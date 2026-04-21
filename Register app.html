@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ट्रॅक्टर हिसाब व्यवस्थापन</title>
+
+<!-- Firebase v9 Modular -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+// 🔥 YOUR CONFIG
+const firebaseConfig = {
+  apiKey: "AIzaSyDjfVQEw5XT3lK7gb6oM5JQ84UNEeVNz1I",
+  authDomain: "tractor--app.firebaseapp.com",
+  projectId: "tractor--app",
+  storageBucket: "tractor--app.firebasestorage.app",
+  messagingSenderId: "864431539732",
+  appId: "1:864431539732:web:39bcde2318404733ee8901",
+  measurementId: "G-6RJ68S4LGJ"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+let userId = null;
+let data = [];
+
+// AUTH
+window.register = async function(){
+  let email = document.getElementById("email").value;
+  let pass = document.getElementById("password").value;
+  await createUserWithEmailAndPassword(auth,email,pass);
+}
+
+window.login = async function(){
+  let email = document.getElementById("email").value;
+  let pass = document.getElementById("password").value;
+  await signInWithEmailAndPassword(auth,email,pass);
+}
+
+window.logout = function(){
+  signOut(auth);
+}
+
+onAuthStateChanged(auth,(user)=>{
+  if(user){
+    userId = user.uid;
+    loginSection.classList.add("hidden");
+    appSection.classList.remove("hidden");
+    fab.classList.remove("hidden");
+    loadData();
+  }else{
+    loginSection.classList.remove("hidden");
+    appSection.classList.add("hidden");
+    fab.classList.add("hidden");
+  }
+});
+
+// DATA
+function loadData(){
+  onValue(ref(db,"users/"+userId),(snap)=>{
+    data = snap.val() || [];
+    updateDashboard();
+    showList();
+  });
+}
+
+function saveToFirebase(){
+  set(ref(db,"users/"+userId), data);
+}
+
+// FORM
+window.openForm = function(){
+  dashboard.classList.add("hidden");
+  formSection.classList.remove("hidden");
+  clearForm();
+}
+
+window.back = function(){
+  dashboard.classList.remove("hidden");
+  formSection.classList.add("hidden");
+}
+
+function clearForm(){
+  editIndex.value="";
+  date.value="";
+  village.value="";
+  hours.value="";
+  rate.value="";
+  paid.value="";
+}
+
+// CRUD
+window.saveEntry = function(){
+  let index = editIndex.value;
+
+  let entry={
+    date:date.value,
+    village:village.value,
+    work:work.value,
+    hours:Number(hours.value),
+    rate:Number(rate.value),
+    paid:Number(paid.value)
+  };
+
+  entry.total = entry.hours * entry.rate;
+  entry.pending = entry.total - entry.paid;
+
+  if(index===""){
+    data.push(entry);
+  }else{
+    data[index]=entry;
+  }
+
+  saveToFirebase();
+  back();
+}
+
+window.editEntry = function(i){
+  let e=data[i];
+  openForm();
+  editIndex.value=i;
+  date.value=e.date;
+  village.value=e.village;
+  work.value=e.work;
+  hours.value=e.hours;
+  rate.value=e.rate;
+  paid.value=e.paid;
+}
+
+window.deleteEntry = function(i){
+  if(confirm("Delete?")){
+    data.splice(i,1);
+    saveToFirebase();
+  }
+}
+
+// UI
+function updateDashboard(){
+  let income=0,pendingAmt=0;
+  let today=new Date().toISOString().split("T")[0];
+
+  data.forEach(e=>{
+    if(e.date===today){income+=e.paid;}
+    pendingAmt+=e.pending;
+  });
+
+  todayIncome.innerText=income;
+  pending.innerText=pendingAmt;
+}
+
+function showList(){
+  let html="";
+  data.forEach((e,i)=>{
+    html+=`
+    <div class="glass">
+    ${e.date} | ${e.village}<br>
+    ${e.work} | ₹${e.total}<br>
+    Paid: ₹${e.paid} | बाकी: ₹${e.pending}<br>
+    <button onclick="editEntry(${i})">Edit</button>
+    <button onclick="deleteEntry(${i})">Delete</button>
+    </div>`;
+  });
+  list.innerHTML=html;
+}
+</script>
+
+<style>
+body{margin:0;font-family:sans-serif;background:#0F0F0F;color:white;}
+header{padding:15px;text-align:center;font-size:20px;background:linear-gradient(45deg,#E53935,#B71C1C);}
+.container{padding:15px;}
+.glass{
+  background:rgba(255,255,255,0.15);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.2);
+  border-radius:15px;
+  padding:15px;margin-bottom:15px;
+}
+input,select{
+  width:100%;padding:10px;margin-top:8px;
+  background:rgba(255,255,255,0.1);
+  border:1px solid rgba(255,255,255,0.2);
+  border-radius:10px;color:white;
+}
+button{
+  width:100%;padding:12px;margin-top:10px;
+  border:none;border-radius:10px;
+  background:#E53935;color:white;font-size:16px;
+}
+.hidden{display:none;}
+.fab{
+  position:fixed;bottom:20px;right:20px;
+  background:#E53935;width:60px;height:60px;
+  border-radius:50%;display:flex;
+  align-items:center;justify-content:center;
+  font-size:30px;
+}
+</style>
+
+</head>
+
+<body>
+
+<header>🚜 ट्रॅक्टर हिसाब व्यवस्थापन</header>
+
+<div class="container">
+
+<div id="loginSection" class="glass">
+<h3>Login / Register</h3>
+<input type="email" id="email" placeholder="Gmail">
+<input type="password" id="password" placeholder="Password">
+<button onclick="register()">Register</button>
+<button onclick="login()">Login</button>
+</div>
+
+<div id="appSection" class="hidden">
+
+<div id="dashboard">
+<div class="glass">आजची कमाई: ₹ <span id="todayIncome">0</span></div>
+<div class="glass">उधारी: ₹ <span id="pending">0</span></div>
+<button onclick="logout()">Logout</button>
+</div>
+
+<div id="formSection" class="hidden">
+<div class="glass">
+
+<input type="hidden" id="editIndex">
+
+<input type="date" id="date">
+<input type="text" id="village" placeholder="गाव">
+<select id="work">
+<option>नांगरणी</option>
+<option>रोटावेटर</option>
+<option>ट्रॉली</option>
+<option>पेरणी</option>
+</select>
+<input type="number" id="hours" placeholder="तास">
+<input type="number" id="rate" placeholder="दर">
+<input type="number" id="paid" placeholder="मिळालेले पैसे">
+
+<button onclick="saveEntry()">सेव करा</button>
+<button onclick="back()">मागे जा</button>
+
+</div>
+</div>
+
+<div id="list"></div>
+
+</div>
+
+</div>
+
+<div class="fab hidden" id="fab" onclick="openForm()">+</div>
+
+</body>
+</html>
