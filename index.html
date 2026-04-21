@@ -6,253 +6,274 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TractorWala Pro - Premium Agriculture Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Hind:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary-green: #15803d;
-            --light-green: #f0fdf4;
-            --accent-green: #22c55e;
-        }
-        body { 
-            font-family: 'Plus Jakarta Sans', 'Hind', sans-serif; 
-            background-color: #f8fafc; 
-            color: #1e293b;
-            overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent;
-        }
+        :root { --primary-green: #15803d; --light-green: #f0fdf4; --accent-green: #22c55e; }
+        body { font-family: 'Plus Jakarta Sans', 'Hind', sans-serif; background-color: #f8fafc; color: #1e293b; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+        
         .green-gradient { background: linear-gradient(135deg, #15803d 0%, #166534 100%); }
+        #side-panel { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; }
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); z-index: 900; }
         
-        #side-panel {
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1000;
-        }
-        .overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(8px);
-            z-index: 900;
-        }
-
-        .card-pro { background: white; border-radius: 32px; box-shadow: 0 4px 25px -5px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; }
-        .btn-primary {
-            background: var(--primary-green);
-            color: white;
-            transition: all 0.2s;
-            box-shadow: 0 10px 20px -5px rgba(21, 128, 61, 0.3);
-        }
-        .btn-primary:active { transform: scale(0.96); }
-        
-        .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 14px 20px;
-            border-radius: 18px;
-            color: #64748b;
-            transition: all 0.2s;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        .nav-item.active {
-            background: var(--light-green);
-            color: var(--primary-green);
-        }
-
-        .tab-content { animation: slideIn 0.4s ease-out; }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        ::-webkit-scrollbar { display: none; }
-
-        .dev-credit-badge {
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            border: 1px solid #e2e8f0;
-            padding: 16px;
-            border-radius: 24px;
-            text-align: center;
+        /* Fixed Alignment Cards */
+        .card-pro { 
+            background: white; 
+            border-radius: 24px; 
+            box-shadow: 0 4px 20px -5px rgba(0,0,0,0.05); 
+            border: 1px solid #f1f5f9;
             width: 100%;
         }
+        
+        .btn-primary { 
+            background: var(--primary-green); 
+            color: white; 
+            transition: all 0.2s; 
+            box-shadow: 0 10px 20px -5px rgba(21, 128, 61, 0.3); 
+        }
+        
+        .nav-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 14px; 
+            padding: 14px 20px; 
+            border-radius: 18px; 
+            color: #64748b; 
+            transition: all 0.2s; 
+            font-weight: 600; 
+            margin-bottom: 4px;
+            width: 100%;
+            text-align: left;
+        }
+        
+        .nav-item.active { background: var(--light-green); color: var(--primary-green); }
+        .tab-content { animation: slideIn 0.3s ease-out; width: 100%; }
+        
+        @keyframes slideIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        /* Input Styling for better alignment */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            width: 100%;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background-color: #f8fafc;
+            border: 1.5px solid #f1f5f9;
+            border-radius: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        input:focus { border-color: var(--primary-green); }
+
+        .recording { 
+            background: #fee2e2 !important; 
+            border: 2px solid #ef4444 !important; 
+            animation: pulse 1.5s infinite; 
+        }
+        
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
     </style>
 </head>
-<body class="max-w-md mx-auto min-h-screen relative shadow-2xl bg-white">
+<body class="max-w-md mx-auto min-h-screen relative shadow-2xl bg-white flex flex-col">
 
+    <!-- SIDE NAVIGATION PANEL -->
     <div id="side-panel" class="fixed top-0 left-0 h-full w-72 bg-white shadow-2xl translate-x-[-100%] flex flex-col">
         <div class="p-8 border-b border-slate-50">
-            <div class="flex items-center gap-4 mb-2">
-                <div class="w-12 h-12 bg-green-600 rounded-2xl flex items-center justify-center text-white font-extrabold text-2xl shadow-lg shadow-green-100">T</div>
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-green-600 rounded-2xl flex items-center justify-center text-white font-extrabold text-2xl shadow-lg">T</div>
                 <div>
-                    <h3 class="font-extrabold text-slate-900 leading-none">TractorWala</h3>
-                    <p class="text-[10px] text-green-600 font-bold uppercase tracking-widest mt-1">v2.0 Pro Edition</p>
+                    <h3 id="side-biz-name" class="font-extrabold text-slate-900 leading-tight">TractorWala</h3>
+                    <p class="text-[10px] text-green-600 font-bold uppercase tracking-widest">v2.0 Pro Edition</p>
                 </div>
             </div>
         </div>
         
-        <div class="p-4 flex-1 overflow-y-auto">
-            <button onclick="switchTab('dashboard')" class="w-full nav-item active" id="nav-dashboard">🏠 डॅशबोर्ड</button>
-            <button onclick="switchTab('jobs')" class="w-full nav-item" id="nav-jobs">🚜 कामाची नोंद</button>
-            <button onclick="switchTab('expenses')" class="w-full nav-item" id="nav-expenses">⛽ इंधन व खर्च</button>
-            <button onclick="switchTab('pending')" class="w-full nav-item" id="nav-pending">⏳ बाकी वसुली</button>
-            <button onclick="switchTab('driver')" class="w-full nav-item" id="nav-driver">👷 ड्रायव्हर हिशोब</button>
-            <button onclick="switchTab('reports')" class="w-full nav-item" id="nav-reports">📊 रिपोर्ट</button>
+        <div class="p-4 flex-1 overflow-y-auto space-y-1">
+            <button onclick="switchTab('dashboard')" class="nav-item active" id="nav-dashboard">🏠 डॅशबोर्ड</button>
+            <button onclick="switchTab('jobs')" class="nav-item" id="nav-jobs">🚜 कामाची नोंद</button>
+            <button onclick="switchTab('pending')" class="nav-item" id="nav-pending">⏳ बाकी वसुली</button>
+            <button onclick="switchTab('settings')" class="nav-item" id="nav-settings">⚙️ सेटिंग्स</button>
             <div class="mt-8 pt-4 border-t border-slate-50">
-                <button onclick="logout()" class="w-full nav-item text-red-500">🚪 लॉग-आउट</button>
+                <button onclick="logout()" class="nav-item text-red-500">🚪 लॉग-आउट</button>
             </div>
         </div>
 
-        <div class="p-4 border-t border-slate-50 flex justify-center items-center">
-            <div class="dev-credit-badge">
-                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-[2px] mb-1">Developer</p>
-                <p class="text-[13px] text-slate-900 font-black mb-1">Sourabh Bongarde</p>
-                <p class="text-[8px] text-green-600 font-bold uppercase tracking-wider">Software Solutions</p>
+        <div class="p-6 border-t border-slate-50">
+            <div class="bg-slate-50 p-4 rounded-2xl text-center">
+                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mb-1">Developer</p>
+                <p class="text-[13px] text-slate-900 font-black">Sourabh Bongarde</p>
             </div>
         </div>
     </div>
     <div id="overlay" class="overlay" onclick="toggleMenu()"></div>
 
+    <!-- LOGIN SCREEN -->
     <div id="login-screen" class="flex flex-col items-center justify-center min-h-screen p-8 text-center bg-white z-[2000] relative">
         <div class="mb-12">
-            <div class="w-64 h-64 bg-green-50 rounded-full flex items-center justify-center mb-8 mx-auto shadow-inner">
-                <img src="https://wallpapers.com/images/hd/smiling-cartoon-farmerwith-tractor-5lyi3c0ezwugz4qm.jpg" 
-                     class="w-48 h-48 object-contain drop-shadow-2xl">
+            <div class="w-56 h-56 bg-green-50 rounded-full flex items-center justify-center mb-8 mx-auto shadow-inner">
+                <img src="https://wallpapers.com/images/hd/smiling-cartoon-farmerwith-tractor-5lyi3c0ezwugz4qm.jpg" class="w-40 h-40 object-contain drop-shadow-2xl">
             </div>
             <h1 class="text-4xl font-black text-slate-900 tracking-tighter">Tractor<span class="text-green-600">Wala</span></h1>
             <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[6px] mt-2">Digital Agri Expert</p>
         </div>
-        
-        <button onclick="login()" class="flex items-center gap-4 bg-white border border-slate-200 px-8 py-4 rounded-2xl shadow-sm hover:shadow-md transition-all active:scale-95 w-full max-w-[300px] justify-center mb-24">
+        <button onclick="login()" class="flex items-center gap-4 bg-white border border-slate-200 px-8 py-4 rounded-2xl shadow-sm active:scale-95 transition-all">
             <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" class="w-6 h-6">
             <span class="font-bold text-slate-700">Google ने सुरू करा</span>
         </button>
-
-        <div class="absolute bottom-8 left-0 right-0 flex flex-col items-center text-center px-6">
-            <div class="w-12 h-[2px] bg-slate-100 mb-4"></div>
-            <p class="text-[9px] text-slate-400 font-bold uppercase tracking-[3px] mb-1">App Developer</p>
-            <p class="text-[12px] text-slate-800 font-black uppercase tracking-tight">Sourabh Bongarde</p>
-            <p class="text-[8px] text-slate-400 mt-2 font-medium">© 2026 TractorWala Pro. All Rights Reserved.</p>
+        <div class="absolute bottom-8 w-full text-center">
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[3px]">By Sourabh Bongarde</p>
         </div>
     </div>
 
+    <!-- MAIN APP SCREEN -->
     <div id="app-screen" class="hidden min-h-screen flex flex-col">
-        <header class="p-4 flex justify-between items-center bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-50">
-            <button onclick="toggleMenu()" class="p-3 bg-slate-50 rounded-2xl active:bg-slate-100">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-            </button>
-            <span class="font-black text-slate-800 tracking-tighter">Tractor<span class="text-green-600">Wala</span></span>
-            <div id="user-photo-small" class="w-10 h-10 rounded-2xl overflow-hidden border-2 border-green-50 shadow-sm bg-green-500 text-white flex items-center justify-center font-bold">U</div>
+        <header class="p-4 flex justify-between items-center bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100">
+            <button onclick="toggleMenu()" class="w-10 h-10 flex items-center justify-center bg-slate-50 rounded-xl">☰</button>
+            <span id="header-biz-name" class="font-black text-slate-800 text-lg tracking-tight">TractorWala</span>
+            <div id="user-photo-small" class="w-10 h-10 rounded-xl bg-green-600 text-white flex items-center justify-center font-bold shadow-md shadow-green-100">U</div>
         </header>
 
         <main class="flex-1 overflow-y-auto pb-32">
-            <section id="section-dashboard" class="p-6 space-y-6 tab-content">
-                <div class="green-gradient p-8 rounded-[40px] text-white shadow-2xl shadow-green-100 relative overflow-hidden">
-                    <p class="text-green-100/70 text-[11px] font-bold uppercase tracking-[3px] mb-1">एकूण शिल्लक (Profit)</p>
-                    <h2 id="net-profit" class="text-5xl font-black tracking-tighter mb-8">₹0</h2>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="bg-white/10 p-4 rounded-2xl border border-white/10">
-                            <p class="text-[9px] font-bold uppercase text-green-200 mb-1">मिळालेले</p>
-                            <p id="header-income" class="text-lg font-bold">₹0</p>
-                        </div>
-                        <div class="bg-white/10 p-4 rounded-2xl border border-white/10">
-                            <p class="text-[9px] font-bold uppercase text-green-200 mb-1">खर्च</p>
-                            <p id="header-expense" class="text-lg font-bold">₹0</p>
-                        </div>
-                    </div>
+            <!-- DASHBOARD -->
+            <section id="section-dashboard" class="p-5 space-y-6 tab-content">
+                <div class="green-gradient p-8 rounded-[32px] text-white shadow-xl shadow-green-100 relative overflow-hidden">
+                    <p class="text-green-100/70 text-[11px] font-bold uppercase tracking-[2px] mb-1">एकूण उत्पन्न (Total Profit)</p>
+                    <h2 id="net-profit" class="text-5xl font-black tracking-tighter">₹0</h2>
+                    <div class="absolute -bottom-6 -right-6 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
                 </div>
 
-                <div class="card-pro p-6">
-                    <div class="flex justify-between items-center mb-6">
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center px-2">
                         <h4 class="font-extrabold text-slate-800 text-xs uppercase tracking-widest">नुकतीच झालेली कामे</h4>
+                        <button onclick="switchTab('jobs')" class="text-green-600 text-[10px] font-bold uppercase">सर्व पहा</button>
                     </div>
-                    <div id="recent-jobs" class="space-y-4"></div>
-                </div>
-
-                <div class="pt-8 pb-4 flex flex-col items-center justify-center">
-                    <div class="px-6 py-3 bg-slate-50 rounded-full border border-slate-100 flex items-center gap-2">
-                        <span class="text-red-500 text-xs">❤️</span>
-                        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">
-                            Built by <span class="text-slate-900 font-black">Sourabh Bongarde</span>
-                        </p>
-                    </div>
-                    <p class="text-[8px] text-slate-300 mt-4 uppercase font-bold tracking-[3px] text-center">© 2026 TractorWala Pro. All Rights Reserved.</p>
+                    <div id="recent-jobs" class="space-y-3"></div>
                 </div>
             </section>
 
-            <section id="section-jobs" class="hidden p-6 space-y-6 tab-content">
+            <!-- JOBS SECTION -->
+            <section id="section-jobs" class="hidden p-5 space-y-6 tab-content">
                 <div class="card-pro p-6 border-2 border-green-50">
-                    <h4 class="font-extrabold text-green-800 text-xs uppercase mb-6 flex items-center gap-2">नवीन कामाची नोंद</h4>
+                    <div class="flex justify-between items-center mb-6">
+                        <h4 class="font-extrabold text-green-800 text-xs uppercase tracking-wider">नवीन कामाची नोंद</h4>
+                        <button id="voice-btn" class="w-10 h-10 bg-green-50 text-green-600 rounded-full flex items-center justify-center text-lg">🎤</button>
+                    </div>
                     <form id="job-form" class="space-y-4">
-                        <input type="text" id="job-cust" placeholder="शेतकऱ्याचे नाव" class="w-full p-4 bg-slate-50 rounded-2xl border-none">
+                        <div class="input-group">
+                            <input type="text" id="j-cust" placeholder="शेतकऱ्याचे नाव" required>
+                        </div>
+                        <div class="input-group">
+                            <input type="tel" id="j-phone" placeholder="मोबाईल नंबर (Optional)">
+                        </div>
                         <div class="flex gap-3">
-                            <input type="number" id="job-unit-val" placeholder="किती?" class="w-1/2 p-4 bg-slate-50 rounded-2xl">
-                            <select id="job-unit-type" class="w-1/2 p-4 bg-slate-50 rounded-2xl font-bold">
-                                <option value="Acre">एकर</option><option value="Gunta">गुंठा</option>
-                                <option value="Hours">तास</option><option value="Trip">ट्रिप</option>
+                            <input type="number" id="j-val" placeholder="प्रमाण (उदा. 5)" required>
+                            <select id="j-unit" class="font-bold bg-white">
+                                <option>Acre</option>
+                                <option>Gunta</option>
+                                <option>Hours</option>
+                                <option>Trip</option>
                             </select>
                         </div>
-                        <input type="number" id="job-amt" placeholder="रक्कम ₹" class="w-full p-4 bg-slate-50 rounded-2xl font-bold">
+                        <div class="input-group">
+                            <input type="number" id="j-amt" placeholder="एकूण रक्कम ₹" class="font-black text-lg" required>
+                        </div>
                         <label class="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl cursor-pointer">
-                            <input type="checkbox" id="job-paid" checked class="w-6 h-6 accent-green-600">
+                            <input type="checkbox" id="j-paid" checked class="w-5 h-5 accent-green-600">
                             <span class="text-xs font-bold text-slate-600 uppercase">पैसे मिळाले (Paid)</span>
                         </label>
-                        <button type="submit" class="w-full btn-primary py-5 rounded-2xl font-black text-sm uppercase">काम सेव्ह करा</button>
+                        <button type="submit" class="w-full btn-primary py-5 rounded-2xl font-black text-sm uppercase tracking-widest mt-2">काम सेव्ह करा</button>
                     </form>
                 </div>
-                <div id="list-jobs" class="space-y-3"></div>
-            </section>
-
-            <section id="section-expenses" class="hidden p-6 space-y-6 tab-content">
-                <div class="card-pro p-6 border-2 border-red-50">
-                    <h4 class="font-extrabold text-red-800 text-xs uppercase mb-6">खर्चाची नोंद</h4>
-                    <form id="exp-form" class="space-y-4">
-                        <input type="text" id="exp-name" placeholder="खर्चाचा प्रकार" class="w-full p-4 bg-slate-50 rounded-2xl border-none">
-                        <input type="number" id="exp-amt" placeholder="रक्कम ₹" class="w-full p-4 bg-slate-50 rounded-2xl font-black border-none">
-                        <button type="submit" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase">खर्च नोंदवा</button>
-                    </form>
+                
+                <div class="space-y-4">
+                    <h4 class="font-extrabold text-slate-800 text-xs uppercase tracking-widest px-2">सर्व कामांची यादी</h4>
+                    <div id="list-jobs" class="space-y-3"></div>
                 </div>
-                <div id="list-expenses" class="space-y-3"></div>
             </section>
 
-            <section id="section-pending" class="hidden p-6 space-y-4 tab-content">
-                <h3 class="text-xl font-black text-slate-900 tracking-tight">येणे बाकी</h3>
+            <!-- PENDING SECTION -->
+            <section id="section-pending" class="hidden p-5 space-y-4 tab-content">
+                <div class="flex items-center gap-2 mb-4 px-2">
+                    <div class="w-2 h-8 bg-red-500 rounded-full"></div>
+                    <h3 class="text-xl font-black text-slate-900 tracking-tight">येणे बाकी (Unpaid)</h3>
+                </div>
                 <div id="list-pending" class="space-y-3"></div>
             </section>
 
-            <section id="section-driver" class="hidden p-6 space-y-6 tab-content">
-                <div class="card-pro p-6 border-2 border-green-50">
-                    <h4 class="font-extrabold text-green-800 text-xs uppercase mb-6">ड्रायव्हर पगार</h4>
-                    <form id="driver-form" class="space-y-4">
-                        <input type="text" id="driver-name" placeholder="नाव" class="w-full p-4 bg-slate-50 rounded-2xl border-none">
-                        <input type="number" id="driver-amt" placeholder="रक्कम ₹" class="w-full p-4 bg-slate-50 rounded-2xl font-black border-none">
-                        <button type="submit" class="w-full btn-primary py-5 rounded-2xl font-black uppercase">नोंद सेव्ह करा</button>
+            <!-- SETTINGS SECTION -->
+            <section id="section-settings" class="hidden p-5 space-y-6 tab-content">
+                <div class="card-pro p-6">
+                    <h4 class="font-extrabold text-slate-800 text-xs uppercase mb-6 tracking-wider">तुमची माहिती</h4>
+                    <form id="settings-form" class="space-y-4">
+                        <div class="input-group">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">व्यवसायाचे नाव</label>
+                            <input type="text" id="set-biz" placeholder="उदा. महालक्ष्मी ट्रॅक्टर्स">
+                        </div>
+                        <div class="input-group">
+                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">UPI ID (पेमेंट साठी)</label>
+                            <input type="text" id="set-upi" placeholder="उदा. 9876543210@ybl">
+                        </div>
+                        <button type="submit" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase tracking-widest mt-4">सेव्ह करा</button>
                     </form>
-                </div>
-                <div id="list-driver" class="space-y-3"></div>
-            </section>
-
-            <section id="section-reports" class="hidden p-6 space-y-6 tab-content">
-                <div class="card-pro p-10 text-center border-dashed border-2 border-slate-200">
-                    <h3 class="text-xl font-black text-slate-800 mb-2">आजचा रिपोर्ट</h3>
-                    <button onclick="shareDailySummary()" class="w-full btn-primary py-5 rounded-2xl font-black uppercase">रिपोर्ट पाठवा</button>
                 </div>
             </section>
         </main>
 
-        <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/90 backdrop-blur-xl border-t border-slate-100 p-4 grid grid-cols-4 gap-2 z-40">
-            <button onclick="switchTab('dashboard')" class="flex flex-col items-center justify-center"><div id="bottom-icon-dashboard" class="w-12 h-12 flex items-center justify-center bg-green-600 text-white rounded-2xl transition-all shadow-lg shadow-green-100">🏠</div></button>
-            <button onclick="switchTab('jobs')" class="flex flex-col items-center justify-center"><div id="bottom-icon-jobs" class="w-12 h-12 flex items-center justify-center bg-slate-50 text-slate-400 rounded-2xl">🚜</div></button>
-            <button onclick="switchTab('pending')" class="flex flex-col items-center justify-center"><div id="bottom-icon-pending" class="w-12 h-12 flex items-center justify-center bg-slate-50 text-slate-400 rounded-2xl">⏳</div></button>
-            <button onclick="toggleMenu()" class="flex flex-col items-center justify-center"><div class="w-12 h-12 flex items-center justify-center bg-slate-50 text-slate-400 rounded-2xl">☰</div></button>
+        <!-- FOOTER NAV -->
+        <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-xl border-t border-slate-100 px-6 py-4 grid grid-cols-4 gap-2 z-40">
+            <button onclick="switchTab('dashboard')" class="flex flex-col items-center gap-1">
+                <div id="bt-dashboard" class="w-12 h-12 flex items-center justify-center bg-green-600 text-white rounded-2xl shadow-lg transition-all">🏠</div>
+            </button>
+            <button onclick="switchTab('jobs')" class="flex flex-col items-center gap-1">
+                <div id="bt-jobs" class="w-12 h-12 flex items-center justify-center bg-slate-50 text-slate-400 rounded-2xl transition-all">🚜</div>
+            </button>
+            <button onclick="switchTab('pending')" class="flex flex-col items-center gap-1">
+                <div id="bt-pending" class="w-12 h-12 flex items-center justify-center bg-slate-50 text-slate-400 rounded-2xl transition-all">⏳</div>
+            </button>
+            <button onclick="toggleMenu()" class="flex flex-col items-center gap-1">
+                <div class="w-12 h-12 flex items-center justify-center bg-slate-50 text-slate-400 rounded-2xl">☰</div>
+            </button>
         </nav>
+    </div>
+
+    <!-- INVOICE MODAL -->
+    <div id="bill-modal" class="fixed inset-0 z-[3000] hidden flex items-center justify-center p-6 bg-black/70 backdrop-blur-md">
+        <div class="bg-white w-full rounded-[32px] p-8 text-center relative shadow-2xl overflow-hidden">
+            <button onclick="closeBill()" class="absolute top-6 right-6 text-slate-400 w-8 h-8 flex items-center justify-center bg-slate-100 rounded-full font-bold">✕</button>
+            
+            <div id="qr-code" class="mb-6 flex justify-center p-4 bg-slate-50 rounded-3xl mx-auto w-fit"></div>
+            
+            <h3 id="bill-biz" class="font-black text-2xl text-slate-900 mb-1">TractorWala</h3>
+            <div class="h-1 w-12 bg-green-600 mx-auto mb-6 rounded-full"></div>
+            
+            <div class="bg-slate-50 rounded-2xl p-4 mb-8 text-left space-y-2">
+                <div class="flex justify-between"><span class="text-slate-400 text-xs font-bold uppercase">शेतकरी</span><span id="b-name" class="font-bold"></span></div>
+                <div class="flex justify-between"><span class="text-slate-400 text-xs font-bold uppercase">काम</span><span id="b-work" class="font-bold"></span></div>
+                <div class="flex justify-between pt-2 border-t border-slate-200"><span class="text-slate-400 text-xs font-bold uppercase">एकूण</span><span id="b-amt" class="font-black text-green-700 text-lg"></span></div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <button id="pdf-btn" class="bg-slate-100 py-4 rounded-2xl font-bold text-xs uppercase text-slate-700">PDF पावती</button>
+                <button id="wa-btn" class="bg-green-600 text-white py-4 rounded-2xl font-bold text-xs uppercase shadow-lg shadow-green-100">WhatsApp</button>
+            </div>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, onSnapshot, orderBy, doc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, setDoc, getDoc, query, onSnapshot, orderBy, doc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // तुमचा ओरिजिनल कॉन्फिग डेटा
         const firebaseConfig = {
             apiKey: "AIzaSyDjfVQEw5XT3lK7gb6oM5JQ84UNEeVNz1I",
             authDomain: "tractor--app.firebaseapp.com",
@@ -269,11 +290,11 @@
         const provider = new GoogleAuthProvider();
 
         let user = null;
-        let stats = { inc: 0, exp: 0, drv: 0 };
+        let bizSettings = { bizName: 'TractorWala', upi: '' };
 
         window.login = () => signInWithPopup(auth, provider);
         window.logout = () => signOut(auth);
-
+        
         window.toggleMenu = () => {
             const menu = document.getElementById('side-panel');
             const overlay = document.getElementById('overlay');
@@ -282,12 +303,15 @@
             overlay.style.display = isOpen ? 'none' : 'block';
         };
 
-        onAuthStateChanged(auth, (u) => {
+        onAuthStateChanged(auth, async (u) => {
             if (u) {
                 user = u;
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('app-screen').classList.remove('hidden');
                 if(u.photoURL) document.getElementById('user-photo-small').innerHTML = `<img src="${u.photoURL}" class="w-full h-full object-cover">`;
+                
+                const sDoc = await getDoc(doc(db, "users", user.uid, "profile", "settings"));
+                if(sDoc.exists()) { bizSettings = sDoc.data(); updateBizUI(); }
                 startSync();
             } else {
                 document.getElementById('login-screen').classList.remove('hidden');
@@ -295,114 +319,149 @@
             }
         });
 
-        window.switchTab = (t) => {
-            const tabs = ['dashboard', 'jobs', 'expenses', 'pending', 'driver', 'reports'];
-            tabs.forEach(s => {
-                const sec = document.getElementById(`section-${s}`);
-                if(sec) sec.classList.add('hidden');
-                const navBtn = document.getElementById(`nav-${s}`);
-                if(navBtn) navBtn.classList.remove('active');
-                const bIcon = document.getElementById(`bottom-icon-${s}`);
-                if(bIcon) {
-                    bIcon.classList.replace('bg-green-600', 'bg-slate-50');
-                    bIcon.classList.replace('text-white', 'text-slate-400');
-                    bIcon.classList.remove('shadow-lg', 'shadow-green-100');
-                }
-            });
-            const activeSec = document.getElementById(`section-${t}`);
-            if(activeSec) activeSec.classList.remove('hidden');
-            const activeBtn = document.getElementById(`nav-${t}`);
-            if(activeBtn) activeBtn.classList.add('active');
-            const activeBIcon = document.getElementById(`bottom-icon-${t}`);
-            if(activeBIcon) {
-                activeBIcon.classList.replace('bg-slate-50', 'bg-green-600');
-                activeBIcon.classList.replace('text-slate-400', 'text-white');
-                activeBIcon.classList.add('shadow-lg', 'shadow-green-100');
-            }
-            if(window.innerWidth < 768) {
-                document.getElementById('side-panel').style.transform = 'translateX(-100%)';
-                document.getElementById('overlay').style.display = 'none';
-            }
-        };
-
-        function startSync() {
-            onSnapshot(query(collection(db, "users", user.uid, "jobs"), orderBy("ts", "desc")), (snap) => {
-                let html = ''; let pendHtml = ''; let recentHtml = ''; stats.inc = 0;
-                let count = 0;
-                snap.forEach(d => {
-                    const v = d.data();
-                    if(v.paid) stats.inc += v.amt;
-                    const card = `<div class="bg-white p-5 rounded-[24px] flex justify-between items-center shadow-sm border border-slate-50"><div><p class="font-extrabold text-slate-800 text-sm leading-tight">${v.name}</p><p class="text-[10px] font-bold text-slate-400 uppercase mt-1">${v.unitVal} ${v.unitType}</p></div><div class="text-right"><p class="font-black text-sm ${v.paid ? 'text-slate-900' : 'text-red-500'}">₹${v.amt}</p><div class="flex gap-4 mt-2 justify-end"><button onclick="sendWA('${v.name}', ${v.amt}, '${v.paid}', '${v.unitVal}', '${v.unitType}')" class="text-green-600 font-bold text-[10px] uppercase">Share</button><button onclick="del('jobs', '${d.id}')" class="text-slate-300">🗑️</button></div></div></div>`;
-                    html += card;
-                    if(!v.paid) pendHtml += card;
-                    if(count < 3) recentHtml += card;
-                    count++;
-                });
-                document.getElementById('list-jobs').innerHTML = html || '<p class="text-center py-20 text-slate-300">No Jobs</p>';
-                document.getElementById('list-pending').innerHTML = pendHtml || '<p class="text-center py-20 text-green-500 font-bold">Paid All! ✅</p>';
-                document.getElementById('recent-jobs').innerHTML = recentHtml || '<p class="text-center text-slate-300 text-xs">No Recent</p>';
-                updateUI();
-            });
-
-            onSnapshot(collection(db, "users", user.uid, "expenses"), (snap) => {
-                let html = ''; stats.exp = 0;
-                snap.forEach(d => {
-                    const v = d.data();
-                    stats.exp += v.amt;
-                    html += `<div class="bg-slate-900 text-white p-5 rounded-[24px] flex justify-between items-center mb-2"><span>${v.name}</span><span class="font-black text-red-400">₹${v.amt}</span></div>`;
-                });
-                document.getElementById('list-expenses').innerHTML = html;
-                updateUI();
-            });
-
-            onSnapshot(collection(db, "users", user.uid, "driver"), (snap) => {
-                let html = ''; stats.drv = 0;
-                snap.forEach(d => {
-                    const v = d.data();
-                    stats.drv += v.amt;
-                    html += `<div class="bg-white p-5 rounded-[24px] flex justify-between items-center shadow-sm border border-slate-50 mb-2"><span>${v.name}</span><span class="font-black text-green-700">₹${v.amt}</span></div>`;
-                });
-                document.getElementById('list-driver').innerHTML = html;
-                updateUI();
-            });
+        function updateBizUI() {
+            const bName = bizSettings.bizName || 'TractorWala';
+            document.getElementById('header-biz-name').innerText = bName;
+            document.getElementById('side-biz-name').innerText = bName;
+            document.getElementById('set-biz').value = bName;
+            document.getElementById('set-upi').value = bizSettings.upi || '';
         }
 
-        function updateUI() {
-            const profit = stats.inc - (stats.exp + stats.drv);
-            document.getElementById('net-profit').innerText = `₹${profit}`;
-            document.getElementById('header-income').innerText = `₹${stats.inc}`;
-            document.getElementById('header-expense').innerText = `₹${stats.exp + stats.drv}`;
+        window.switchTab = (t) => {
+            ['dashboard', 'jobs', 'pending', 'settings'].forEach(s => {
+                document.getElementById(`section-${s}`).classList.add('hidden');
+                const nav = document.getElementById(`nav-${s}`); if(nav) nav.classList.remove('active');
+                const btn = document.getElementById(`bt-${s}`); if(btn) { 
+                    btn.classList.replace('bg-green-600', 'bg-slate-50'); 
+                    btn.classList.replace('text-white', 'text-slate-400'); 
+                    btn.classList.remove('shadow-lg'); 
+                }
+            });
+            document.getElementById(`section-${t}`).classList.remove('hidden');
+            const activeNav = document.getElementById(`nav-${t}`); if(activeNav) activeNav.classList.add('active');
+            const activeBtn = document.getElementById(`bt-${t}`); if(activeBtn) { 
+                activeBtn.classList.replace('bg-slate-50', 'bg-green-600'); 
+                activeBtn.classList.replace('text-slate-400', 'text-white'); 
+                activeBtn.classList.add('shadow-lg'); 
+            }
+            if(document.getElementById('side-panel').style.transform === 'translateX(0%)') toggleMenu();
+        };
+        function startSync() {
+            onSnapshot(query(collection(db, "users", user.uid, "jobs"), orderBy("ts", "desc")), (snap) => {
+                let html = ''; let p_html = ''; let r_html = ''; let total = 0; let count = 0;
+                snap.forEach(d => {
+                    const v = d.data(); if(v.paid) total += Number(v.amt);
+                    const card = `
+                    <div class="card-pro p-4 flex justify-between items-center transition-all active:scale-[0.98]">
+                        <div class="flex flex-col">
+                            <p class="font-black text-slate-800">${v.name}</p>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">${v.val} ${v.unit}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-black ${v.paid ? 'text-slate-900' : 'text-red-500'} text-lg">₹${v.amt}</p>
+                            <div class="flex gap-4 mt-1 justify-end">
+                                <button onclick="openBill('${v.name}', ${v.amt}, '${v.paid}', '${v.val}', '${v.unit}', '${v.phone || ''}')" class="text-green-600 text-[10px] font-bold uppercase tracking-widest">पावती</button>
+                                <button onclick="delJob('${d.id}')" class="text-slate-300">🗑️</button>
+                            </div>
+                        </div>
+                    </div>`;
+                    html += card; 
+                    if(!v.paid) p_html += card; 
+                    if(count < 5) r_html += card; 
+                    count++;
+                });
+                document.getElementById('list-jobs').innerHTML = html || '<p class="text-center py-10 text-slate-300 font-bold uppercase tracking-widest text-xs">No Jobs Found</p>';
+                document.getElementById('list-pending').innerHTML = p_html || '<div class="text-center py-20"><p class="text-green-500 font-black text-xl mb-2">सर्व पेमेंट मिळाले!</p><p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Great Job!</p></div>';
+                document.getElementById('recent-jobs').innerHTML = r_html;
+                document.getElementById('net-profit').innerText = `₹${total.toLocaleString('hi-IN')}`;
+            });
         }
 
         document.getElementById('job-form').onsubmit = async (e) => {
             e.preventDefault();
-            const data = {
-                name: document.getElementById('job-cust').value,
-                amt: Number(document.getElementById('job-amt').value),
-                unitVal: document.getElementById('job-unit-val').value,
-                unitType: document.getElementById('job-unit-type').value,
-                paid: document.getElementById('job-paid').checked,
-                ts: serverTimestamp()
+            const btn = e.target.querySelector('button');
+            btn.disabled = true; btn.innerText = "सेव्ह होत आहे...";
+            try {
+                const data = {
+                    name: document.getElementById('j-cust').value,
+                    phone: document.getElementById('j-phone').value,
+                    val: document.getElementById('j-val').value,
+                    unit: document.getElementById('j-unit').value,
+                    amt: Number(document.getElementById('j-amt').value),
+                    paid: document.getElementById('j-paid').checked,
+                    ts: serverTimestamp()
+                };
+                await addDoc(collection(db, "users", user.uid, "jobs"), data);
+                e.target.reset();
+                switchTab('dashboard');
+            } catch(e) { console.error(e); }
+            btn.disabled = false; btn.innerText = "काम सेव्ह करा";
+        };
+
+        document.getElementById('settings-form').onsubmit = async (e) => {
+            e.preventDefault();
+            bizSettings = { bizName: document.getElementById('set-biz').value, upi: document.getElementById('set-upi').value };
+            await setDoc(doc(db, "users", user.uid, "profile", "settings"), bizSettings);
+            updateBizUI();
+            alert('Settings Saved!');
+        };
+
+        window.delJob = async (id) => { if(confirm('ही नोंद कायमची हटवायची आहे का?')) await deleteDoc(doc(db, "users", user.uid, "jobs", id)); };
+
+        // VOICE INPUT
+        const vBtn = document.getElementById('voice-btn');
+        const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if(Speech) {
+            const rec = new Speech(); rec.lang = 'mr-IN';
+            vBtn.onclick = () => { rec.start(); vBtn.classList.add('recording'); };
+            rec.onresult = (e) => { document.getElementById('j-cust').value = e.results[0][0].transcript; vBtn.classList.remove('recording'); };
+            rec.onend = () => vBtn.classList.remove('recording');
+        }
+
+        // BILLING & MODAL
+        window.openBill = (n, a, p, v, u, ph) => {
+            const modal = document.getElementById('bill-modal');
+            const qBox = document.getElementById('qr-code');
+            
+            document.getElementById('bill-biz').innerText = bizSettings.bizName || 'TractorWala';
+            document.getElementById('b-name').innerText = n;
+            document.getElementById('b-work').innerText = `${v} ${u}`;
+            document.getElementById('b-amt').innerText = `₹${a}`;
+
+            qBox.innerHTML = "";
+            if(bizSettings.upi) { 
+                new QRCode(qBox, { 
+                    text: `upi://pay?pa=${bizSettings.upi}&pn=${bizSettings.bizName}&am=${a}&cu=INR`, 
+                    width: 140, 
+                    height: 140,
+                    colorDark: "#1e293b",
+                    colorLight: "#f8fafc"
+                }); 
+            } else {
+                qBox.innerHTML = `<div class="text-slate-400 text-[10px] uppercase font-bold text-center w-32 h-32 flex items-center justify-center border-2 border-dashed border-slate-200 rounded-2xl">UPI सेट करा</div>`;
+            }
+            
+            document.getElementById('wa-btn').onclick = () => {
+                const msg = `🚜 *${bizSettings.bizName}*\n\nशेतकरी: ${n}\nकाम: ${v} ${u}\nरक्कम: ₹${a}\nस्थिती: ${p === 'true' ? '✅ Paid' : '⏳ Pending'}\n\nधन्यवाद!`;
+                window.open(`https://wa.me/${ph ? '91'+ph : ''}?text=${encodeURIComponent(msg)}`);
             };
-            await addDoc(collection(db, "users", user.uid, "jobs"), data);
-            e.target.reset();
-            switchTab('dashboard');
+
+            document.getElementById('pdf-btn').onclick = () => {
+                const { jsPDF } = window.jspdf; 
+                const doc = new jsPDF();
+                doc.setFontSize(22); doc.text(bizSettings.bizName || "TractorWala", 20, 20);
+                doc.setFontSize(12); doc.text("Invoice / Bill", 20, 30);
+                doc.line(20, 35, 190, 35);
+                doc.text(`Farmer Name: ${n}`, 20, 50);
+                doc.text(`Work Details: ${v} ${u}`, 20, 60);
+                doc.text(`Total Amount: Rs. ${a}`, 20, 70);
+                doc.text(`Status: ${p === 'true' ? 'Paid' : 'Unpaid'}`, 20, 80);
+                doc.save(`${n}_bill.pdf`);
+            };
+            modal.classList.remove('hidden');
         };
 
-        window.del = async (c, id) => { if(confirm('ही नोंद हटवायची का?')) await deleteDoc(doc(db, "users", user.uid, c, id)); };
-
-        window.sendWA = (n, a, p, uv, ut) => {
-            const msg = p === 'true' 
-                ? `🚜 *TractorWala Bill*\nCustomer: ${n}\nAmt: ₹${a} (Paid)\n✅ Success`
-                : `🚜 *TractorWala Bill*\nCustomer: ${n}\nAmt: ₹${a} (Pending)\n⏳ Please pay.`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
-        };
-
-        window.shareDailySummary = () => {
-            const msg = `🚜 *TractorWala Summary*\nProfit: ₹${stats.inc - (stats.exp + stats.drv)}\nIn: ₹${stats.inc}\nOut: ₹${stats.exp + stats.drv}\n© Sourabh Bongarde Softwares`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
-        };
+        window.closeBill = () => document.getElementById('bill-modal').classList.add('hidden');
     </script>
 </body>
 </html>
-
