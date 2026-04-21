@@ -1,260 +1,229 @@
+```html
 <!DOCTYPE html>
 <html lang="mr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ट्रॅक्टर हिसाब व्यवस्थापन</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tractor Pro - Business Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, onSnapshot, orderBy, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-<!-- Firebase v9 Modular -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDjfVQEw5XT3lK7gb6oM5JQ84UNEeVNz1I",
+            authDomain: "tractor--app.firebaseapp.com",
+            projectId: "tractor--app",
+            storageBucket: "tractor--app.firebasestorage.app",
+            messagingSenderId: "864431539732",
+            appId: "1:864431539732:web:39bcde2318404733ee8901",
+            measurementId: "G-6RJ68S4LGJ"
+        };
 
-// 🔥 YOUR CONFIG
-const firebaseConfig = {
-  apiKey: "AIzaSyDjfVQEw5XT3lK7gb6oM5JQ84UNEeVNz1I",
-  authDomain: "tractor--app.firebaseapp.com",
-  projectId: "tractor--app",
-  storageBucket: "tractor--app.firebasestorage.app",
-  messagingSenderId: "864431539732",
-  appId: "1:864431539732:web:39bcde2318404733ee8901",
-  measurementId: "G-6RJ68S4LGJ"
-};
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getDatabase(app);
+        // UI Elements
+        const loginScreen = document.getElementById('login-screen');
+        const appScreen = document.getElementById('app-screen');
+        const userNameDisp = document.getElementById('user-name');
+        const bookingForm = document.getElementById('booking-form');
+        const recordsList = document.getElementById('records-list');
+        const totalEarningsDisp = document.getElementById('total-earnings');
 
-let userId = null;
-let data = [];
+        let currentUser = null;
 
-// AUTH
-window.register = async function(){
-  let email = document.getElementById("email").value;
-  let pass = document.getElementById("password").value;
-  await createUserWithEmailAndPassword(auth,email,pass);
-}
+        // --- AUTH LOGIC ---
+        window.login = async () => {
+            try {
+                await signInWithPopup(auth, provider);
+            } catch (error) {
+                console.error("Login Error", error);
+                alert("लॉगिन अयशस्वी झाले!");
+            }
+        };
 
-window.login = async function(){
-  let email = document.getElementById("email").value;
-  let pass = document.getElementById("password").value;
-  await signInWithEmailAndPassword(auth,email,pass);
-}
+        window.logout = () => signOut(auth);
 
-window.logout = function(){
-  signOut(auth);
-}
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                loginScreen.classList.add('hidden');
+                appScreen.classList.remove('hidden');
+                userNameDisp.innerText = user.displayName;
+                loadData();
+            } else {
+                currentUser = null;
+                loginScreen.classList.remove('hidden');
+                appScreen.classList.add('hidden');
+            }
+        });
 
-onAuthStateChanged(auth,(user)=>{
-  if(user){
-    userId = user.uid;
-    loginSection.classList.add("hidden");
-    appSection.classList.remove("hidden");
-    fab.classList.remove("hidden");
-    loadData();
-  }else{
-    loginSection.classList.remove("hidden");
-    appSection.classList.add("hidden");
-    fab.classList.add("hidden");
-  }
-});
+        // --- DATA LOGIC ---
+        bookingForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const customer = document.getElementById('customer').value;
+            const amount = document.getElementById('amount').value;
+            const type = document.getElementById('work-type').value;
 
-// DATA
-function loadData(){
-  onValue(ref(db,"users/"+userId),(snap)=>{
-    data = snap.val() || [];
-    updateDashboard();
-    showList();
-  });
-}
+            if (!customer || !amount) return;
 
-function saveToFirebase(){
-  set(ref(db,"users/"+userId), data);
-}
+            try {
+                await addDoc(collection(db, `users/${currentUser.uid}/bookings`), {
+                    customer,
+                    amount: Number(amount),
+                    type,
+                    date: new Date().toISOString()
+                });
+                bookingForm.reset();
+            } catch (err) {
+                console.error("Data Save Error", err);
+                // Offline Logic: Saving to LocalStorage if Firebase fails
+                saveOffline(customer, amount, type);
+            }
+        };
 
-// FORM
-window.openForm = function(){
-  dashboard.classList.add("hidden");
-  formSection.classList.remove("hidden");
-  clearForm();
-}
+        function loadData() {
+            const q = query(collection(db, `users/${currentUser.uid}/bookings`), orderBy("date", "desc"));
+            onSnapshot(q, (snapshot) => {
+                let html = '';
+                let total = 0;
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    total += data.amount;
+                    html += `
+                        <div class="bg-white p-4 rounded-lg shadow mb-3 flex justify-between items-center border-l-4 border-orange-500">
+                            <div>
+                                <p class="font-bold text-gray-800">${data.customer}</p>
+                                <p class="text-xs text-gray-500">${data.type} | ${new Date(data.date).toLocaleDateString()}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-green-600">₹${data.amount}</p>
+                                <button onclick="deleteRecord('${doc.id}')" class="text-red-400 text-xs mt-1">डिलीट</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                recordsList.innerHTML = html || '<p class="text-center text-gray-400 py-10">अद्याप कोणतीही नोंद नाही</p>';
+                totalEarningsDisp.innerText = `₹${total}`;
+            });
+        }
 
-window.back = function(){
-  dashboard.classList.remove("hidden");
-  formSection.classList.add("hidden");
-}
+        window.deleteRecord = async (id) => {
+            if(confirm('ही नोंद हटवायची आहे का?')) {
+                await deleteDoc(doc(db, `users/${currentUser.uid}/bookings`, id));
+            }
+        };
 
-function clearForm(){
-  editIndex.value="";
-  date.value="";
-  village.value="";
-  hours.value="";
-  rate.value="";
-  paid.value="";
-}
+        function saveOffline(customer, amount, type) {
+            alert("इंटरनेट नाही! नोंद फोनमध्ये सेव्ह झाली आहे (Offline Mode).");
+            // Simple LocalStorage Fallback
+            const offlineData = JSON.parse(localStorage.getItem('offline_bookings') || '[]');
+            offlineData.push({ customer, amount, type, date: new Date().toISOString() });
+            localStorage.setItem('offline_bookings', JSON.stringify(offlineData));
+        }
 
-// CRUD
-window.saveEntry = function(){
-  let index = editIndex.value;
-
-  let entry={
-    date:date.value,
-    village:village.value,
-    work:work.value,
-    hours:Number(hours.value),
-    rate:Number(rate.value),
-    paid:Number(paid.value)
-  };
-
-  entry.total = entry.hours * entry.rate;
-  entry.pending = entry.total - entry.paid;
-
-  if(index===""){
-    data.push(entry);
-  }else{
-    data[index]=entry;
-  }
-
-  saveToFirebase();
-  back();
-}
-
-window.editEntry = function(i){
-  let e=data[i];
-  openForm();
-  editIndex.value=i;
-  date.value=e.date;
-  village.value=e.village;
-  work.value=e.work;
-  hours.value=e.hours;
-  rate.value=e.rate;
-  paid.value=e.paid;
-}
-
-window.deleteEntry = function(i){
-  if(confirm("Delete?")){
-    data.splice(i,1);
-    saveToFirebase();
-  }
-}
-
-// UI
-function updateDashboard(){
-  let income=0,pendingAmt=0;
-  let today=new Date().toISOString().split("T")[0];
-
-  data.forEach(e=>{
-    if(e.date===today){income+=e.paid;}
-    pendingAmt+=e.pending;
-  });
-
-  todayIncome.innerText=income;
-  pending.innerText=pendingAmt;
-}
-
-function showList(){
-  let html="";
-  data.forEach((e,i)=>{
-    html+=`
-    <div class="glass">
-    ${e.date} | ${e.village}<br>
-    ${e.work} | ₹${e.total}<br>
-    Paid: ₹${e.paid} | बाकी: ₹${e.pending}<br>
-    <button onclick="editEntry(${i})">Edit</button>
-    <button onclick="deleteEntry(${i})">Delete</button>
-    </div>`;
-  });
-  list.innerHTML=html;
-}
-</script>
-
-<style>
-body{margin:0;font-family:sans-serif;background:#0F0F0F;color:white;}
-header{padding:15px;text-align:center;font-size:20px;background:linear-gradient(45deg,#E53935,#B71C1C);}
-.container{padding:15px;}
-.glass{
-  background:rgba(255,255,255,0.15);
-  backdrop-filter:blur(12px);
-  border:1px solid rgba(255,255,255,0.2);
-  border-radius:15px;
-  padding:15px;margin-bottom:15px;
-}
-input,select{
-  width:100%;padding:10px;margin-top:8px;
-  background:rgba(255,255,255,0.1);
-  border:1px solid rgba(255,255,255,0.2);
-  border-radius:10px;color:white;
-}
-button{
-  width:100%;padding:12px;margin-top:10px;
-  border:none;border-radius:10px;
-  background:#E53935;color:white;font-size:16px;
-}
-.hidden{display:none;}
-.fab{
-  position:fixed;bottom:20px;right:20px;
-  background:#E53935;width:60px;height:60px;
-  border-radius:50%;display:flex;
-  align-items:center;justify-content:center;
-  font-size:30px;
-}
-</style>
-
+    </script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; }
+        .tractor-gradient { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
+    </style>
 </head>
+<body class="max-w-md mx-auto min-h-screen relative shadow-2xl">
 
-<body>
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="flex flex-col items-center justify-center h-screen bg-white p-8">
+        <div class="w-24 h-24 bg-orange-100 rounded-full flex items-center justify-center mb-6">
+            <span class="text-5xl">🚜</span>
+        </div>
+        <h1 class="text-2xl font-bold text-gray-800 mb-2">ट्रॅक्टर बिझनेस प्रो</h1>
+        <p class="text-gray-500 text-center mb-8">तुमचा हिशोब आता होईल सोपा आणि सुरक्षित</p>
+        <button onclick="login()" class="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 py-3 px-4 rounded-xl shadow-sm hover:bg-gray-50 transition-all font-medium text-gray-700">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" width="20" alt="Google">
+            Google द्वारे लॉगिन करा
+        </button>
+    </div>
 
-<header>🚜 ट्रॅक्टर हिसाब व्यवस्थापन</header>
+    <!-- APP SCREEN -->
+    <div id="app-screen" class="hidden pb-24">
+        <!-- Header -->
+        <div class="tractor-gradient text-white p-6 rounded-b-[2rem] shadow-lg">
+            <div class="flex justify-between items-start mb-6">
+                <div>
+                    <p class="opacity-80 text-sm">नमस्कार,</p>
+                    <h2 id="user-name" class="text-xl font-bold">युझर</h2>
+                </div>
+                <button onclick="logout()" class="bg-white/20 p-2 rounded-lg text-xs">बाहेर पडा</button>
+            </div>
+            <div class="bg-white/20 backdrop-blur-md p-4 rounded-2xl">
+                <p class="text-sm opacity-90">एकूण कमाई</p>
+                <h3 id="total-earnings" class="text-3xl font-bold">₹0</h3>
+            </div>
+        </div>
 
-<div class="container">
+        <!-- Booking Form -->
+        <div class="p-4 -mt-8">
+            <form id="booking-form" class="bg-white p-5 rounded-2xl shadow-xl space-y-4">
+                <h4 class="font-bold text-gray-700">नवीन नोंदणी</h4>
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="text" id="customer" placeholder="शेतकऱ्याचे नाव" class="col-span-2 w-full p-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-orange-500 outline-none" required>
+                    <input type="number" id="amount" placeholder="रक्कम (₹)" class="w-full p-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-orange-500 outline-none" required>
+                    <select id="work-type" class="w-full p-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-orange-500 outline-none">
+                        <option value="नांगरणी">नांगरणी</option>
+                        <option value="पेरणी">पेरणी</option>
+                        <option value="रोटाव्हेटर">रोटाव्हेटर</option>
+                        <option value="ट्रॉली">ट्रॉली</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full tractor-gradient text-white py-3 rounded-xl font-bold shadow-orange-200 shadow-lg active:scale-95 transition-transform">
+                    सेव्ह करा
+                </button>
+            </form>
+        </div>
 
-<div id="loginSection" class="glass">
-<h3>Login / Register</h3>
-<input type="email" id="email" placeholder="Gmail">
-<input type="password" id="password" placeholder="Password">
-<button onclick="register()">Register</button>
-<button onclick="login()">Login</button>
-</div>
+        <!-- Records List -->
+        <div class="p-4">
+            <h4 class="font-bold text-gray-700 mb-4 flex items-center gap-2">
+                <span>📅</span> अलीकडील नोंदी
+            </h4>
+            <div id="records-list" class="space-y-1">
+                <!-- Data comes here -->
+            </div>
+        </div>
 
-<div id="appSection" class="hidden">
+        <!-- Bottom Navigation (Mock) -->
+        <div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t p-4 flex justify-around text-gray-400">
+            <div class="text-orange-600 flex flex-col items-center">
+                <span class="text-xl">🏠</span>
+                <span class="text-[10px]">होम</span>
+            </div>
+            <div class="flex flex-col items-center">
+                <span class="text-xl">📊</span>
+                <span class="text-[10px]">रिपोर्ट</span>
+            </div>
+            <div class="flex flex-col items-center">
+                <span class="text-xl">⚙️</span>
+                <span class="text-[10px]">सेटिंग्स</span>
+            </div>
+        </div>
+    </div>
 
-<div id="dashboard">
-<div class="glass">आजची कमाई: ₹ <span id="todayIncome">0</span></div>
-<div class="glass">उधारी: ₹ <span id="pending">0</span></div>
-<button onclick="logout()">Logout</button>
-</div>
-
-<div id="formSection" class="hidden">
-<div class="glass">
-
-<input type="hidden" id="editIndex">
-
-<input type="date" id="date">
-<input type="text" id="village" placeholder="गाव">
-<select id="work">
-<option>नांगरणी</option>
-<option>रोटावेटर</option>
-<option>ट्रॉली</option>
-<option>पेरणी</option>
-</select>
-<input type="number" id="hours" placeholder="तास">
-<input type="number" id="rate" placeholder="दर">
-<input type="number" id="paid" placeholder="मिळालेले पैसे">
-
-<button onclick="saveEntry()">सेव करा</button>
-<button onclick="back()">मागे जा</button>
-
-</div>
-</div>
-
-<div id="list"></div>
-
-</div>
-
-</div>
-
-<div class="fab hidden" id="fab" onclick="openForm()">+</div>
-
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW failed', err));
+            });
+        }
+    </script>
 </body>
 </html>
+
+```
+                                                                       
