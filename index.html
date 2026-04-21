@@ -1,0 +1,349 @@
+```html
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TractorWala - Sourabh Bongarde Software Solutions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;500;600;700&family=Roboto:wght@500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Hind', sans-serif; background-color: #f8fafc; -webkit-tap-highlight-color: transparent; }
+        .brand-gradient { background: linear-gradient(135deg, #ea580c 0%, #9a3412 100%); }
+        .card-pro { background: white; border-radius: 24px; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; }
+        .tab-active { color: #ea580c; border-bottom: 3px solid #ea580c; font-weight: 700; }
+        
+        /* Updated Google Button based on user's image (Middle Style) */
+        .google-btn-official {
+            display: inline-flex;
+            align-items: center;
+            background-color: #ffffff;
+            border: 1px solid #dadce0;
+            border-radius: 8px; /* Slightly more rounded as per image */
+            padding: 2px;
+            cursor: pointer;
+            transition: box-shadow .2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            min-width: 260px;
+            height: 50px;
+        }
+        .google-btn-official:hover {
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            background-color: #fcfcfc;
+        }
+        .google-btn-official .g-logo {
+            padding: 12px;
+            background: white;
+            border-radius: 6px 0 0 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .google-btn-official .g-logo img {
+            width: 24px;
+            height: 24px;
+        }
+        .google-btn-official .g-text {
+            color: #3c4043;
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            padding: 0 16px;
+            flex-grow: 1;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="max-w-md mx-auto min-h-screen relative overflow-x-hidden">
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="flex flex-col items-center justify-center min-h-screen p-6 bg-white text-center">
+        <div class="mb-6 w-full flex justify-center">
+            <!-- Full Image - No Crop with Containment -->
+            <div class="w-full h-64 flex items-center justify-center bg-slate-50 rounded-3xl overflow-hidden border border-slate-100">
+                <img src="https://wallpapers.com/images/hd/smiling-cartoon-farmerwith-tractor-5lyi3c0ezwugz4qm.jpg" 
+                     alt="Farmer with Tractor" 
+                     class="max-w-full max-h-full object-contain">
+            </div>
+        </div>
+        
+        <h1 class="text-5xl font-black text-slate-900 tracking-tighter mb-1">Tractor<span class="text-orange-600">Wala</span></h1>
+        <p class="text-slate-500 mb-12 text-xs font-bold uppercase tracking-[4px]">Digital Agri Solution</p>
+        
+        <!-- Updated Official Google Sign-In Button -->
+        <button onclick="login()" class="google-btn-official">
+            <div class="g-logo">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" alt="Google">
+            </div>
+            <div class="g-text">Sign in with Google</div>
+        </button>
+        
+        <div class="mt-20 border-t border-slate-100 pt-8 w-full">
+            <p class="text-[9px] text-slate-400 uppercase tracking-[4px] font-black">Developed By</p>
+            <p class="text-[11px] text-slate-700 mt-2 font-bold uppercase tracking-tight">Sourabh Bongarde Software Solutions Pvt Ltd</p>
+        </div>
+    </div>
+
+    <!-- MAIN APP SCREEN -->
+    <div id="app-screen" class="hidden">
+        <!-- Header Dashboard -->
+        <header class="brand-gradient text-white p-6 rounded-b-[45px] shadow-2xl relative overflow-hidden">
+            <div class="flex justify-between items-center mb-8 relative z-10">
+                <div class="flex items-center gap-3">
+                    <div id="user-photo" class="w-12 h-12 rounded-2xl bg-white/20 border border-white/30 flex items-center justify-center font-bold text-xl overflow-hidden shadow-lg">T</div>
+                    <div>
+                        <h2 id="user-name" class="text-sm font-bold tracking-wide">Owner</h2>
+                        <p class="text-orange-200 text-[10px] font-black uppercase tracking-widest">TractorWala Pro</p>
+                    </div>
+                </div>
+                <button onclick="logout()" class="p-2 bg-white/10 rounded-xl border border-white/10">🚪</button>
+            </div>
+
+            <div class="bg-white/10 backdrop-blur-md p-6 rounded-3xl border border-white/20 relative z-10">
+                <div class="flex justify-between items-end mb-4">
+                    <div>
+                        <p class="text-white/70 text-[10px] font-bold uppercase mb-1">आजचा निव्वळ नफा</p>
+                        <h3 id="net-profit" class="text-4xl font-black tracking-tighter">₹0</h3>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-white text-[10px] font-black" id="header-income">In: ₹0</p>
+                        <p class="text-orange-200 text-[10px] font-black" id="header-expense">Out: ₹0</p>
+                    </div>
+                </div>
+                <button onclick="shareDailySummary()" class="w-full bg-white text-orange-700 py-3 rounded-2xl text-[10px] font-black uppercase flex items-center justify-center gap-2 shadow-lg active:scale-95 transition">
+                    📊 आजची समरी शेअर करा
+                </button>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="flex bg-white mt-4 mx-4 rounded-2xl shadow-sm border border-slate-100 font-bold text-[10px] uppercase overflow-x-auto no-scrollbar">
+            <button onclick="switchTab('jobs')" id="tab-jobs" class="flex-none px-6 py-4 tab-active">कामे</button>
+            <button onclick="switchTab('expenses')" id="tab-expenses" class="flex-none px-6 py-4 text-slate-400">खर्च</button>
+            <button onclick="switchTab('pending')" id="tab-pending" class="flex-none px-6 py-4 text-slate-400">बाकी</button>
+            <button onclick="switchTab('driver')" id="tab-driver" class="flex-none px-6 py-4 text-slate-400">ड्रायव्हर</button>
+        </nav>
+
+        <main class="p-4 space-y-6">
+            <!-- Jobs Section -->
+            <section id="section-jobs" class="space-y-4">
+                <div class="card-pro p-6">
+                    <h4 class="font-black text-slate-800 uppercase text-[10px] tracking-widest mb-4">📝 नवीन कामाची नोंद</h4>
+                    <form id="job-form" class="space-y-3">
+                        <input type="text" id="job-cust" placeholder="शेतकऱ्याचे नाव" class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-medium border-none" required>
+                        <div class="flex gap-2">
+                            <input type="number" id="job-unit-val" placeholder="किती?" class="w-1/2 p-4 bg-slate-50 rounded-2xl outline-none font-bold border-none" required>
+                            <select id="job-unit-type" class="w-1/2 p-4 bg-slate-50 rounded-2xl outline-none font-bold text-slate-500 border-none">
+                                <option value="Acre">एकर (Acre)</option>
+                                <option value="Gunta">गुंठा (Gunta)</option>
+                                <option value="Hours">तास (Hours)</option>
+                                <option value="Trip">ट्रिप (Trip)</option>
+                            </select>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="number" id="job-amt" placeholder="बिल रक्कम ₹" class="w-1/2 p-4 bg-slate-50 rounded-2xl outline-none font-bold border-none" required>
+                            <select id="job-type" class="w-1/2 p-4 bg-slate-50 rounded-2xl outline-none font-bold text-slate-500 border-none">
+                                <option>नांगरणी</option><option>पेरणी</option><option>रोटाव्हेटर</option><option>ट्रॉली</option><option>इतर</option>
+                            </select>
+                        </div>
+                        <label class="flex items-center gap-3 bg-slate-50 p-4 rounded-2xl cursor-pointer">
+                            <input type="checkbox" id="job-paid" checked class="w-6 h-6 accent-orange-600">
+                            <span class="text-[10px] font-bold text-slate-600 uppercase">पैसे मिळाले (Paid)</span>
+                        </label>
+                        <button type="submit" class="w-full bg-orange-600 text-white py-4 rounded-2xl font-black shadow-xl shadow-orange-100 active:scale-95 transition">नोंद सेव्ह करा</button>
+                    </form>
+                </div>
+                <div id="list-jobs" class="space-y-3"></div>
+            </section>
+
+            <!-- Expense Section -->
+            <section id="section-expenses" class="hidden space-y-4">
+                <div class="card-pro p-6">
+                    <h4 class="font-black text-slate-800 mb-4 uppercase text-[10px] tracking-widest">⛽ खर्चाची नोंद</h4>
+                    <form id="exp-form" class="space-y-3">
+                        <input type="text" id="exp-name" placeholder="खर्चाचे नाव" class="w-full p-4 bg-slate-50 rounded-2xl outline-none border-none" required>
+                        <input type="number" id="exp-amt" placeholder="रक्कम ₹" class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-bold border-none" required>
+                        <button type="submit" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black active:scale-95 transition">खर्च नोंदवा</button>
+                    </form>
+                </div>
+                <div id="list-expenses" class="space-y-3"></div>
+            </section>
+
+            <!-- Pending Section -->
+            <section id="section-pending" class="hidden space-y-4">
+                <div class="bg-orange-50 p-6 rounded-[32px] border border-orange-100">
+                    <h4 class="font-black text-orange-800 text-[10px] uppercase tracking-widest mb-4">येणे बाकी (Dues)</h4>
+                    <div id="list-pending" class="space-y-3"></div>
+                </div>
+            </section>
+            <!-- Driver Section -->
+            <section id="section-driver" class="hidden space-y-4">
+                <div class="card-pro p-6">
+                    <h4 class="font-black text-slate-800 mb-4 uppercase text-[10px] tracking-widest">👷 ड्रायव्हर हिशोब</h4>
+                    <form id="driver-form" class="space-y-3">
+                        <input type="text" id="driver-name" placeholder="ड्रायव्हरचे नाव" class="w-full p-4 bg-slate-50 rounded-2xl outline-none border-none" required>
+                        <input type="number" id="driver-amt" placeholder="पगार/उचल ₹" class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-bold border-none" required>
+                        <button type="submit" class="w-full bg-orange-600 text-white py-4 rounded-2xl font-black">नोंद करा</button>
+                    </form>
+                </div>
+                <div id="list-driver" class="space-y-3"></div>
+            </section>
+        </main>
+
+        <footer class="mt-20 px-6 py-12 text-center border-t border-slate-100 bg-white">
+            <p class="text-[9px] text-slate-400 font-black uppercase tracking-[5px] mb-2">© 2024 TractorWala Ultimate</p>
+            <p class="text-[11px] text-slate-900 font-bold uppercase tracking-tight">Sourabh Bongarde Software Solutions Pvt Ltd</p>
+        </footer>
+    </div>
+
+    <!-- FIREBASE SYSTEM -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, onSnapshot, orderBy, doc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDjfVQEw5XT3lK7gb6oM5JQ84UNEeVNz1I",
+            authDomain: "tractor--app.firebaseapp.com",
+            projectId: "tractor--app",
+            storageBucket: "tractor--app.firebasestorage.app",
+            messagingSenderId: "864431539732",
+            appId: "1:864431539732:web:39bcde2318404733ee8901"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+
+        let user = null;
+        let stats = { inc: 0, exp: 0, drv: 0 };
+
+        window.login = () => signInWithPopup(auth, provider);
+        window.logout = () => signOut(auth);
+
+        onAuthStateChanged(auth, (u) => {
+            if (u) {
+                user = u;
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('app-screen').classList.remove('hidden');
+                document.getElementById('user-name').innerText = u.displayName;
+                if(u.photoURL) document.getElementById('user-photo').innerHTML = `<img src="${u.photoURL}" class="w-full h-full object-cover">`;
+                startSync();
+            } else {
+                document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('app-screen').classList.add('hidden');
+            }
+        });
+
+        window.switchTab = (t) => {
+            ['jobs', 'expenses', 'pending', 'driver'].forEach(s => {
+                document.getElementById(`section-${s}`).classList.add('hidden');
+                document.getElementById(`tab-${s}`).classList.remove('tab-active');
+                document.getElementById(`tab-${s}`).classList.add('text-slate-400');
+            });
+            document.getElementById(`section-${t}`).classList.remove('hidden');
+            document.getElementById(`tab-${t}`).classList.add('tab-active');
+            document.getElementById(`tab-${t}`).classList.remove('text-slate-400');
+        };
+
+        function startSync() {
+            // Jobs
+            onSnapshot(query(collection(db, "users", user.uid, "jobs"), orderBy("ts", "desc")), (snap) => {
+                let html = ''; let pendHtml = ''; stats.inc = 0;
+                snap.forEach(d => {
+                    const v = d.data();
+                    if(v.paid) stats.inc += v.amt;
+                    const card = `<div class="bg-white p-5 rounded-3xl flex justify-between items-center shadow-sm border border-slate-50">
+                        <div>
+                            <p class="font-bold text-slate-800 text-sm">${v.name}</p>
+                            <p class="text-[9px] font-black uppercase text-slate-400">${v.unitVal} ${v.unitType} • ${v.type}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-black text-sm ${v.paid ? 'text-slate-900' : 'text-orange-600'}">₹${v.amt}</p>
+                            <div class="flex gap-2 mt-1 justify-end">
+                                <button onclick="sendWA('${v.name}', ${v.amt}, '${v.paid}', '${v.unitVal}', '${v.unitType}')" class="text-green-600 text-[9px] font-black uppercase">Share</button>
+                                <button onclick="del('jobs', '${d.id}')" class="text-red-200 text-[9px]">Del</button>
+                            </div>
+                        </div>
+                    </div>`;
+                    html += card; if(!v.paid) pendHtml += card;
+                });
+                document.getElementById('list-jobs').innerHTML = html || '<p class="text-center py-10 text-slate-300 text-xs tracking-widest">No Records</p>';
+                document.getElementById('list-pending').innerHTML = pendHtml || '<p class="text-center py-10 text-green-500 text-[10px] font-black">CLEAN ✅</p>';
+                updateUI();
+            });
+
+            // Expenses & Driver
+            onSnapshot(collection(db, "users", user.uid, "expenses"), (snap) => {
+                let html = ''; stats.exp = 0;
+                snap.forEach(d => { stats.exp += d.data().amt; html += `<div class="bg-slate-900 text-white p-4 rounded-2xl flex justify-between items-center mb-2"><span>${d.data().name}</span><span class="font-black text-red-400">₹${d.data().amt}</span></div>`; });
+                document.getElementById('list-expenses').innerHTML = html; updateUI();
+            });
+
+            onSnapshot(collection(db, "users", user.uid, "driver"), (snap) => {
+                let html = ''; stats.drv = 0;
+                snap.forEach(d => { stats.drv += d.data().amt; html += `<div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border mb-2"><span>${d.data().name}</span><span class="font-black text-red-600">₹${d.data().amt}</span></div>`; });
+                document.getElementById('list-driver').innerHTML = html; updateUI();
+            });
+        }
+
+        function updateUI() {
+            const profit = stats.inc - (stats.exp + stats.drv);
+            document.getElementById('net-profit').innerText = `₹${profit}`;
+            document.getElementById('header-income').innerText = `In: ₹${stats.inc}`;
+            document.getElementById('header-expense').innerText = `Out: ₹${stats.exp + stats.drv}`;
+        }
+
+        document.getElementById('job-form').onsubmit = async (e) => {
+            e.preventDefault();
+            await addDoc(collection(db, "users", user.uid, "jobs"), {
+                name: document.getElementById('job-cust').value,
+                amt: Number(document.getElementById('job-amt').value),
+                unitVal: document.getElementById('job-unit-val').value,
+                unitType: document.getElementById('job-unit-type').value,
+                type: document.getElementById('job-type').value,
+                paid: document.getElementById('job-paid').checked,
+                ts: serverTimestamp()
+            });
+            e.target.reset();
+        };
+
+        document.getElementById('exp-form').onsubmit = async (e) => {
+            e.preventDefault();
+            await addDoc(collection(db, "users", user.uid, "expenses"), {
+                name: document.getElementById('exp-name').value,
+                amt: Number(document.getElementById('exp-amt').value),
+                ts: serverTimestamp()
+            }); e.target.reset();
+        };
+
+        document.getElementById('driver-form').onsubmit = async (e) => {
+            e.preventDefault();
+            await addDoc(collection(db, "users", user.uid, "driver"), {
+                name: document.getElementById('driver-name').value,
+                amt: Number(document.getElementById('driver-amt').value),
+                ts: serverTimestamp()
+            }); e.target.reset();
+        };
+
+        window.del = async (c, id) => { if(confirm('ही नोंद हटवायची का?')) await deleteDoc(doc(db, "users", user.uid, c, id)); };
+
+        window.sendWA = (n, a, p, uv, ut) => {
+            const date = new Date().toLocaleDateString('mr-IN');
+            const msg = p === 'true' 
+                ? `🚜 *TractorWala Receipt*\nCustomer: ${n}\nWork: ${uv} ${ut}\nAmount: ₹${a} (Paid)\nDate: ${date}\n✅ Received with thanks!`
+                : `🚜 *TractorWala Dues*\nCustomer: ${n}\nWork: ${uv} ${ut}\nAmount: ₹${a} (Pending)\nDate: ${date}\n⏳ Please clear soon.`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
+        };
+
+        window.shareDailySummary = () => {
+            const date = new Date().toLocaleDateString('mr-IN');
+            const msg = `🚜 *TractorWala Daily Report*\nDate: ${date}\n------------------\nProfit: ₹${stats.inc - (stats.exp + stats.drv)}\nIn: ₹${stats.inc}\nOut: ₹${stats.exp + stats.drv}\n------------------\n© Sourabh Bongarde Softwares`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
+        };
+    </script>
+</body>
+</html>
+
+```
