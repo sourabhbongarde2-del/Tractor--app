@@ -4,464 +4,513 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TractorWala Pro - Premium Agriculture Manager</title>
+    <title>Tractor Wala | SB Software Solutions</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Hind:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&display=swap" rel="stylesheet">
     <style>
-        :root { --primary-green: #15803d; --light-green: #f0fdf4; --accent-green: #22c55e; }
-        body { font-family: 'Plus Jakarta Sans', 'Hind', sans-serif; background-color: #f8fafc; color: #1e293b; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #010a08; 
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+        .main-gradient {
+            background: radial-gradient(circle at 50% -20%, #065f46 0%, #010a08 70%);
+        }
+        .hero-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 3rem;
+        }
+        .google-btn {
+            background: #ffffff;
+            color: #010a08;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 40px rgba(16, 185, 129, 0.2);
+        }
+        .google-btn:active { transform: scale(0.95); }
         
-        .green-gradient { background: linear-gradient(135deg, #15803d 0%, #166534 100%); }
-        #side-panel { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; }
-        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); z-index: 900; }
-        
-        /* Fixed Alignment Cards */
-        .card-pro { 
-            background: white; 
-            border-radius: 24px; 
-            box-shadow: 0 4px 20px -5px rgba(0,0,0,0.05); 
-            border: 1px solid #f1f5f9;
-            width: 100%;
+        .logo-glow {
+            box-shadow: 0 0 50px rgba(52, 211, 153, 0.2);
+            border: 2px solid rgba(52, 211, 153, 0.3);
         }
         
-        .btn-primary { 
-            background: var(--primary-green); 
-            color: white; 
-            transition: all 0.2s; 
-            box-shadow: 0 10px 20px -5px rgba(21, 128, 61, 0.3); 
-        }
-        
-        .nav-item { 
-            display: flex; 
-            align-items: center; 
-            gap: 14px; 
-            padding: 14px 20px; 
-            border-radius: 18px; 
-            color: #64748b; 
-            transition: all 0.2s; 
-            font-weight: 600; 
-            margin-bottom: 4px;
-            width: 100%;
-            text-align: left;
-        }
-        
-        .nav-item.active { background: var(--light-green); color: var(--primary-green); }
-        .tab-content { animation: slideIn 0.3s ease-out; width: 100%; }
-        
-        @keyframes slideIn { 
-            from { opacity: 0; transform: translateY(10px); } 
-            to { opacity: 1; transform: translateY(0); } 
+        .brand-footer {
+            background: linear-gradient(to top, rgba(6, 95, 70, 0.1), transparent);
         }
 
-        /* Input Styling for better alignment */
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            width: 100%;
-        }
-        
-        input, select {
-            width: 100%;
-            padding: 1rem 1.25rem;
-            background-color: #f8fafc;
-            border: 1.5px solid #f1f5f9;
-            border-radius: 16px;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-        
-        input:focus { border-color: var(--primary-green); }
-
-        .recording { 
-            background: #fee2e2 !important; 
-            border: 2px solid #ef4444 !important; 
-            animation: pulse 1.5s infinite; 
-        }
-        
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+        /* App UI Overrides */
+        .app-bg { background-color: #f8fafc; color: #1e293b; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .modal.active { display: flex; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: #10b981; color: white; padding: 12px 24px; border-radius: 50px; display: none; z-index: 2000; box-shadow: 0 10px 25px rgba(16,185,129,0.3); }
     </style>
 </head>
-<body class="max-w-md mx-auto min-h-screen relative shadow-2xl bg-white flex flex-col">
+<body class="max-w-md mx-auto min-h-screen flex flex-col">
 
-    <!-- SIDE NAVIGATION PANEL -->
-    <div id="side-panel" class="fixed top-0 left-0 h-full w-72 bg-white shadow-2xl translate-x-[-100%] flex flex-col">
-        <div class="p-8 border-b border-slate-50">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-green-600 rounded-2xl flex items-center justify-center text-white font-extrabold text-2xl shadow-lg">T</div>
-                <div>
-                    <h3 id="side-biz-name" class="font-extrabold text-slate-900 leading-tight">TractorWala</h3>
-                    <p class="text-[10px] text-green-600 font-bold uppercase tracking-widest">v2.0 Pro Edition</p>
-                </div>
-            </div>
-        </div>
-        
-        <div class="p-4 flex-1 overflow-y-auto space-y-1">
-            <button onclick="switchTab('dashboard')" class="nav-item active" id="nav-dashboard">🏠 डॅशबोर्ड</button>
-            <button onclick="switchTab('jobs')" class="nav-item" id="nav-jobs">🚜 कामाची नोंद</button>
-            <button onclick="switchTab('pending')" class="nav-item" id="nav-pending">⏳ बाकी वसुली</button>
-            <button onclick="switchTab('settings')" class="nav-item" id="nav-settings">⚙️ सेटिंग्स</button>
-            <div class="mt-8 pt-4 border-t border-slate-50">
-                <button onclick="logout()" class="nav-item text-red-500">🚪 लॉग-आउट</button>
-            </div>
-        </div>
+    <div id="toast" class="toast"></div>
 
-        <div class="p-6 border-t border-slate-50">
-            <div class="bg-slate-50 p-4 rounded-2xl text-center">
-                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mb-1">Developer</p>
-                <p class="text-[13px] text-slate-900 font-black">Sourabh Bongarde</p>
-            </div>
-        </div>
-    </div>
-    <div id="overlay" class="overlay" onclick="toggleMenu()"></div>
-
-    <!-- LOGIN SCREEN -->
-    <div id="login-screen" class="flex flex-col items-center justify-center min-h-screen p-8 text-center bg-white z-[2000] relative">
-        <div class="mb-12">
-            <div class="w-56 h-56 bg-green-50 rounded-full flex items-center justify-center mb-8 mx-auto shadow-inner">
-                <img src="https://wallpapers.com/images/hd/smiling-cartoon-farmerwith-tractor-5lyi3c0ezwugz4qm.jpg" class="w-40 h-40 object-contain drop-shadow-2xl">
-            </div>
-            <h1 class="text-4xl font-black text-slate-900 tracking-tighter">Tractor<span class="text-green-600">Wala</span></h1>
-            <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[6px] mt-2">Digital Agri Expert</p>
-        </div>
-        <button onclick="login()" class="flex items-center gap-4 bg-white border border-slate-200 px-8 py-4 rounded-2xl shadow-sm active:scale-95 transition-all">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" class="w-6 h-6">
-            <span class="font-bold text-slate-700">Google ने सुरू करा</span>
-        </button>
-        <div class="absolute bottom-8 w-full text-center">
-            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[3px]">By Sourabh Bongarde</p>
-        </div>
-    </div>
-
-    <!-- MAIN APP SCREEN -->
-    <div id="app-screen" class="hidden min-h-screen flex flex-col">
-        <header class="p-4 flex justify-between items-center bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100">
-            <button onclick="toggleMenu()" class="w-10 h-10 flex items-center justify-center bg-slate-50 rounded-xl">☰</button>
-            <span id="header-biz-name" class="font-black text-slate-800 text-lg tracking-tight">TractorWala</span>
-            <div id="user-photo-small" class="w-10 h-10 rounded-xl bg-green-600 text-white flex items-center justify-center font-bold shadow-md shadow-green-100">U</div>
+    <!-- LANDING PAGE (As Requested) -->
+    <div id="login-page" class="flex-1 flex flex-col main-gradient w-full">
+        <header class="pt-8 px-6 text-center">
+            <p class="text-[9px] font-bold tracking-[0.5em] text-emerald-500 uppercase mb-2">Exclusive Release</p>
+            <h2 class="text-[10px] font-medium text-white/40 uppercase leading-tight">
+                Sourabh Bongarde Software Solutions <br> Private Limited
+            </h2>
         </header>
 
-        <main class="flex-1 overflow-y-auto pb-32">
-            <!-- DASHBOARD -->
-            <section id="section-dashboard" class="p-5 space-y-6 tab-content">
-                <div class="green-gradient p-8 rounded-[32px] text-white shadow-xl shadow-green-100 relative overflow-hidden">
-                    <p class="text-green-100/70 text-[11px] font-bold uppercase tracking-[2px] mb-1">एकूण उत्पन्न (Total Profit)</p>
-                    <h2 id="net-profit" class="text-5xl font-black tracking-tighter">₹0</h2>
-                    <div class="absolute -bottom-6 -right-6 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
-                </div>
+        <main class="flex-1 flex flex-col items-center justify-center px-6 py-10">
+            <div class="relative mb-12">
+                <div class="absolute inset-0 bg-emerald-500 blur-[80px] opacity-20"></div>
+                <img src="https://wallpapers.com/images/hd/smiling-cartoon-farmerwith-tractor-5lyi3c0ezwugz4qm.jpg" 
+                     class="w-48 h-48 object-cover rounded-[3.5rem] logo-glow relative z-10" 
+                     alt="Tractor Wala">
+            </div>
 
-                <div class="space-y-4">
-                    <div class="flex justify-between items-center px-2">
-                        <h4 class="font-extrabold text-slate-800 text-xs uppercase tracking-widest">नुकतीच झालेली कामे</h4>
-                        <button onclick="switchTab('jobs')" class="text-green-600 text-[10px] font-bold uppercase">सर्व पहा</button>
+            <div class="text-center mb-10">
+                <h1 class="text-5xl font-extrabold tracking-tighter mb-3">
+                    Tractor<span class="text-emerald-500 italic">Wala</span>
+                </h1>
+                <p class="text-white/50 text-sm font-light tracking-wide px-10">
+                    आता प्रत्येक कामाचा हिशोब असेल बोटावर. <br> स्मार्ट शेतकरी, स्मार्ट ट्रॅक्टर!
+                </p>
+            </div>
+
+            <div class="hero-card w-full p-8 space-y-6">
+                <button id="google-login-btn" class="google-btn w-full py-5 rounded-2xl flex items-center justify-center gap-4 font-extrabold text-sm uppercase tracking-widest">
+                    <svg width="20" height="20" viewBox="0 0 24 24">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                    </svg>
+                    Google लॉगिन
+                </button>
+
+                <div class="grid grid-cols-3 gap-4 pt-4">
+                    <div class="text-center">
+                        <p class="text-lg">📈</p>
+                        <p class="text-[8px] font-bold text-white/30 uppercase mt-1">Reports</p>
                     </div>
-                    <div id="recent-jobs" class="space-y-3"></div>
-                </div>
-            </section>
-
-            <!-- JOBS SECTION -->
-            <section id="section-jobs" class="hidden p-5 space-y-6 tab-content">
-                <div class="card-pro p-6 border-2 border-green-50">
-                    <div class="flex justify-between items-center mb-6">
-                        <h4 class="font-extrabold text-green-800 text-xs uppercase tracking-wider">नवीन कामाची नोंद</h4>
-                        <button id="voice-btn" class="w-10 h-10 bg-green-50 text-green-600 rounded-full flex items-center justify-center text-lg">🎤</button>
+                    <div class="text-center">
+                        <p class="text-lg">⛽</p>
+                        <p class="text-[8px] font-bold text-white/30 uppercase mt-1">Fuel</p>
                     </div>
-                    <form id="job-form" class="space-y-4">
-                        <div class="input-group">
-                            <input type="text" id="j-cust" placeholder="शेतकऱ्याचे नाव" required>
-                        </div>
-                        <div class="input-group">
-                            <input type="tel" id="j-phone" placeholder="मोबाईल नंबर (Optional)">
-                        </div>
-                        <div class="flex gap-3">
-                            <input type="number" id="j-val" placeholder="प्रमाण (उदा. 5)" required>
-                            <select id="j-unit" class="font-bold bg-white">
-                                <option>Acre</option>
-                                <option>Gunta</option>
-                                <option>Hours</option>
-                                <option>Trip</option>
-                            </select>
-                        </div>
-                        <div class="input-group">
-                            <input type="number" id="j-amt" placeholder="एकूण रक्कम ₹" class="font-black text-lg" required>
-                        </div>
-                        <label class="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl cursor-pointer">
-                            <input type="checkbox" id="j-paid" checked class="w-5 h-5 accent-green-600">
-                            <span class="text-xs font-bold text-slate-600 uppercase">पैसे मिळाले (Paid)</span>
-                        </label>
-                        <button type="submit" class="w-full btn-primary py-5 rounded-2xl font-black text-sm uppercase tracking-widest mt-2">काम सेव्ह करा</button>
-                    </form>
+                    <div class="text-center">
+                        <p class="text-lg">📑</p>
+                        <p class="text-[8px] font-bold text-white/30 uppercase mt-1">Billing</p>
+                    </div>
                 </div>
-                
-                <div class="space-y-4">
-                    <h4 class="font-extrabold text-slate-800 text-xs uppercase tracking-widest px-2">सर्व कामांची यादी</h4>
-                    <div id="list-jobs" class="space-y-3"></div>
-                </div>
-            </section>
-
-            <!-- PENDING SECTION -->
-            <section id="section-pending" class="hidden p-5 space-y-4 tab-content">
-                <div class="flex items-center gap-2 mb-4 px-2">
-                    <div class="w-2 h-8 bg-red-500 rounded-full"></div>
-                    <h3 class="text-xl font-black text-slate-900 tracking-tight">येणे बाकी (Unpaid)</h3>
-                </div>
-                <div id="list-pending" class="space-y-3"></div>
-            </section>
-
-            <!-- SETTINGS SECTION -->
-            <section id="section-settings" class="hidden p-5 space-y-6 tab-content">
-                <div class="card-pro p-6">
-                    <h4 class="font-extrabold text-slate-800 text-xs uppercase mb-6 tracking-wider">तुमची माहिती</h4>
-                    <form id="settings-form" class="space-y-4">
-                        <div class="input-group">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">व्यवसायाचे नाव</label>
-                            <input type="text" id="set-biz" placeholder="उदा. महालक्ष्मी ट्रॅक्टर्स">
-                        </div>
-                        <div class="input-group">
-                            <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">UPI ID (पेमेंट साठी)</label>
-                            <input type="text" id="set-upi" placeholder="उदा. 9876543210@ybl">
-                        </div>
-                        <button type="submit" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase tracking-widest mt-4">सेव्ह करा</button>
-                    </form>
-                </div>
-            </section>
+            </div>
         </main>
 
-        <!-- FOOTER NAV -->
-        <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-xl border-t border-slate-100 px-6 py-4 grid grid-cols-4 gap-2 z-40">
-            <button onclick="switchTab('dashboard')" class="flex flex-col items-center gap-1">
-                <div id="bt-dashboard" class="w-12 h-12 flex items-center justify-center bg-green-600 text-white rounded-2xl shadow-lg transition-all">🏠</div>
+        <footer class="brand-footer pb-10 px-8 text-center">
+            <div class="h-[1px] w-12 bg-emerald-500/30 mx-auto mb-6"></div>
+            <p class="text-[10px] font-black tracking-[0.3em] text-white/70 mb-2">
+                SOURABH BONGARDE SOFTWARE SOLUTIONS
+            </p>
+            <p class="text-[8px] text-white/20 font-bold uppercase tracking-widest">Innovation for Rural Development</p>
+        </footer>
+    </div>
+
+    <!-- MAIN APP INTERFACE (Visible after login) -->
+    <div id="app-ui" class="hidden min-h-screen app-bg pb-24">
+        <header class="bg-emerald-600 text-white p-6 rounded-b-[2.5rem] shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <p class="text-xs opacity-80 uppercase tracking-widest">शेतकरी डॅशबोर्ड</p>
+                    <h2 id="user-name" class="text-xl font-bold">लोड होत आहे...</h2>
+                </div>
+                <button id="logout-btn" class="bg-white/10 p-2 rounded-full backdrop-blur-md">
+                    <svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M16 17l5-5-5-5M21 12H9m4-9H5a2 2 0 00-2 2v14a2 2 0 002 2h8"/></svg>
+                </button>
+            </div>
+            
+            <div class="bg-white/10 rounded-3xl p-5 backdrop-blur-sm grid grid-cols-3 gap-4">
+                <div class="text-center">
+                    <p class="text-[10px] uppercase opacity-70 mb-1">उत्पन्न</p>
+                    <p id="dash-income" class="font-bold text-lg leading-none">₹0</p>
+                </div>
+                <div class="text-center border-x border-white/20">
+                    <p class="text-[10px] uppercase opacity-70 mb-1">खर्च</p>
+                    <p id="dash-expense" class="font-bold text-lg leading-none text-red-200">₹0</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-[10px] uppercase opacity-70 mb-1">नफा</p>
+                    <p id="dash-profit" class="font-bold text-lg leading-none text-emerald-200">₹0</p>
+                </div>
+            </div>
+        </header>
+
+        <main class="px-5 mt-8">
+            <!-- Home Tab -->
+            <div id="tab-home" class="tab-content active space-y-6">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-extrabold text-slate-800">अलीकडील कामे</h3>
+                    <button onclick="exportToCSV()" class="text-emerald-600 text-xs font-bold uppercase tracking-tighter bg-emerald-50 px-3 py-1 rounded-full">Report CSV</button>
+                </div>
+
+                <div class="flex gap-2">
+                    <input type="text" id="job-search" placeholder="नाव शोधा..." class="flex-1 p-4 rounded-2xl bg-white shadow-sm border-none focus:ring-2 focus:ring-emerald-500 text-sm" oninput="filterJobs()">
+                    <select id="job-filter" class="p-4 rounded-2xl bg-white shadow-sm border-none text-xs font-bold" onchange="filterJobs()">
+                        <option value="all">सर्व</option>
+                        <option value="pending">उधारी</option>
+                        <option value="paid">जमा</option>
+                    </select>
+                </div>
+
+                <div id="job-list" class="space-y-4"></div>
+            </div>
+
+            <!-- Expenses Tab -->
+            <div id="tab-expenses" class="tab-content space-y-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-extrabold text-slate-800">खर्च तपशील</h3>
+                    <button onclick="openModal('expense')" class="bg-red-500 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-lg shadow-red-200">+ खर्च</button>
+                </div>
+                <div id="expense-list" class="space-y-3"></div>
+            </div>
+
+            <!-- Fleet Tab -->
+            <div id="tab-fleet" class="tab-content space-y-8">
+                <section>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-extrabold text-slate-800">माझे ट्रॅक्टर्स</h3>
+                        <button onclick="openModal('tractor')" class="text-emerald-600 text-xs font-bold">+ नवीन</button>
+                    </div>
+                    <div id="tractor-list" class="grid grid-cols-2 gap-3"></div>
+                </section>
+                <section>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-extrabold text-slate-800">ड्रायव्हर्स</h3>
+                        <button onclick="openModal('driver')" class="text-emerald-600 text-xs font-bold">+ नवीन</button>
+                    </div>
+                    <div id="driver-list" class="grid grid-cols-2 gap-3"></div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="fixed bottom-6 left-5 right-5 bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-3 flex justify-around items-center shadow-2xl z-50">
+            <button onclick="switchTab('home')" class="nav-btn active p-3 text-emerald-400">
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
             </button>
-            <button onclick="switchTab('jobs')" class="flex flex-col items-center gap-1">
-                <div id="bt-jobs" class="w-12 h-12 flex items-center justify-center bg-slate-50 text-slate-400 rounded-2xl transition-all">🚜</div>
+            <button onclick="switchTab('expenses')" class="nav-btn p-3 text-white/40">
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.82v-1.91c-1.84-.44-3.32-1.57-3.41-3.6h2.15c.08 1.14.86 1.83 2.1 1.83 1.27 0 2.06-.63 2.06-1.51 0-.82-.67-1.39-2.12-1.74-2.11-.5-4.4-1.15-4.4-3.64 0-1.87 1.43-3.23 3.32-3.64V4h2.82v1.9c1.61.35 2.87 1.41 3.03 3.23h-2.14c-.11-.94-.85-1.53-2.02-1.53-1.14 0-1.93.52-1.93 1.34 0 .77.72 1.25 2.22 1.6 2.18.51 4.3 1.39 4.3 3.73 0 2.13-1.63 3.33-3.41 3.78z"/></svg>
             </button>
-            <button onclick="switchTab('pending')" class="flex flex-col items-center gap-1">
-                <div id="bt-pending" class="w-12 h-12 flex items-center justify-center bg-slate-50 text-slate-400 rounded-2xl transition-all">⏳</div>
+            <button onclick="openModal('job')" class="bg-emerald-500 text-white w-14 h-14 rounded-full flex items-center justify-center -mt-10 shadow-xl border-4 border-slate-900">
+                <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
             </button>
-            <button onclick="toggleMenu()" class="flex flex-col items-center gap-1">
-                <div class="w-12 h-12 flex items-center justify-center bg-slate-50 text-slate-400 rounded-2xl">☰</div>
+            <button onclick="switchTab('fleet')" class="nav-btn p-3 text-white/40">
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M22 11h-2V9h2v2zm0-4h-2V5h2v2zm-2 10h2v-2h-2v2zm0 4h2v-2h-2v2zM4 11h2V9H4v2zm0-4h2V5H4v2zm2 10H4v-2h2v2zm0 4H4v-2h2v2zm9-14H9c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h6c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 14H9V5h6v12z"/></svg>
             </button>
         </nav>
     </div>
 
-    <!-- INVOICE MODAL -->
-    <div id="bill-modal" class="fixed inset-0 z-[3000] hidden flex items-center justify-center p-6 bg-black/70 backdrop-blur-md">
-        <div class="bg-white w-full rounded-[32px] p-8 text-center relative shadow-2xl overflow-hidden">
-            <button onclick="closeBill()" class="absolute top-6 right-6 text-slate-400 w-8 h-8 flex items-center justify-center bg-slate-100 rounded-full font-bold">✕</button>
-            
-            <div id="qr-code" class="mb-6 flex justify-center p-4 bg-slate-50 rounded-3xl mx-auto w-fit"></div>
-            
-            <h3 id="bill-biz" class="font-black text-2xl text-slate-900 mb-1">TractorWala</h3>
-            <div class="h-1 w-12 bg-green-600 mx-auto mb-6 rounded-full"></div>
-            
-            <div class="bg-slate-50 rounded-2xl p-4 mb-8 text-left space-y-2">
-                <div class="flex justify-between"><span class="text-slate-400 text-xs font-bold uppercase">शेतकरी</span><span id="b-name" class="font-bold"></span></div>
-                <div class="flex justify-between"><span class="text-slate-400 text-xs font-bold uppercase">काम</span><span id="b-work" class="font-bold"></span></div>
-                <div class="flex justify-between pt-2 border-t border-slate-200"><span class="text-slate-400 text-xs font-bold uppercase">एकूण</span><span id="b-amt" class="font-black text-green-700 text-lg"></span></div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
-                <button id="pdf-btn" class="bg-slate-100 py-4 rounded-2xl font-bold text-xs uppercase text-slate-700">PDF पावती</button>
-                <button id="wa-btn" class="bg-green-600 text-white py-4 rounded-2xl font-bold text-xs uppercase shadow-lg shadow-green-100">WhatsApp</button>
-            </div>
+    <!-- Modals -->
+    <div id="modal-overlay" class="modal">
+        <div class="bg-white w-full max-w-sm p-6 rounded-3xl shadow-2xl relative">
+            <button onclick="window.closeModal()" class="absolute top-4 right-4 text-slate-300">✕</button>
+            <div id="modal-body"></div>
         </div>
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, setDoc, getDoc, query, onSnapshot, orderBy, doc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDjfVQEw5XT3lK7gb6oM5JQ84UNEeVNz1I",
-            authDomain: "tractor--app.firebaseapp.com",
-            projectId: "tractor--app",
-            storageBucket: "tractor--app.firebasestorage.app",
-            messagingSenderId: "864431539732",
-            appId: "1:864431539732:web:39bcde2318404733ee8901",
-            measurementId: "G-6RJ68S4LGJ"
-        };
-
+        const firebaseConfig = JSON.parse(__firebase_config);
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const provider = new GoogleAuthProvider();
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'tractor-pwa-v2';
 
         let user = null;
-        let bizSettings = { bizName: 'TractorWala', upi: '' };
+        let data = { jobs: [], expenses: [], tractors: [], drivers: [] };
+        let editingId = null;
 
-        window.login = () => signInWithPopup(auth, provider);
-        window.logout = () => signOut(auth);
-        
-        window.toggleMenu = () => {
-            const menu = document.getElementById('side-panel');
-            const overlay = document.getElementById('overlay');
-            const isOpen = menu.style.transform === 'translateX(0%)';
-            menu.style.transform = isOpen ? 'translateX(-100%)' : 'translateX(0%)';
-            overlay.style.display = isOpen ? 'none' : 'block';
+        // AUTH HANDLERS
+        document.getElementById('google-login-btn').onclick = () => {
+            const provider = new GoogleAuthProvider();
+            signInWithPopup(auth, provider).catch(e => console.error(e));
         };
 
-        onAuthStateChanged(auth, async (u) => {
+        document.getElementById('logout-btn').onclick = () => signOut(auth);
+
+        onAuthStateChanged(auth, (u) => {
             if (u) {
                 user = u;
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('app-screen').classList.remove('hidden');
-                if(u.photoURL) document.getElementById('user-photo-small').innerHTML = `<img src="${u.photoURL}" class="w-full h-full object-cover">`;
-                
-                const sDoc = await getDoc(doc(db, "users", user.uid, "profile", "settings"));
-                if(sDoc.exists()) { bizSettings = sDoc.data(); updateBizUI(); }
-                startSync();
+                document.getElementById('login-page').classList.add('hidden');
+                document.getElementById('app-ui').classList.remove('hidden');
+                document.getElementById('user-name').innerText = u.displayName.split(' ')[0];
+                initData();
             } else {
-                document.getElementById('login-screen').classList.remove('hidden');
-                document.getElementById('app-screen').classList.add('hidden');
+                document.getElementById('login-page').classList.remove('hidden');
+                document.getElementById('app-ui').classList.add('hidden');
             }
         });
 
-        function updateBizUI() {
-            const bName = bizSettings.bizName || 'TractorWala';
-            document.getElementById('header-biz-name').innerText = bName;
-            document.getElementById('side-biz-name').innerText = bName;
-            document.getElementById('set-biz').value = bName;
-            document.getElementById('set-upi').value = bizSettings.upi || '';
+        // DATA HANDLERS
+        function initData() {
+            const path = `artifacts/${appId}/users/${user.uid}`;
+            onSnapshot(query(collection(db, `${path}/jobs`), orderBy('timestamp', 'desc')), snap => {
+                data.jobs = snap.docs.map(d => ({id: d.id, ...d.data()}));
+                renderAll();
+            }, e => console.error(e));
+            
+            onSnapshot(collection(db, `${path}/expenses`), snap => {
+                data.expenses = snap.docs.map(d => ({id: d.id, ...d.data()}));
+                renderAll();
+            });
+
+            onSnapshot(collection(db, `${path}/tractors`), snap => {
+                data.tractors = snap.docs.map(d => ({id: d.id, ...d.data()}));
+                renderAll();
+            });
+
+            onSnapshot(collection(db, `${path}/drivers`), snap => {
+                data.drivers = snap.docs.map(d => ({id: d.id, ...d.data()}));
+                renderAll();
+            });
         }
 
-        window.switchTab = (t) => {
-            ['dashboard', 'jobs', 'pending', 'settings'].forEach(s => {
-                document.getElementById(`section-${s}`).classList.add('hidden');
-                const nav = document.getElementById(`nav-${s}`); if(nav) nav.classList.remove('active');
-                const btn = document.getElementById(`bt-${s}`); if(btn) { 
-                    btn.classList.replace('bg-green-600', 'bg-slate-50'); 
-                    btn.classList.replace('text-white', 'text-slate-400'); 
-                    btn.classList.remove('shadow-lg'); 
-                }
-            });
-            document.getElementById(`section-${t}`).classList.remove('hidden');
-            const activeNav = document.getElementById(`nav-${t}`); if(activeNav) activeNav.classList.add('active');
-            const activeBtn = document.getElementById(`bt-${t}`); if(activeBtn) { 
-                activeBtn.classList.replace('bg-slate-50', 'bg-green-600'); 
-                activeBtn.classList.replace('text-slate-400', 'text-white'); 
-                activeBtn.classList.add('shadow-lg'); 
+        // RENDERING
+        function renderAll() {
+            renderDashboard();
+            renderJobList();
+            renderExpenseList();
+            renderFleetList();
+        }
+
+        function renderDashboard() {
+            const income = data.jobs.reduce((a, b) => a + (Number(b.paidAmount) || 0), 0);
+            const expense = data.expenses.reduce((a, b) => a + (Number(b.amount) || 0), 0);
+            document.getElementById('dash-income').innerText = `₹${income}`;
+            document.getElementById('dash-expense').innerText = `₹${expense}`;
+            document.getElementById('dash-profit').innerText = `₹${income - expense}`;
+        }
+
+        window.renderJobList = (filtered = null) => {
+            const list = document.getElementById('job-list');
+            const items = filtered || data.jobs;
+            if(!items.length) {
+                list.innerHTML = `<div class="text-center py-10 text-slate-300 text-sm italic">कामे उपलब्ध नाहीत...</div>`;
+                return;
             }
-            if(document.getElementById('side-panel').style.transform === 'translateX(0%)') toggleMenu();
-        };
-        function startSync() {
-            onSnapshot(query(collection(db, "users", user.uid, "jobs"), orderBy("ts", "desc")), (snap) => {
-                let html = ''; let p_html = ''; let r_html = ''; let total = 0; let count = 0;
-                snap.forEach(d => {
-                    const v = d.data(); if(v.paid) total += Number(v.amt);
-                    const card = `
-                    <div class="card-pro p-4 flex justify-between items-center transition-all active:scale-[0.98]">
-                        <div class="flex flex-col">
-                            <p class="font-black text-slate-800">${v.name}</p>
-                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">${v.val} ${v.unit}</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="font-black ${v.paid ? 'text-slate-900' : 'text-red-500'} text-lg">₹${v.amt}</p>
-                            <div class="flex gap-4 mt-1 justify-end">
-                                <button onclick="openBill('${v.name}', ${v.amt}, '${v.paid}', '${v.val}', '${v.unit}', '${v.phone || ''}')" class="text-green-600 text-[10px] font-bold uppercase tracking-widest">पावती</button>
-                                <button onclick="delJob('${d.id}')" class="text-slate-300">🗑️</button>
+            list.innerHTML = items.map(j => {
+                const bal = j.totalAmount - j.paidAmount;
+                return `
+                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h4 class="font-bold text-slate-800">${j.customerName}</h4>
+                                <p class="text-[10px] text-slate-400 uppercase font-bold">${j.workType || 'इतर काम'}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-black text-slate-800">₹${j.totalAmount}</p>
+                                <p class="text-[10px] ${bal > 0 ? 'text-orange-500' : 'text-emerald-500'} font-bold uppercase">
+                                    ${bal > 0 ? 'बाकी: ₹' + bal : 'पूर्ण जमा'}
+                                </p>
                             </div>
                         </div>
-                    </div>`;
-                    html += card; 
-                    if(!v.paid) p_html += card; 
-                    if(count < 5) r_html += card; 
-                    count++;
-                });
-                document.getElementById('list-jobs').innerHTML = html || '<p class="text-center py-10 text-slate-300 font-bold uppercase tracking-widest text-xs">No Jobs Found</p>';
-                document.getElementById('list-pending').innerHTML = p_html || '<div class="text-center py-20"><p class="text-green-500 font-black text-xl mb-2">सर्व पेमेंट मिळाले!</p><p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Great Job!</p></div>';
-                document.getElementById('recent-jobs').innerHTML = r_html;
-                document.getElementById('net-profit').innerText = `₹${total.toLocaleString('hi-IN')}`;
-            });
-        }
-
-        document.getElementById('job-form').onsubmit = async (e) => {
-            e.preventDefault();
-            const btn = e.target.querySelector('button');
-            btn.disabled = true; btn.innerText = "सेव्ह होत आहे...";
-            try {
-                const data = {
-                    name: document.getElementById('j-cust').value,
-                    phone: document.getElementById('j-phone').value,
-                    val: document.getElementById('j-val').value,
-                    unit: document.getElementById('j-unit').value,
-                    amt: Number(document.getElementById('j-amt').value),
-                    paid: document.getElementById('j-paid').checked,
-                    ts: serverTimestamp()
-                };
-                await addDoc(collection(db, "users", user.uid, "jobs"), data);
-                e.target.reset();
-                switchTab('dashboard');
-            } catch(e) { console.error(e); }
-            btn.disabled = false; btn.innerText = "काम सेव्ह करा";
+                        <div class="flex gap-2 pt-4 border-t border-slate-50">
+                            <button onclick="window.editJob('${j.id}')" class="flex-1 py-2 text-[10px] font-bold uppercase tracking-wider bg-slate-50 text-slate-500 rounded-xl">Edit</button>
+                            <button onclick="window.shareWhatsApp('${j.id}')" class="flex-1 py-2 text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-600 rounded-xl">WhatsApp</button>
+                            <button onclick="window.openInvoice('${j.id}')" class="flex-1 py-2 text-[10px] font-bold uppercase tracking-wider bg-slate-900 text-white rounded-xl">Bill</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         };
 
-        document.getElementById('settings-form').onsubmit = async (e) => {
-            e.preventDefault();
-            bizSettings = { bizName: document.getElementById('set-biz').value, upi: document.getElementById('set-upi').value };
-            await setDoc(doc(db, "users", user.uid, "profile", "settings"), bizSettings);
-            updateBizUI();
-            alert('Settings Saved!');
+        window.renderExpenseList = () => {
+            document.getElementById('expense-list').innerHTML = data.expenses.map(e => `
+                <div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm">
+                    <div>
+                        <p class="font-bold text-sm text-slate-700">${e.category || e.type}</p>
+                        <p class="text-[10px] text-slate-400">${e.note || '-'}</p>
+                    </div>
+                    <p class="font-bold text-red-500">₹${e.amount}</p>
+                </div>
+            `).join('');
         };
 
-        window.delJob = async (id) => { if(confirm('ही नोंद कायमची हटवायची आहे का?')) await deleteDoc(doc(db, "users", user.uid, "jobs", id)); };
+        window.renderFleetList = () => {
+            document.getElementById('tractor-list').innerHTML = data.tractors.map(t => `
+                <div class="bg-white p-4 rounded-2xl shadow-sm text-center border-b-2 border-emerald-500">
+                    <p class="text-xs font-bold text-slate-700">${t.name}</p>
+                    <p class="text-[10px] text-slate-400 font-mono">${t.number}</p>
+                </div>
+            `).join('');
+            document.getElementById('driver-list').innerHTML = data.drivers.map(d => `
+                <div class="bg-white p-4 rounded-2xl shadow-sm text-center border-b-2 border-blue-500">
+                    <p class="text-xs font-bold text-slate-700">${d.name}</p>
+                    <p class="text-[10px] text-slate-400">${d.phone}</p>
+                </div>
+            `).join('');
+        };
 
-        // VOICE INPUT
-        const vBtn = document.getElementById('voice-btn');
-        const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if(Speech) {
-            const rec = new Speech(); rec.lang = 'mr-IN';
-            vBtn.onclick = () => { rec.start(); vBtn.classList.add('recording'); };
-            rec.onresult = (e) => { document.getElementById('j-cust').value = e.results[0][0].transcript; vBtn.classList.remove('recording'); };
-            rec.onend = () => vBtn.classList.remove('recording');
-        }
+         // UI ACTIONS
+        window.switchTab = (tab) => {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.replace('text-emerald-400', 'text-white/40'));
+            event.currentTarget.classList.replace('text-white/40', 'text-emerald-400');
+        };
 
-        // BILLING & MODAL
-        window.openBill = (n, a, p, v, u, ph) => {
-            const modal = document.getElementById('bill-modal');
-            const qBox = document.getElementById('qr-code');
-            
-            document.getElementById('bill-biz').innerText = bizSettings.bizName || 'TractorWala';
-            document.getElementById('b-name').innerText = n;
-            document.getElementById('b-work').innerText = `${v} ${u}`;
-            document.getElementById('b-amt').innerText = `₹${a}`;
+        window.showToast = (m) => {
+            const t = document.getElementById('toast');
+            t.innerText = m;
+            t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 3000);
+        };
 
-            qBox.innerHTML = "";
-            if(bizSettings.upi) { 
-                new QRCode(qBox, { 
-                    text: `upi://pay?pa=${bizSettings.upi}&pn=${bizSettings.bizName}&am=${a}&cu=INR`, 
-                    width: 140, 
-                    height: 140,
-                    colorDark: "#1e293b",
-                    colorLight: "#f8fafc"
-                }); 
-            } else {
-                qBox.innerHTML = `<div class="text-slate-400 text-[10px] uppercase font-bold text-center w-32 h-32 flex items-center justify-center border-2 border-dashed border-slate-200 rounded-2xl">UPI सेट करा</div>`;
+        window.openModal = (type) => {
+            const overlay = document.getElementById('modal-overlay');
+            const body = document.getElementById('modal-body');
+            overlay.classList.add('active');
+            editingId = null;
+
+            if (type === 'job') {
+                body.innerHTML = `
+                    <h3 class="font-black text-xl mb-6 text-slate-800">कामाची नोंद</h3>
+                    <form id="job-form" class="space-y-4">
+                        <input name="customerName" placeholder="ग्राहकाचे नाव" required class="w-full p-4 bg-slate-50 rounded-2xl border-none">
+                        <input name="customerPhone" placeholder="मोबाईल नंबर" type="tel" class="w-full p-4 bg-slate-50 rounded-2xl border-none">
+                        <div class="grid grid-cols-2 gap-3">
+                            <input name="totalAmount" type="number" placeholder="एकूण ₹" required class="w-full p-4 bg-slate-50 rounded-2xl border-none">
+                            <input name="paidAmount" type="number" placeholder="जमा ₹" required class="w-full p-4 bg-slate-50 rounded-2xl border-none">
+                        </div>
+                        <select name="workType" class="w-full p-4 bg-slate-50 rounded-2xl border-none text-slate-500">
+                            <option>नांगरणी</option><option>रोटाव्हेटर</option><option>पेरणी</option><option>इतर</option>
+                        </select>
+                        <button type="submit" class="w-full bg-emerald-600 text-white p-5 rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl shadow-emerald-100">Save Job</button>
+                    </form>
+                `;
+            } else if (type === 'expense') {
+                body.innerHTML = `
+                    <h3 class="font-black text-xl mb-6 text-slate-800">खर्च नोंदवा</h3>
+                    <form id="expense-form" class="space-y-4">
+                        <select name="type" class="w-full p-4 bg-slate-50 rounded-2xl border-none">
+                            <option value="diesel">डिझेल</option><option value="repair">दुरुस्ती</option><option value="salary">पगार</option>
+                        </select>
+                        <input name="amount" type="number" placeholder="रक्कम ₹" required class="w-full p-4 bg-slate-50 rounded-2xl border-none">
+                        <input name="note" placeholder="टिपणी (उदा. पंप वरून भरले)" class="w-full p-4 bg-slate-50 rounded-2xl border-none">
+                        <button type="submit" class="w-full bg-red-500 text-white p-5 rounded-2xl font-black uppercase text-sm">Add Expense</button>
+                    </form>
+                `;
+            } else if (type === 'tractor') {
+                body.innerHTML = `
+                    <h3 class="font-black text-xl mb-6 text-slate-800">नवीन ट्रॅक्टर</h3>
+                    <form id="tractor-form" class="space-y-4">
+                        <input name="name" placeholder="उदा. Mahindra 575" required class="w-full p-4 bg-slate-50 rounded-2xl border-none">
+                        <input name="number" placeholder="गाडी नंबर (उदा. MH12 AB 1234)" required class="w-full p-4 bg-slate-50 rounded-2xl border-none">
+                        <button type="submit" class="w-full bg-slate-900 text-white p-5 rounded-2xl font-black uppercase text-sm">Save Tractor</button>
+                    </form>
+                `;
             }
-            
-            document.getElementById('wa-btn').onclick = () => {
-                const msg = `🚜 *${bizSettings.bizName}*\n\nशेतकरी: ${n}\nकाम: ${v} ${u}\nरक्कम: ₹${a}\nस्थिती: ${p === 'true' ? '✅ Paid' : '⏳ Pending'}\n\nधन्यवाद!`;
-                window.open(`https://wa.me/${ph ? '91'+ph : ''}?text=${encodeURIComponent(msg)}`);
-            };
 
-            document.getElementById('pdf-btn').onclick = () => {
-                const { jsPDF } = window.jspdf; 
-                const doc = new jsPDF();
-                doc.setFontSize(22); doc.text(bizSettings.bizName || "TractorWala", 20, 20);
-                doc.setFontSize(12); doc.text("Invoice / Bill", 20, 30);
-                doc.line(20, 35, 190, 35);
-                doc.text(`Farmer Name: ${n}`, 20, 50);
-                doc.text(`Work Details: ${v} ${u}`, 20, 60);
-                doc.text(`Total Amount: Rs. ${a}`, 20, 70);
-                doc.text(`Status: ${p === 'true' ? 'Paid' : 'Unpaid'}`, 20, 80);
-                doc.save(`${n}_bill.pdf`);
-            };
-            modal.classList.remove('hidden');
+            const form = body.querySelector('form');
+            if(form) form.onsubmit = (e) => handleForm(e, type);
         };
 
-        window.closeBill = () => document.getElementById('bill-modal').classList.add('hidden');
+        window.closeModal = () => document.getElementById('modal-overlay').classList.remove('active');
+
+        async function handleForm(e, type) {
+            e.preventDefault();
+            const raw = Object.fromEntries(new FormData(e.target).entries());
+            if(raw.totalAmount) raw.totalAmount = Number(raw.totalAmount);
+            if(raw.paidAmount) raw.paidAmount = Number(raw.paidAmount);
+            if(raw.amount) raw.amount = Number(raw.amount);
+
+            const path = `artifacts/${appId}/users/${user.uid}/${type}s`;
+            try {
+                if(editingId) {
+                    await updateDoc(doc(db, path, editingId), raw);
+                    window.showToast("बदल जतन झाले!");
+                } else {
+                    raw.timestamp = serverTimestamp();
+                    await addDoc(collection(db, path), raw);
+                    window.showToast("यशस्वी नोंद!");
+                }
+                window.closeModal();
+            } catch(err) { window.showToast("Error: " + err.message); }
+        }
+
+        window.editJob = (id) => {
+            const j = data.jobs.find(x => x.id === id);
+            window.openModal('job');
+            editingId = id;
+            const f = document.getElementById('job-form');
+            Object.keys(j).forEach(k => { if(f.elements[k]) f.elements[k].value = j[k]; });
+        };
+
+        window.filterJobs = () => {
+            const q = document.getElementById('job-search').value.toLowerCase();
+            const f = document.getElementById('job-filter').value;
+            let res = data.jobs.filter(j => j.customerName.toLowerCase().includes(q));
+            if(f === 'pending') res = res.filter(j => (j.totalAmount - j.paidAmount) > 0);
+            if(f === 'paid') res = res.filter(j => (j.totalAmount - j.paidAmount) <= 0);
+            window.renderJobList(res);
+        };
+
+        window.openInvoice = (id) => {
+            const j = data.jobs.find(x => x.id === id);
+            const overlay = document.getElementById('modal-overlay');
+            const body = document.getElementById('modal-body');
+            overlay.classList.add('active');
+            body.innerHTML = `
+                <div class="p-2">
+                    <div class="text-center mb-6">
+                        <h2 class="text-lg font-black uppercase text-emerald-600">TractorWala Bill</h2>
+                        <p class="text-[10px] text-slate-400">Owner: ${user.displayName}</p>
+                    </div>
+                    <div class="space-y-2 text-sm mb-6 bg-slate-50 p-4 rounded-2xl">
+                        <p class="flex justify-between"><span>ग्राहक:</span><b>${j.customerName}</b></p>
+                        <p class="flex justify-between"><span>काम:</span><b>${j.workType}</b></p>
+                        <p class="flex justify-between"><span>एकूण बिल:</span><b>₹${j.totalAmount}</b></p>
+                        <p class="flex justify-between text-emerald-600"><span>जमा रक्कम:</span><b>₹${j.paidAmount}</b></p>
+                        <p class="flex justify-between border-t pt-2 font-black text-orange-600"><span>बाकी रक्कम:</span><b>₹${j.totalAmount-j.paidAmount}</b></p>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <div id="qr-code"></div>
+                        <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Scan to Pay UPI</p>
+                    </div>
+                    <button onclick="window.closeModal()" class="w-full mt-6 py-4 bg-slate-100 rounded-2xl text-xs font-bold uppercase">बंद करा</button>
+                </div>
+            `;
+            new QRCode(document.getElementById("qr-code"), {
+                text: `upi://pay?pa=7219561084@ybl&pn=TractorWala&am=${j.totalAmount-j.paidAmount}`,
+                width: 140,
+                height: 140
+            });
+        };
+
+        window.shareWhatsApp = (id) => {
+            const j = data.jobs.find(x => x.id === id);
+            const msg = `*TractorWala Bill*\n------------------\nग्राहक: ${j.customerName}\nकाम: ${j.workType}\nएकूण बिल: ₹${j.totalAmount}\nजमा: ₹${j.paidAmount}\n*बाकी रक्कम: ₹${j.totalAmount-j.paidAmount}*\n------------------\nधन्यवाद! 🙏`;
+            window.open(`https://wa.me/${j.customerPhone ? '91'+j.customerPhone : ''}?text=${encodeURIComponent(msg)}`);
+        };
+
+        window.exportToCSV = () => {
+            let csv = "Date,Customer,Work,Total,Paid,Balance\n";
+            data.jobs.forEach(j => {
+                const date = j.timestamp ? new Date(j.timestamp.seconds*1000).toLocaleDateString() : 'New';
+                csv += `${date},${j.customerName},${j.workType},${j.totalAmount},${j.paidAmount},${j.totalAmount-j.paidAmount}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `TractorWala_Report_${new Date().toLocaleDateString()}.csv`;
+            a.click();
+        };
+
     </script>
 </body>
 </html>
