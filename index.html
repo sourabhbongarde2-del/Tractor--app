@@ -11,300 +11,351 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Poppins', sans-serif; background-color: #f0fdf4; }
+        body { font-family: 'Poppins', sans-serif; background-color: #f0fdf4; scroll-behavior: smooth; }
         .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(34, 197, 94, 0.2); }
-        .active-nav { background: #166534; color: white; }
+        .active-nav { background: #166534 !important; color: white !important; }
         .sidebar { transition: transform 0.3s ease-in-out; }
-        input:focus, select:focus { outline: 2px solid #22c55e; border-color: transparent; }
         @media (max-width: 768px) { .sidebar { transform: translateX(-100%); } .sidebar.open { transform: translateX(0); } }
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #22c55e; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        input:focus, select:focus { outline: 2px solid #22c55e; border-color: transparent; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #22c55e; border-radius: 10px; }
     </style>
 </head>
-<body>
+<body class="antialiased">
     <div id="app" class="min-h-screen flex flex-col">
-        <!-- Auth Overlay -->
-        <div id="auth-screen" class="fixed inset-0 z-50 bg-green-50 flex items-center justify-center p-4">
-            <div class="max-w-md w-full glass-card rounded-3xl p-8 text-center shadow-2xl">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-9ZsFmYknbpG7c5zTqKbSoBk9jekFP4b4yzIK43FUgQ&s=10" alt="Logo" class="w-32 h-32 mx-auto mb-6 rounded-full border-4 border-green-500">
-                <h1 class="text-3xl font-bold text-green-800 mb-2">TractorWala</h1>
-                <p class="text-gray-600 mb-8" id="lang-hero-tag">Smart Management for Smart Farmers</p>
+        
+        <!-- LOADING OVERLAY -->
+        <div id="loading-screen" class="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center">
+            <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600"></div>
+            <p class="mt-4 text-green-800 font-bold">TractorWala Loading...</p>
+        </div>
+
+        <!-- AUTH SCREEN -->
+        <div id="auth-screen" class="hidden fixed inset-0 z-50 bg-green-50 flex items-center justify-center p-4">
+            <div class="max-w-md w-full glass-card rounded-[2.5rem] p-8 text-center shadow-2xl border-2 border-green-200">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-9ZsFmYknbpG7c5zTqKbSoBk9jekFP4b4yzIK43FUgQ&s=10" alt="Logo" class="w-32 h-32 mx-auto mb-6 rounded-full border-4 border-green-500 shadow-xl">
+                <h1 class="text-4xl font-extrabold text-green-900 mb-2">TractorWala</h1>
+                <p class="text-gray-600 mb-8 font-medium" id="lang-hero-tag">Smart Management for Smart Farmers</p>
                 
-                <div class="space-y-4">
-                    <button onclick="handleLogin()" id="login-btn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-3 transition-all transform active:scale-95 shadow-lg">
-                        <i data-lucide="log-in"></i> Google ने लॉगिन करा
-                    </button>
-                    <div class="flex justify-center gap-4 mt-6">
-                        <button onclick="setLang('mr')" class="text-xs px-3 py-1 bg-white border border-green-200 rounded-full">मराठी</button>
-                        <button onclick="setLang('hi')" class="text-xs px-3 py-1 bg-white border border-green-200 rounded-full">हिन्दी</button>
-                        <button onclick="setLang('en')" class="text-xs px-3 py-1 bg-white border border-green-200 rounded-full">English</button>
-                    </div>
+                <button onclick="handleLogin()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-3 transition-all transform active:scale-95 shadow-lg mb-4">
+                    <i data-lucide="log-in"></i> Google ने लॉगिन करा
+                </button>
+
+                <div class="flex justify-center gap-3 mt-6">
+                    <button onclick="setLang('mr')" class="px-4 py-2 bg-white border border-green-200 rounded-xl text-sm font-bold shadow-sm">मराठी</button>
+                    <button onclick="setLang('hi')" class="px-4 py-2 bg-white border border-green-200 rounded-xl text-sm font-bold shadow-sm">हिन्दी</button>
+                    <button onclick="setLang('en')" class="px-4 py-2 bg-white border border-green-200 rounded-xl text-sm font-bold shadow-sm">English</button>
                 </div>
-                
+
                 <div class="mt-12 text-xs text-gray-400">
                     © All Rights Reserved – Sourabh Bongarde Software Solutions
                 </div>
             </div>
         </div>
 
-        <!-- Main Dashboard Wrapper -->
-        <div id="main-content" class="hidden flex-1 flex flex-col md:flex-row">
-            <!-- Sidebar -->
-            <aside id="sidebar" class="sidebar fixed md:relative z-40 w-64 h-full bg-white border-r border-green-100 flex flex-col shadow-xl">
+        <!-- DASHBOARD UI -->
+        <div id="main-ui" class="hidden flex flex-col md:flex-row h-screen overflow-hidden">
+            
+            <!-- SIDEBAR -->
+            <aside id="sidebar" class="sidebar fixed md:relative z-40 w-72 h-full bg-white border-r border-green-100 flex flex-col shadow-2xl">
                 <div class="p-6 border-b border-green-50 flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <div class="bg-green-100 p-2 rounded-lg"><i data-lucide="tractor" class="text-green-600"></i></div>
-                        <span class="font-bold text-xl text-green-800">TractorWala</span>
+                    <div class="flex items-center gap-3">
+                        <div class="bg-green-600 p-2 rounded-xl text-white shadow-lg"><i data-lucide="tractor"></i></div>
+                        <span class="font-black text-2xl text-green-900 tracking-tight">TractorWala</span>
                     </div>
-                    <button onclick="toggleSidebar()" class="md:hidden"><i data-lucide="x"></i></button>
+                    <button onclick="toggleSidebar()" class="md:hidden p-2 text-gray-500"><i data-lucide="x"></i></button>
                 </div>
                 
                 <nav class="flex-1 overflow-y-auto p-4 space-y-2">
-                    <button onclick="showModule('dashboard')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-gray-600 hover:bg-green-50" data-module="dashboard">
-                        <i data-lucide="layout-dashboard"></i> <span class="lang-nav-dash">Dashboard</span>
+                    <button onclick="showModule('dashboard')" class="nav-item w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all font-semibold text-gray-600 hover:bg-green-50" data-module="dashboard">
+                        <i data-lucide="layout-grid"></i> <span class="lang-nav-dash">Dashboard</span>
                     </button>
-                    <button onclick="showModule('work-entry')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-gray-600 hover:bg-green-50" data-module="work-entry">
-                        <i data-lucide="plus-circle"></i> <span class="lang-nav-work">New Work</span>
+                    <button onclick="showModule('work-entry')" class="nav-item w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all font-semibold text-gray-600 hover:bg-green-50" data-module="work-entry">
+                        <i data-lucide="plus-circle"></i> <span class="lang-nav-work">New Entry</span>
                     </button>
-                    <button onclick="showModule('work-list')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-gray-600 hover:bg-green-50" data-module="work-list">
-                        <i data-lucide="list"></i> <span class="lang-nav-list">Work History</span>
+                    <button onclick="showModule('work-list')" class="nav-item w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all font-semibold text-gray-600 hover:bg-green-50" data-module="work-list">
+                        <i data-lucide="clipboard-list"></i> <span class="lang-nav-list">History</span>
                     </button>
-                    <button onclick="showModule('expenses')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-gray-600 hover:bg-green-50" data-module="expenses">
-                        <i data-lucide="wallet"></i> <span class="lang-nav-exp">Expenses</span>
+                    <button onclick="showModule('expenses')" class="nav-item w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all font-semibold text-gray-600 hover:bg-green-50" data-module="expenses">
+                        <i data-lucide="trending-down"></i> <span class="lang-nav-exp">Expenses</span>
                     </button>
-                    <button onclick="showModule('farmers')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-gray-600 hover:bg-green-50" data-module="farmers">
+                    <button onclick="showModule('farmers')" class="nav-item w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all font-semibold text-gray-600 hover:bg-green-50" data-module="farmers">
                         <i data-lucide="users"></i> <span class="lang-nav-farm">Farmers</span>
                     </button>
-                    <button onclick="showModule('rates')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-gray-600 hover:bg-green-50" data-module="rates">
-                        <i data-lucide="tags"></i> <span class="lang-nav-rates">Rate Card</span>
+                    <button onclick="showModule('rates')" class="nav-item w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all font-semibold text-gray-600 hover:bg-green-50" data-module="rates">
+                        <i data-lucide="tag"></i> <span class="lang-nav-rates">Rate Card</span>
                     </button>
                 </nav>
 
-                <div class="p-4 border-t border-green-50">
-                    <button onclick="showModule('profile')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-50 mb-2">
-                        <i data-lucide="user-cog"></i> Profile
+                <div class="p-4 border-t border-green-50 bg-green-50/50">
+                    <button onclick="showModule('profile')" class="w-full flex items-center gap-4 px-5 py-3 rounded-xl text-gray-700 hover:bg-white mb-2 font-medium transition-all">
+                        <i data-lucide="settings"></i> Setting
                     </button>
-                    <button onclick="handleLogout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50">
-                        <i data-lucide="log-out"></i> Logout
+                    <button onclick="handleLogout()" class="w-full flex items-center gap-4 px-5 py-3 rounded-xl text-red-600 hover:bg-red-50 font-bold transition-all">
+                        <i data-lucide="power"></i> Logout
                     </button>
                 </div>
             </aside>
 
-            <!-- Main Content Area -->
-            <main class="flex-1 flex flex-col h-screen overflow-hidden">
-                <!-- Top Header -->
-                <header class="bg-white border-b border-green-50 px-6 py-4 flex items-center justify-between shadow-sm">
+            <!-- MAIN VIEWPORT -->
+            <main class="flex-1 flex flex-col bg-green-50/30 overflow-hidden">
+                
+                <!-- TOP HEADER -->
+                <header class="bg-white border-b border-green-100 px-6 py-4 flex items-center justify-between shadow-sm z-30">
                     <div class="flex items-center gap-4">
-                        <button onclick="toggleSidebar()" class="md:hidden"><i data-lucide="menu"></i></button>
-                        <h2 id="current-module-title" class="font-bold text-xl text-gray-800">Dashboard</h2>
+                        <button onclick="toggleSidebar()" class="md:hidden p-2 bg-green-50 rounded-lg text-green-700"><i data-lucide="menu"></i></button>
+                        <h2 id="current-title" class="font-extrabold text-2xl text-gray-800">Dashboard</h2>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <div id="user-info" class="hidden md:flex flex-col items-end">
-                            <span id="user-name" class="text-sm font-semibold">User</span>
-                            <span class="text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded">Free Plan</span>
+                    <div class="flex items-center gap-4">
+                        <div class="hidden md:block text-right">
+                            <p id="user-display-name" class="font-bold text-gray-900 leading-none">User</p>
+                            <span class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Premium Plan</span>
                         </div>
-                        <img id="user-photo" src="https://ui-avatars.com/api/?name=User" class="w-10 h-10 rounded-full border-2 border-green-200">
+                        <img id="user-display-photo" src="https://ui-avatars.com/api/?name=U" class="w-12 h-12 rounded-full border-2 border-green-400 shadow-md">
                     </div>
                 </header>
 
-                <!-- Scrollable Viewport -->
-                <div id="module-container" class="flex-1 overflow-y-auto p-4 md:p-8 bg-green-50/30">
+                <!-- CONTENT SCROLL -->
+                <div id="content-container" class="flex-1 overflow-y-auto p-4 md:p-8">
                     
-                    <!-- Dashboard Module -->
-                    <div id="mod-dashboard" class="module hidden space-y-6">
+                    <!-- MODULE: DASHBOARD -->
+                    <div id="mod-dashboard" class="module hidden space-y-8">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div class="glass-card p-6 rounded-3xl border-l-8 border-green-500 shadow-md">
-                                <p class="text-gray-500 text-sm font-medium">Monthly Revenue</p>
-                                <h3 id="stat-month-revenue" class="text-3xl font-bold text-green-700">₹0</h3>
-                                <div class="mt-2 text-xs text-green-600 flex items-center gap-1"><i data-lucide="trending-up" class="w-3 h-3"></i> This Month</div>
+                            <div class="glass-card p-6 rounded-[2rem] border-b-4 border-green-600 shadow-xl">
+                                <div class="flex justify-between items-center mb-4">
+                                    <div class="bg-green-100 p-3 rounded-2xl text-green-700"><i data-lucide="arrow-up-right"></i></div>
+                                    <span class="text-xs font-bold text-green-600 uppercase tracking-widest">Monthly Revenue</span>
+                                </div>
+                                <h3 id="m-rev" class="text-4xl font-black text-green-900">₹0</h3>
                             </div>
-                            <div class="glass-card p-6 rounded-3xl border-l-8 border-red-500 shadow-md">
-                                <p class="text-gray-500 text-sm font-medium">Monthly Expense</p>
-                                <h3 id="stat-month-expense" class="text-3xl font-bold text-red-600">₹0</h3>
-                                <div class="mt-2 text-xs text-red-600">Maintenance & Fuel</div>
+                            <div class="glass-card p-6 rounded-[2rem] border-b-4 border-red-500 shadow-xl">
+                                <div class="flex justify-between items-center mb-4">
+                                    <div class="bg-red-100 p-3 rounded-2xl text-red-600"><i data-lucide="arrow-down-left"></i></div>
+                                    <span class="text-xs font-bold text-red-500 uppercase tracking-widest">Monthly Expense</span>
+                                </div>
+                                <h3 id="m-exp" class="text-4xl font-black text-red-700">₹0</h3>
                             </div>
-                            <div class="glass-card p-6 rounded-3xl border-l-8 border-blue-500 shadow-md">
-                                <p class="text-gray-500 text-sm font-medium">Monthly Profit</p>
-                                <h3 id="stat-month-profit" class="text-3xl font-bold text-blue-700">₹0</h3>
-                                <div class="mt-2 text-xs text-blue-600">Net Earnings</div>
+                            <div class="glass-card p-6 rounded-[2rem] border-b-4 border-blue-600 shadow-xl">
+                                <div class="flex justify-between items-center mb-4">
+                                    <div class="bg-blue-100 p-3 rounded-2xl text-blue-700"><i data-lucide="wallet"></i></div>
+                                    <span class="text-xs font-bold text-blue-600 uppercase tracking-widest">Net Profit</span>
+                                </div>
+                                <h3 id="m-prof" class="text-4xl font-black text-blue-900">₹0</h3>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <div class="glass-card p-6 rounded-3xl shadow-sm">
-                                <div class="flex justify-between items-center mb-6">
-                                    <h4 class="font-bold text-lg">Today's Performance</h4>
-                                    <span class="text-xs bg-gray-100 px-3 py-1 rounded-full" id="display-date">Date</span>
-                                </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div class="glass-card p-8 rounded-[2.5rem] shadow-lg">
+                                <h4 class="font-black text-xl mb-6 text-gray-800 flex items-center gap-3">
+                                    <i data-lucide="calendar-days" class="text-green-600"></i> Today's Summary
+                                </h4>
                                 <div class="space-y-4">
-                                    <div class="flex justify-between items-center p-4 bg-green-50 rounded-2xl">
-                                        <div class="flex items-center gap-3"><i data-lucide="sun" class="text-yellow-600"></i> Revenue</div>
-                                        <span id="stat-day-revenue" class="font-bold text-lg">₹0</span>
+                                    <div class="flex justify-between p-5 bg-green-50 rounded-2xl border border-green-100">
+                                        <span class="font-bold text-gray-600">Today Revenue</span>
+                                        <span id="d-rev" class="font-black text-xl text-green-700">₹0</span>
                                     </div>
-                                    <div class="flex justify-between items-center p-4 bg-red-50 rounded-2xl">
-                                        <div class="flex items-center gap-3"><i data-lucide="fuel" class="text-red-600"></i> Expense</div>
-                                        <span id="stat-day-expense" class="font-bold text-lg">₹0</span>
+                                    <div class="flex justify-between p-5 bg-red-50 rounded-2xl border border-red-100">
+                                        <span class="font-bold text-gray-600">Today Expense</span>
+                                        <span id="d-exp" class="font-black text-xl text-red-700">₹0</span>
                                     </div>
-                                    <button onclick="shareDailyReport()" class="w-full flex items-center justify-center gap-2 bg-green-600 text-white p-4 rounded-2xl hover:bg-green-700 shadow-lg">
-                                        <i data-lucide="share-2"></i> Share Today's Report (WhatsApp)
+                                    <div class="flex justify-between p-5 bg-blue-50 rounded-2xl border border-blue-100">
+                                        <span class="font-bold text-gray-600">Today Profit</span>
+                                        <span id="d-prof" class="font-black text-xl text-blue-700">₹0</span>
+                                    </div>
+                                    <button onclick="shareDailyReport()" class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white font-bold py-5 rounded-2xl shadow-xl flex items-center justify-center gap-3 transition-all transform active:scale-95">
+                                        <i data-lucide="share-2"></i> WhatsApp Daily Report
                                     </button>
                                 </div>
                             </div>
                             
-                            <div class="glass-card p-6 rounded-3xl shadow-sm">
-                                <h4 class="font-bold text-lg mb-6">Pending Dues</h4>
-                                <div id="pending-list" class="space-y-3 max-h-60 overflow-y-auto">
-                                    <!-- Dynamic content -->
-                                    <p class="text-center text-gray-400 py-4">No pending payments</p>
+                            <div class="glass-card p-8 rounded-[2.5rem] shadow-lg">
+                                <div class="flex justify-between items-center mb-6">
+                                    <h4 class="font-black text-xl text-gray-800 flex items-center gap-3">
+                                        <i data-lucide="alert-circle" class="text-red-500"></i> Pending Udhar
+                                    </h4>
+                                    <span class="text-xs bg-red-100 text-red-600 px-3 py-1 rounded-full font-bold">Top 5</span>
+                                </div>
+                                <div id="pending-list" class="space-y-3 max-h-80 overflow-y-auto pr-2">
+                                    <p class="text-center text-gray-400 py-8 italic">No pending payments found.</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Work Entry Module -->
+                    <!-- MODULE: WORK ENTRY -->
                     <div id="mod-work-entry" class="module hidden">
-                        <div class="max-w-2xl mx-auto glass-card p-8 rounded-3xl shadow-lg">
-                            <form id="work-form" class="space-y-6" onsubmit="saveWork(event)">
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Farmer Name</label>
-                                        <input type="text" id="work-customer" list="farmers-list" required class="w-full p-4 rounded-xl border border-gray-200" placeholder="नाव निवडा किंवा लिहा">
-                                        <datalist id="farmers-list"></datalist>
+                        <div class="max-w-4xl mx-auto glass-card p-8 md:p-12 rounded-[3rem] shadow-2xl border-2 border-green-100">
+                            <form id="work-form" onsubmit="saveWorkEntry(event)" class="space-y-8">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-black text-gray-700 uppercase tracking-wider">Farmer Name (शेतकऱ्याचे नाव)</label>
+                                        <input type="text" id="w-farmer" list="farmer-suggest" required class="w-full p-4 rounded-2xl bg-gray-50 border border-gray-200 focus:bg-white transition-all shadow-inner" placeholder="नाव लिहा...">
+                                        <datalist id="farmer-suggest"></datalist>
                                     </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Mobile Number</label>
-                                        <input type="tel" id="work-mobile" required class="w-full p-4 rounded-xl border border-gray-200" placeholder="99xx...">
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-black text-gray-700 uppercase tracking-wider">Mobile Number (मोबाईल)</label>
+                                        <input type="tel" id="w-mobile" pattern="[0-9]{10}" required class="w-full p-4 rounded-2xl bg-gray-50 border border-gray-200 focus:bg-white transition-all shadow-inner" placeholder="99xxxxxxxx">
                                     </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Work Type</label>
-                                        <select id="work-type" onchange="applyRate()" required class="w-full p-4 rounded-xl border border-gray-200">
-                                            <option value="">Select Work</option>
-                                            <option value="Ploughing">Ploughing (नांगरणी)</option>
-                                            <option value="Rotavator">Rotavator (रोटाव्हेटर)</option>
-                                            <option value="Sowing">Sowing (पेरणी)</option>
-                                            <option value="Transportation">Transportation (वाहतूक)</option>
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-black text-gray-700 uppercase tracking-wider">Work Type (कामाचा प्रकार)</label>
+                                        <select id="w-type" onchange="autoFillRate()" required class="w-full p-4 rounded-2xl bg-gray-50 border border-gray-200 focus:bg-white transition-all shadow-inner">
+                                            <option value="">निवडा...</option>
+                                            <option value="नांगरणी (Ploughing)">नांगरणी (Ploughing)</option>
+                                            <option value="रोटाव्हेटर (Rotavator)">रोटाव्हेटर (Rotavator)</option>
+                                            <option value="पेरणी (Sowing)">पेरणी (Sowing)</option>
+                                            <option value="वाहतूक (Transportation)">वाहतूक (Transportation)</option>
+                                            <option value="मशागत (Harrowing)">मशागत (Harrowing)</option>
                                         </select>
                                     </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Unit</label>
-                                        <select id="work-unit" required class="w-full p-4 rounded-xl border border-gray-200">
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-black text-gray-700 uppercase tracking-wider">Unit (एकक)</label>
+                                        <select id="w-unit" required class="w-full p-4 rounded-2xl bg-gray-50 border border-gray-200 focus:bg-white transition-all shadow-inner">
                                             <option value="Hour">Hour (तास)</option>
                                             <option value="Acre">Acre (एकर)</option>
                                             <option value="Gunta">Gunta (गुंठा)</option>
                                             <option value="Trip">Trip (फेरी)</option>
                                         </select>
                                     </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
-                                        <input type="number" step="0.01" id="work-qty" oninput="calcTotal()" required class="w-full p-4 rounded-xl border border-gray-200" placeholder="0.00">
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-black text-gray-700 uppercase tracking-wider">Quantity (प्रमाण)</label>
+                                        <input type="number" step="0.01" id="w-qty" oninput="calculateWorkTotal()" required class="w-full p-4 rounded-2xl bg-gray-50 border border-gray-200 focus:bg-white transition-all shadow-inner" placeholder="0.00">
                                     </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Rate (₹)</label>
-                                        <input type="number" id="work-rate" oninput="calcTotal()" required class="w-full p-4 rounded-xl border border-gray-200" placeholder="0">
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-black text-gray-700 uppercase tracking-wider">Rate (दर)</label>
+                                        <input type="number" id="w-rate" oninput="calculateWorkTotal()" required class="w-full p-4 rounded-2xl bg-gray-50 border border-gray-200 focus:bg-white transition-all shadow-inner" placeholder="0">
                                     </div>
                                 </div>
                                 
-                                <div class="bg-green-50 p-6 rounded-2xl flex justify-between items-center border border-green-100">
-                                    <span class="text-green-800 font-medium">Total Amount:</span>
-                                    <span class="text-2xl font-bold text-green-700" id="work-total-display">₹0</span>
+                                <div class="bg-green-600 p-8 rounded-[2rem] flex flex-col md:flex-row justify-between items-center text-white shadow-xl">
+                                    <div class="mb-4 md:mb-0">
+                                        <p class="text-green-100 font-bold uppercase text-xs tracking-widest">Total Amount (एकूण बिल)</p>
+                                        <h2 id="w-total-label" class="text-5xl font-black">₹0</h2>
+                                    </div>
+                                    <button type="submit" class="bg-white text-green-700 px-12 py-5 rounded-2xl font-black text-xl shadow-lg hover:bg-green-50 transition-all transform active:scale-95">
+                                        SAVE ENTRY
+                                    </button>
                                 </div>
-
-                                <button type="submit" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:bg-green-700">Save Work Entry</button>
                             </form>
                         </div>
                     </div>
 
-                    <!-- Work List Module -->
-                    <div id="mod-work-list" class="module hidden space-y-4">
-                        <div class="flex flex-col md:flex-row gap-4 mb-6">
-                            <input type="text" id="work-search" oninput="renderWorkList()" placeholder="Search by name..." class="flex-1 p-4 rounded-xl border border-gray-200">
-                            <input type="date" id="work-filter-date" onchange="renderWorkList()" class="p-4 rounded-xl border border-gray-200">
-                        </div>
-                        <div id="work-list-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                            <!-- Cards inject here -->
-                        </div>
-                    </div>
-
-                    <!-- Rate Card Module -->
-                    <div id="mod-rates" class="module hidden">
-                        <div class="max-w-xl mx-auto glass-card p-6 rounded-3xl shadow-md">
-                            <h3 class="font-bold mb-4">Manage Standard Rates</h3>
-                            <div class="space-y-4" id="rates-form-container">
-                                <!-- Dynamic inputs -->
+                    <!-- MODULE: WORK LIST -->
+                    <div id="mod-work-list" class="module hidden space-y-6">
+                        <div class="flex flex-col md:flex-row gap-4">
+                            <div class="relative flex-1">
+                                <i data-lucide="search" class="absolute left-4 top-4 text-gray-400"></i>
+                                <input type="text" id="work-search" oninput="renderWorkHistory()" placeholder="Search by name or mobile..." class="w-full pl-12 p-4 rounded-2xl border border-gray-200 shadow-sm">
                             </div>
-                            <button onclick="saveRates()" class="mt-6 w-full bg-green-600 text-white py-3 rounded-xl font-bold">Update Rate Card</button>
+                            <input type="date" id="work-date-filter" onchange="renderWorkHistory()" class="p-4 rounded-2xl border border-gray-200 shadow-sm">
+                        </div>
+                        <div id="work-history-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                            <!-- Cards -->
                         </div>
                     </div>
 
-                    <!-- Expenses Module -->
+                    <!-- MODULE: EXPENSES -->
                     <div id="mod-expenses" class="module hidden">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div class="glass-card p-6 rounded-3xl shadow-md">
-                                <h3 class="font-bold mb-6 text-red-600">Add New Expense</h3>
-                                <form id="expense-form" onsubmit="saveExpense(event)" class="space-y-4">
-                                    <div>
-                                        <label class="block text-sm mb-1">Expense Type</label>
-                                        <select id="exp-type" required class="w-full p-3 rounded-xl border border-gray-200">
-                                            <option value="Diesel">Diesel (डिझेल)</option>
-                                            <option value="Maintenance">Maintenance (दुरुस्ती)</option>
-                                            <option value="Driver">Driver Salary (ड्रायव्हर)</option>
-                                            <option value="Other">Other (इतर)</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm mb-1">Amount (₹)</label>
-                                        <input type="number" id="exp-amount" required class="w-full p-3 rounded-xl border border-gray-200" placeholder="0">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm mb-1">Date</label>
-                                        <input type="date" id="exp-date" required class="w-full p-3 rounded-xl border border-gray-200">
-                                    </div>
-                                    <button type="submit" class="w-full bg-red-600 text-white py-3 rounded-xl font-bold">Save Expense</button>
-                                </form>
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            <div class="lg:col-span-1">
+                                <div class="glass-card p-8 rounded-[2.5rem] shadow-xl border-t-8 border-red-500">
+                                    <h3 class="font-black text-2xl mb-8 text-red-700">Add Expense</h3>
+                                    <form id="expense-form" onsubmit="saveExpense(event)" class="space-y-6">
+                                        <div class="space-y-2">
+                                            <label class="block text-xs font-black text-gray-500 uppercase">Category</label>
+                                            <select id="e-type" required class="w-full p-4 rounded-2xl bg-gray-50 border border-gray-200">
+                                                <option value="Diesel">Diesel (डिझेल)</option>
+                                                <option value="Maintenance">Maintenance (दुरुस्ती)</option>
+                                                <option value="Driver">Driver Salary (पगार)</option>
+                                                <option value="EMI">Loan EMI (हप्ता)</option>
+                                                <option value="Other">Other (इतर)</option>
+                                            </select>
+                                        </div>
+                                        <div class="space-y-2">
+                                            <label class="block text-xs font-black text-gray-500 uppercase">Amount (₹)</label>
+                                            <input type="number" id="e-amt" required class="w-full p-4 rounded-2xl bg-gray-50 border border-gray-200" placeholder="0">
+                                        </div>
+                                        <div class="space-y-2">
+                                            <label class="block text-xs font-black text-gray-500 uppercase">Date</label>
+                                            <input type="date" id="e-date" required class="w-full p-4 rounded-2xl bg-gray-50 border border-gray-200">
+                                        </div>
+                                        <button type="submit" class="w-full bg-red-600 text-white font-bold py-5 rounded-2xl shadow-lg hover:bg-red-700 transition-all">
+                                            Record Expense
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
-                            <div class="glass-card p-6 rounded-3xl shadow-md">
-                                <h3 class="font-bold mb-6">Recent Expenses</h3>
-                                <div id="expense-list" class="space-y-3">
-                                    <!-- Entries -->
+                            <div class="lg:col-span-2">
+                                <div class="glass-card p-8 rounded-[2.5rem] shadow-xl h-full overflow-hidden flex flex-col">
+                                    <h3 class="font-black text-2xl mb-6">Recent Expenses</h3>
+                                    <div id="expense-list" class="flex-1 overflow-y-auto space-y-4">
+                                        <!-- Items -->
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Farmers Module -->
-                    <div id="mod-farmers" class="module hidden space-y-4">
-                        <div class="flex gap-4">
-                            <input type="text" id="farmer-search" oninput="renderFarmers()" placeholder="Search farmer..." class="flex-1 p-4 rounded-xl border border-gray-200 shadow-sm">
+                    <!-- MODULE: FARMERS -->
+                    <div id="mod-farmers" class="module hidden space-y-8">
+                        <div class="max-w-xl mx-auto">
+                            <div class="relative">
+                                <i data-lucide="search" class="absolute left-4 top-4 text-gray-400"></i>
+                                <input type="text" id="farmer-search" oninput="renderFarmerDatabase()" placeholder="Search farmer database..." class="w-full pl-12 p-4 rounded-2xl border border-gray-200 shadow-xl">
+                            </div>
                         </div>
-                        <div id="farmers-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <!-- Farmer Cards -->
+                        <div id="farmer-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <!-- Cards -->
                         </div>
                     </div>
 
-                    <!-- Profile Module -->
+                    <!-- MODULE: RATE CARD -->
+                    <div id="mod-rates" class="module hidden">
+                        <div class="max-w-2xl mx-auto glass-card p-10 rounded-[3rem] shadow-2xl">
+                            <h3 class="font-black text-3xl mb-8 text-green-800 text-center">Update Rate Card</h3>
+                            <div id="rate-editor" class="space-y-6">
+                                <!-- Dynamic Rates -->
+                            </div>
+                            <button onclick="saveRateCard()" class="w-full mt-10 bg-green-600 text-white font-black py-5 rounded-2xl shadow-xl hover:bg-green-700 transition-all text-xl">
+                                SAVE RATE CARD
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- MODULE: PROFILE & SETTINGS -->
                     <div id="mod-profile" class="module hidden">
-                        <div class="max-w-xl mx-auto glass-card p-8 rounded-3xl shadow-md space-y-6">
-                            <div class="text-center">
-                                <img id="profile-img" src="https://ui-avatars.com/api/?name=User" class="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-green-100">
-                                <h3 id="profile-name-text" class="text-xl font-bold">Owner Name</h3>
+                        <div class="max-w-2xl mx-auto space-y-8">
+                            <div class="glass-card p-10 rounded-[3rem] shadow-xl text-center">
+                                <div class="relative w-32 h-32 mx-auto mb-6">
+                                    <img id="p-photo" src="" class="w-32 h-32 rounded-full border-4 border-green-500 shadow-2xl">
+                                    <div class="absolute bottom-0 right-0 bg-green-600 p-2 rounded-full text-white shadow-lg"><i data-lucide="camera" class="w-4 h-4"></i></div>
+                                </div>
+                                <h3 id="p-name" class="text-3xl font-black text-gray-800">Owner Name</h3>
+                                <p id="p-email" class="text-gray-500 font-medium italic">user@gmail.com</p>
                             </div>
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-xs text-gray-500 uppercase font-bold mb-1">Business Name</label>
-                                    <input type="text" id="prof-biz-name" class="w-full p-3 border rounded-xl" placeholder="उदा. सिद्धीविनायक ट्रॅक्टर्स">
+
+                            <div class="glass-card p-10 rounded-[3rem] shadow-xl space-y-6">
+                                <div class="space-y-4">
+                                    <div class="space-y-2">
+                                        <label class="block text-xs font-black text-gray-400 uppercase">Business Name</label>
+                                        <input type="text" id="s-biz-name" class="w-full p-4 rounded-2xl bg-gray-50 border border-gray-200 font-bold" placeholder="सिद्धीविनायक ट्रॅक्टर्स">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="block text-xs font-black text-gray-400 uppercase">UPI ID for Invoices</label>
+                                        <input type="text" id="s-upi" class="w-full p-4 rounded-2xl bg-gray-50 border border-gray-200 font-bold" placeholder="name@upi">
+                                    </div>
                                 </div>
-                                <div>
-                                    <label class="block text-xs text-gray-500 uppercase font-bold mb-1">UPI ID for Payments</label>
-                                    <input type="text" id="prof-upi" class="w-full p-3 border rounded-xl" placeholder="example@upi">
+                                <button onclick="saveProfile()" class="w-full bg-green-800 text-white font-bold py-5 rounded-2xl shadow-xl hover:bg-black transition-all">
+                                    Update Business Profile
+                                </button>
+                                <div class="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
+                                    <button onclick="exportJSON()" class="flex items-center justify-center gap-2 p-4 bg-gray-100 rounded-2xl font-bold text-xs hover:bg-gray-200">
+                                        <i data-lucide="download"></i> Export JSON
+                                    </button>
+                                    <label class="flex items-center justify-center gap-2 p-4 bg-gray-100 rounded-2xl font-bold text-xs hover:bg-gray-200 cursor-pointer">
+                                        <i data-lucide="upload"></i> Import JSON
+                                        <input type="file" id="import-input" class="hidden" onchange="importJSON(event)">
+                                    </label>
                                 </div>
-                                <div class="p-4 bg-yellow-50 rounded-xl border border-yellow-100 text-xs text-yellow-800">
-                                    Note: Adding your UPI ID will enable automatic QR code generation on invoices.
-                                </div>
-                                <button onclick="saveProfile()" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold">Save Settings</button>
-                            </div>
-                            <div class="pt-6 border-t border-gray-100 flex justify-between gap-4">
-                                <button onclick="exportData()" class="flex-1 bg-gray-100 p-3 rounded-xl text-xs font-bold hover:bg-gray-200">Export Backup</button>
-                                <button onclick="importData()" class="flex-1 bg-gray-100 p-3 rounded-xl text-xs font-bold hover:bg-gray-200">Import Data</button>
                             </div>
                         </div>
                     </div>
@@ -313,124 +364,645 @@
             </main>
         </div>
 
-        <!-- Global Toast Container -->
-        <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
-        
-        <!-- Modal for Payments -->
-        <div id="payment-modal" class="hidden fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-            <div class="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl overflow-y-auto max-h-[90vh]">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-bold text-xl">Payment Details</h3>
-                    <button onclick="closePaymentModal()"><i data-lucide="x"></i></button>
+        <!-- PAYMENT MODAL -->
+        <div id="payment-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="bg-white w-full max-w-lg rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden">
+                <div class="flex justify-between items-center mb-8">
+                    <h3 class="font-black text-2xl">Payment Details</h3>
+                    <button onclick="closePaymentModal()" class="p-2 hover:bg-gray-100 rounded-full"><i data-lucide="x"></i></button>
                 </div>
-                <div id="payment-modal-content" class="space-y-4">
+                <div id="pay-content" class="space-y-6">
                     <!-- Dynamic -->
                 </div>
             </div>
         </div>
 
-        <!-- Hidden Invoice Template -->
-        <div id="invoice-template" class="fixed -left-full -top-full p-8 bg-white w-[800px]" style="font-family: serif;">
-            <div class="flex justify-between border-b-2 border-green-600 pb-4 mb-6">
+        <!-- INVOICE TEMPLATE (HIDDEN) -->
+        <div id="invoice-render" class="fixed -left-[1000px] -top-[1000px] w-[800px] bg-white p-12" style="font-family: serif;">
+            <div class="flex justify-between border-b-4 border-green-600 pb-8 mb-10">
                 <div>
-                    <h1 id="inv-biz-name" class="text-3xl font-bold text-green-700">TractorWala</h1>
-                    <p id="inv-owner-name" class="text-gray-600">Owner Name</p>
+                    <h1 id="inv-biz" class="text-4xl font-black text-green-800 uppercase">BUSINESS NAME</h1>
+                    <p id="inv-owner" class="text-gray-600 font-bold mt-1">Owner: Name</p>
                 </div>
                 <div class="text-right">
-                    <p class="text-xl font-bold">INVOICE</p>
-                    <p id="inv-date">Date: 2024-01-01</p>
+                    <h2 class="text-2xl font-black">INVOICE</h2>
+                    <p id="inv-date" class="text-gray-500 font-bold">Date: 00/00/0000</p>
                 </div>
             </div>
-            <div class="mb-8">
-                <h4 class="font-bold mb-1">Customer:</h4>
-                <p id="inv-cust-name" class="text-lg"></p>
-                <p id="inv-cust-mobile"></p>
+            <div class="mb-10">
+                <h4 class="font-black text-gray-500 uppercase text-xs mb-2">Billed To:</h4>
+                <p id="inv-cust" class="text-2xl font-bold text-gray-900"></p>
+                <p id="inv-phone" class="text-gray-600 font-bold"></p>
             </div>
-            <table class="w-full mb-8">
-                <thead class="bg-green-50">
-                    <tr>
-                        <th class="p-2 text-left">Description</th>
-                        <th class="p-2 text-center">Unit</th>
-                        <th class="p-2 text-center">Rate</th>
-                        <th class="p-2 text-right">Amount</th>
+            <table class="w-full mb-10 border-collapse">
+                <thead>
+                    <tr class="bg-green-600 text-white">
+                        <th class="p-4 text-left font-black">Description</th>
+                        <th class="p-4 text-center font-black">Qty</th>
+                        <th class="p-4 text-right font-black">Rate</th>
+                        <th class="p-4 text-right font-black">Total</th>
                     </tr>
                 </thead>
                 <tbody id="inv-items"></tbody>
                 <tfoot>
-                    <tr class="border-t-2">
-                        <td colspan="3" class="p-2 font-bold text-right">Total</td>
-                        <td id="inv-total" class="p-2 font-bold text-right">₹0</td>
+                    <tr class="bg-gray-100">
+                        <td colspan="3" class="p-4 text-right font-black text-xl">Grand Total</td>
+                        <td id="inv-total" class="p-4 text-right font-black text-xl">₹0</td>
                     </tr>
                     <tr>
-                        <td colspan="3" class="p-2 text-green-600 text-right">Paid</td>
-                        <td id="inv-paid" class="p-2 text-green-600 text-right">₹0</td>
+                        <td colspan="3" class="p-4 text-right font-bold text-green-600">Total Paid</td>
+                        <td id="inv-paid" class="p-4 text-right font-bold text-green-600">₹0</td>
                     </tr>
-                    <tr class="bg-red-50">
-                        <td colspan="3" class="p-2 font-bold text-red-600 text-right">Pending Dues</td>
-                        <td id="inv-pending" class="p-2 font-bold text-red-600 text-right">₹0</td>
+                    <tr class="border-t-2 border-black bg-red-50">
+                        <td colspan="3" class="p-4 text-right font-black text-red-600 text-xl">Balance Due</td>
+                        <td id="inv-bal" class="p-4 text-right font-black text-red-600 text-xl">₹0</td>
                     </tr>
                 </tfoot>
             </table>
-            <div class="flex justify-between items-end">
-                <div>
-                    <p class="text-sm text-gray-500 italic mb-2">Scan to pay via UPI</p>
-                    <div id="inv-qr" class="w-32 h-32 bg-gray-100 flex items-center justify-center border">QR CODE</div>
+            <div class="flex justify-between items-end mt-12">
+                <div class="text-center">
+                    <div id="inv-qr" class="w-32 h-32 border-2 border-gray-100 p-1 mb-2 inline-block"></div>
+                    <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest">Scan to Pay via UPI</p>
                 </div>
                 <div class="text-right">
-                    <p class="border-t border-gray-300 w-48 mt-12 mb-1"></p>
-                    <p class="font-bold">Authorized Signatory</p>
+                    <p class="border-t-2 border-black w-48 mt-12 mb-1"></p>
+                    <p class="font-black text-xs uppercase tracking-widest">Authorized Signature</p>
                 </div>
             </div>
         </div>
+
+        <!-- TOAST CONTAINER -->
+        <div id="toast-box" class="fixed bottom-6 right-6 z-[100] space-y-3"></div>
     </div>
 
-    <!-- Firebase SDKs -->
+    <!-- FIREBASE MODULES -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, where, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, where, onSnapshot, orderBy, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+        // APP CONFIGURATION
         const firebaseConfig = {
             apiKey: "AIzaSyDjfVQEw5XT3lK7gb6oM5JQ84UNEeVNz1I",
             authDomain: "tractor--app.firebaseapp.com",
             projectId: "tractor--app",
             storageBucket: "tractor--app.firebasestorage.app",
             messagingSenderId: "864431539732",
-            appId: "1:864431539732:web:39bcde2318404733ee8901"
+            appId: "1:864431539732:web:39bcde2318404733ee8901",
+            measurementId: "G-6RJ68S4LGJ"
         };
 
+        // INITIALIZE SERVICES
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
         const googleProvider = new GoogleAuthProvider();
 
-        // App State
+        // GLOBAL STATE
         let currentUser = null;
-        let activeModule = 'dashboard';
-        let works = [];
-        let expenses = [];
-        let rates = { "Ploughing": 1000, "Rotavator": 800, "Sowing": 700, "Transportation": 1200 };
-        let profile = { bizName: "My Tractor Business", owner: "User", upi: "" };
-        let currentLang = 'mr';
+        let userData = {
+            profile: { bizName: "माझा ट्रॅक्टर व्यवसाय", upi: "" },
+            rates: {
+                "नांगरणी (Ploughing)": 1000,
+                "रोटाव्हेटर (Rotavator)": 800,
+                "पेरणी (Sowing)": 700,
+                "वाहतूक (Transportation)": 1200,
+                "मशागत (Harrowing)": 600
+            },
+            works: [],
+            expenses: []
+        };
+        let lang = 'mr';
 
         const i18n = {
-            mr: { 
-                hero: "तुमच्या ट्रॅक्टर व्यवसायाचे स्मार्ट व्यवस्थापन करा",
-                nav_dash: "डॅशबोर्ड", nav_work: "नवीन काम", nav_list: "कामाची नोंद", nav_exp: "खर्च", nav_farm: "शेतकरी", nav_rates: "दर पत्रक"
-            },
-            hi: {
-                hero: "अपने ट्रैक्टर व्यवसाय का स्मार्ट प्रबंधन करें",
-                nav_dash: "डैशबोर्ड", nav_work: "नया काम", nav_list: "कार्य सूची", nav_exp: "खर्च", nav_farm: "किसान", nav_rates: "दर कार्ड"
-            },
-            en: {
-                hero: "Manage your tractor business smartly",
-                nav_dash: "Dashboard", nav_work: "New Entry", nav_list: "Job History", nav_exp: "Expenses", nav_farm: "Farmers", nav_rates: "Rate Card"
+            mr: { hero: "तुमच्या ट्रॅक्टर व्यवसायाचे स्मार्ट व्यवस्थापन करा", nav_dash: "डॅशबोर्ड", nav_work: "नवीन काम", nav_list: "कामाची नोंद", nav_exp: "खर्च", nav_farm: "शेतकरी", nav_rates: "दर पत्रक" },
+            hi: { hero: "अपने ट्रैक्टर व्यवसाय का स्मार्ट प्रबंधन करें", nav_dash: "डैशबोर्ड", nav_work: "नया काम", nav_list: "कार्य सूची", nav_exp: "खर्च", nav_farm: "किसान", nav_rates: "दर कार्ड" },
+            en: { hero: "Manage your tractor business smartly", nav_dash: "Dashboard", nav_work: "New Entry", nav_list: "History", nav_exp: "Expenses", nav_farm: "Farmers", nav_rates: "Rate Card" }
+        };
+
+        // --- AUTH LOGIC ---
+        window.handleLogin = async () => {
+            try {
+                await signInWithPopup(auth, googleProvider);
+            } catch (err) {
+                notify("Login failed: " + err.message, "error");
             }
         };
 
-        // UI Handlers
+        window.handleLogout = async () => {
+            await signOut(auth);
+            location.reload();
+        };
+
+        onAuthStateChanged(auth, async (user) => {
+            document.getElementById('loading-screen').classList.add('hidden');
+            if (user) {
+                currentUser = user;
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('main-ui').classList.remove('hidden');
+                document.getElementById('user-display-name').innerText = user.displayName;
+                document.getElementById('user-display-photo').src = user.photoURL;
+                document.getElementById('p-photo').src = user.photoURL;
+                document.getElementById('p-name').innerText = user.displayName;
+                document.getElementById('p-email').innerText = user.email;
+                await initUserData();
+            } else {
+                document.getElementById('auth-screen').classList.remove('hidden');
+                document.getElementById('main-ui').classList.add('hidden');
+            }
+            lucide.createIcons();
+        });
+
+        // --- DATA LOGIC ---
+        async function initUserData() {
+            const uid = currentUser.uid;
+            
+            // PROFILE & RATES
+            const pRef = doc(db, "users", uid);
+            onSnapshot(pRef, (snap) => {
+                if (snap.exists()) {
+                    userData.profile = snap.data().profile || userData.profile;
+                    userData.rates = snap.data().rates || userData.rates;
+                    document.getElementById('s-biz-name').value = userData.profile.bizName;
+                    document.getElementById('s-upi').value = userData.profile.upi;
+                } else {
+                    setDoc(pRef, { profile: userData.profile, rates: userData.rates });
+                }
+                renderRateCardEditor();
+            });
+
+            // WORKS (REAL-TIME)
+            const wQuery = query(collection(db, "works"), where("userId", "==", uid), orderBy("date", "desc"));
+            onSnapshot(wQuery, (snap) => {
+                userData.works = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                updateDashboard();
+                renderWorkHistory();
+                renderFarmerDatabase();
+                updateFarmerSuggestions();
+            });
+
+            // EXPENSES (REAL-TIME)
+            const eQuery = query(collection(db, "expenses"), where("userId", "==", uid), orderBy("date", "desc"));
+            onSnapshot(eQuery, (snap) => {
+                userData.expenses = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                updateDashboard();
+                renderExpenseList();
+            });
+        }
+
+        // --- DASHBOARD CALCS ---
+        function updateDashboard() {
+            const now = new Date();
+            const todayStr = now.toISOString().split('T')[0];
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+
+            let dRev = 0, dExp = 0, mRev = 0, mExp = 0;
+
+            userData.works.forEach(w => {
+                const wDate = new Date(w.date);
+                if (w.date === todayStr) dRev += Number(w.total);
+                if (wDate.getMonth() === currentMonth && wDate.getFullYear() === currentYear) mRev += Number(w.total);
+            });
+
+            userData.expenses.forEach(e => {
+                const eDate = new Date(e.date);
+                if (e.date === todayStr) dExp += Number(e.amount);
+                if (eDate.getMonth() === currentMonth && eDate.getFullYear() === currentYear) mExp += Number(e.amount);
+            });
+
+            document.getElementById('m-rev').innerText = `₹${mRev.toLocaleString()}`;
+            document.getElementById('m-exp').innerText = `₹${mExp.toLocaleString()}`;
+            document.getElementById('m-prof').innerText = `₹${(mRev - mExp).toLocaleString()}`;
+
+            document.getElementById('d-rev').innerText = `₹${dRev.toLocaleString()}`;
+            document.getElementById('d-exp').innerText = `₹${dExp.toLocaleString()}`;
+            document.getElementById('d-prof').innerText = `₹${(dRev - dExp).toLocaleString()}`;
+
+            // PENDING LIST
+            const pendingContainer = document.getElementById('pending-list');
+            const pendingWorks = userData.works.filter(w => {
+                const paid = w.payments ? w.payments.reduce((a, b) => a + Number(b.amount), 0) : 0;
+                return (Number(w.total) - paid) > 0;
+            }).slice(0, 5);
+
+            if (pendingWorks.length > 0) {
+                pendingContainer.innerHTML = pendingWorks.map(w => {
+                    const paid = w.payments ? w.payments.reduce((a, b) => a + Number(b.amount), 0) : 0;
+                    const bal = Number(w.total) - paid;
+                    return `
+                    <div class="flex justify-between items-center p-4 bg-white border border-red-50 rounded-2xl shadow-sm hover:shadow-md transition-all">
+                        <div>
+                            <p class="font-black text-gray-800">${w.farmer}</p>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">${w.date}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-red-600 font-black">₹${bal}</p>
+                            <button onclick="openPayments('${w.id}')" class="text-[10px] bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-black uppercase">Pay</button>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+            } else {
+                pendingContainer.innerHTML = `<p class="text-center text-gray-400 py-8 italic">No pending payments.</p>`;
+            }
+        }
+
+        // --- WORK ENTRY MODULE ---
+        window.autoFillRate = () => {
+            const type = document.getElementById('w-type').value;
+            if (userData.rates[type]) {
+                document.getElementById('w-rate').value = userData.rates[type];
+                calculateWorkTotal();
+            }
+        };
+
+        window.calculateWorkTotal = () => {
+            const qty = Number(document.getElementById('w-qty').value) || 0;
+            const rate = Number(document.getElementById('w-rate').value) || 0;
+            const total = qty * rate;
+            document.getElementById('w-total-label').innerText = `₹${total.toFixed(0)}`;
+        };
+
+        window.saveWorkEntry = async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.innerText = "SAVING...";
+
+            const work = {
+                userId: currentUser.uid,
+                farmer: document.getElementById('w-farmer').value,
+                mobile: document.getElementById('w-mobile').value,
+                type: document.getElementById('w-type').value,
+                unit: document.getElementById('w-unit').value,
+                qty: Number(document.getElementById('w-qty').value),
+                rate: Number(document.getElementById('w-rate').value),
+                total: Number(document.getElementById('w-qty').value) * Number(document.getElementById('w-rate').value),
+                date: new Date().toISOString().split('T')[0],
+                payments: [],
+                timestamp: Date.now()
+            };
+
+            try {
+                await addDoc(collection(db, "works"), work);
+                notify("Entry Saved Successfully!", "success");
+                e.target.reset();
+                document.getElementById('w-total-label').innerText = "₹0";
+                showModule('work-list');
+            } catch (err) {
+                notify("Save Error: " + err.message, "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "SAVE ENTRY";
+            }
+        };
+
+        // --- WORK LIST MODULE ---
+        window.renderWorkHistory = () => {
+            const grid = document.getElementById('work-history-grid');
+            const search = document.getElementById('work-search').value.toLowerCase();
+            const dateFilt = document.getElementById('work-date-filter').value;
+
+            const filtered = userData.works.filter(w => {
+                const matchSearch = w.farmer.toLowerCase().includes(search) || w.mobile.includes(search);
+                const matchDate = dateFilt ? w.date === dateFilt : true;
+                return matchSearch && matchDate;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-20 text-center text-gray-400 font-bold italic">No records found.</div>`;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(w => {
+                const paid = w.payments ? w.payments.reduce((a, b) => a + Number(b.amount), 0) : 0;
+                const bal = Number(w.total) - paid;
+                return `
+                <div class="glass-card p-6 rounded-[2rem] shadow-lg border border-white hover:border-green-300 transition-all">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="bg-green-100 text-green-700 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">${w.type}</span>
+                        <span class="text-gray-400 font-bold text-xs">${w.date}</span>
+                    </div>
+                    <h4 class="text-xl font-black text-gray-900">${w.farmer}</h4>
+                    <p class="text-gray-400 text-xs font-bold mb-4">${w.qty} ${w.unit} × ₹${w.rate}</p>
+                    
+                    <div class="flex justify-between items-center py-3 border-t border-gray-50 mt-4">
+                        <div class="text-xs">
+                            <p class="text-gray-400 uppercase font-black">Total</p>
+                            <p class="font-black text-gray-800">₹${w.total}</p>
+                        </div>
+                        <div class="text-right text-xs">
+                            <p class="text-red-400 uppercase font-black">Balance</p>
+                            <p class="font-black ${bal > 0 ? 'text-red-600' : 'text-green-600'}">₹${bal}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3 mt-4">
+                        <button onclick="openPayments('${w.id}')" class="bg-blue-600 text-white py-3 rounded-xl text-[10px] font-black uppercase shadow-md active:scale-95 transition-all">Payments</button>
+                        <button onclick="downloadInvoice('${w.id}')" class="bg-gray-800 text-white py-3 rounded-xl text-[10px] font-black uppercase shadow-md active:scale-95 transition-all">Invoice</button>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        };
+
+        // --- PAYMENT LOGIC ---
+        window.openPayments = (id) => {
+            const w = userData.works.find(item => item.id === id);
+            const paid = w.payments ? w.payments.reduce((a, b) => a + Number(b.amount), 0) : 0;
+            const bal = Number(w.total) - paid;
+            
+            const content = document.getElementById('pay-content');
+            content.innerHTML = `
+                <div class="bg-green-50 p-6 rounded-3xl border border-green-100 mb-6 text-center">
+                    <p class="text-xs font-black text-green-600 uppercase tracking-widest mb-1">Total Bill</p>
+                    <h4 class="text-3xl font-black text-green-900">₹${w.total}</h4>
+                    <div class="flex justify-between mt-4 text-[10px] font-black uppercase">
+                        <span class="text-blue-600">Paid: ₹${paid}</span>
+                        <span class="text-red-600">Balance: ₹${bal}</span>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h5 class="font-black text-sm uppercase text-gray-400">Payment History</h5>
+                    <div class="max-h-40 overflow-y-auto space-y-2 pr-2">
+                        ${w.payments && w.payments.length > 0 ? w.payments.map(p => `
+                            <div class="flex justify-between p-3 bg-gray-50 rounded-xl border border-gray-100 text-xs">
+                                <div>
+                                    <p class="font-bold">${p.date}</p>
+                                    <p class="text-gray-400 uppercase font-black tracking-tighter">${p.method}</p>
+                                </div>
+                                <p class="font-black text-green-700">₹${p.amount}</p>
+                            </div>
+                        `).join('') : '<p class="text-center text-gray-300 italic text-xs py-4">No payments recorded.</p>'}
+                    </div>
+                </div>
+
+                ${bal > 0 ? `
+                <hr class="my-6">
+                <div class="space-y-4">
+                    <h5 class="font-black text-sm uppercase text-gray-400">Receive New Payment</h5>
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="number" id="p-new-amt" class="p-4 rounded-xl bg-gray-50 border border-gray-200 font-bold" placeholder="Amount" max="${bal}">
+                        <select id="p-new-method" class="p-4 rounded-xl bg-gray-50 border border-gray-200 font-bold">
+                            <option>Cash</option>
+                            <option>Online/UPI</option>
+                        </select>
+                    </div>
+                    <button onclick="submitPayment('${w.id}')" class="w-full bg-green-600 text-white font-black py-4 rounded-2xl shadow-xl active:scale-95 transition-all">COLLECT PAYMENT</button>
+                    <button onclick="sendReminder('${w.id}')" class="w-full border-2 border-green-600 text-green-600 font-black py-4 rounded-2xl shadow-sm flex items-center justify-center gap-2 active:scale-95 transition-all">
+                        <i data-lucide="message-circle" class="w-4 h-4"></i> WHATSAPP REMINDER
+                    </button>
+                </div>
+                ` : '<div class="p-4 bg-green-100 rounded-2xl text-center font-black text-green-700 uppercase text-xs">Fully Paid!</div>'}
+            `;
+            document.getElementById('payment-modal').classList.remove('hidden');
+            lucide.createIcons();
+        };
+
+        window.submitPayment = async (id) => {
+            const amt = Number(document.getElementById('p-new-amt').value);
+            const method = document.getElementById('p-new-method').value;
+            if (!amt || amt <= 0) return notify("Enter valid amount", "error");
+
+            const w = userData.works.find(item => item.id === id);
+            const currentPayments = w.payments || [];
+            const newPayment = { amount: amt, method, date: new Date().toISOString().split('T')[0], timestamp: Date.now() };
+            
+            try {
+                await updateDoc(doc(db, "works", id), {
+                    payments: [...currentPayments, newPayment]
+                });
+                notify("Payment Received!", "success");
+                closePaymentModal();
+            } catch (err) {
+                notify("Error updating payment", "error");
+            }
+        };
+
+        window.closePaymentModal = () => document.getElementById('payment-modal').classList.add('hidden');
+
+        window.sendReminder = (id) => {
+            const w = userData.works.find(item => item.id === id);
+            const paid = w.payments ? w.payments.reduce((a, b) => a + Number(b.amount), 0) : 0;
+            const bal = Number(w.total) - paid;
+            const msg = `*पैसे भरण्याची आठवण*%0A%0Aनमस्ते ${w.farmer} जी,%0Aतुमच्या ट्रॅक्टर मशागतीचे (दि. ${w.date}) एकूण ₹${w.total} पैकी ₹${bal} येणे बाकी आहे. कृपया लवकरात लवकर जमा करावे.%0A%0A*Business:* ${userData.profile.bizName}%0A*UPI:* ${userData.profile.upi}`;
+            window.open(`https://wa.me/91${w.mobile}?text=${msg}`);
+        };
+
+        // --- INVOICE GENERATION ---
+        window.downloadInvoice = async (id) => {
+            const w = userData.works.find(item => item.id === id);
+            const paid = w.payments ? w.payments.reduce((a, b) => a + Number(b.amount), 0) : 0;
+            const bal = Number(w.total) - paid;
+
+            document.getElementById('inv-biz').innerText = userData.profile.bizName;
+            document.getElementById('inv-owner').innerText = `Owner: ${currentUser.displayName}`;
+            document.getElementById('inv-date').innerText = `Date: ${w.date}`;
+            document.getElementById('inv-cust').innerText = w.farmer;
+            document.getElementById('inv-phone').innerText = `Mobile: ${w.mobile}`;
+            document.getElementById('inv-total').innerText = `₹${w.total}`;
+            document.getElementById('inv-paid').innerText = `₹${paid}`;
+            document.getElementById('inv-bal').innerText = `₹${bal}`;
+            
+            document.getElementById('inv-items').innerHTML = `
+                <tr class="border-b">
+                    <td class="p-4 font-bold text-gray-700">${w.type} मशागत</td>
+                    <td class="p-4 text-center font-bold">${w.qty} ${w.unit}</td>
+                    <td class="p-4 text-right font-bold">₹${w.rate}</td>
+                    <td class="p-4 text-right font-bold">₹${w.total}</td>
+                </tr>
+            `;
+
+            const upiUrl = `upi://pay?pa=${userData.profile.upi}&pn=${encodeURIComponent(userData.profile.bizName)}&am=${bal}&cu=INR`;
+            const qrContainer = document.getElementById('inv-qr');
+            qrContainer.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(upiUrl)}" class="w-full h-full">`;
+
+            const element = document.getElementById('invoice-render');
+            const canvas = await html2canvas(element, { scale: 2 });
+            const imgData = canvas.toDataURL('image/png');
+            
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+            
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save(`TractorWala_Invoice_${w.farmer}.pdf`);
+            notify("Invoice Downloaded!", "success");
+        };
+
+        // --- FARMERS DIRECTORY ---
+        window.renderFarmerDatabase = () => {
+            const grid = document.getElementById('farmer-grid');
+            const search = document.getElementById('farmer-search').value.toLowerCase();
+            
+            const farmersMap = new Map();
+            userData.works.forEach(w => {
+                if(!farmersMap.has(w.mobile)) {
+                    farmersMap.set(w.mobile, { name: w.farmer, mobile: w.mobile });
+                }
+            });
+
+            const farmersList = Array.from(farmersMap.values()).filter(f => f.name.toLowerCase().includes(search) || f.mobile.includes(search));
+
+            if (farmersList.length === 0) {
+                grid.innerHTML = `<p class="col-span-full text-center text-gray-400 py-10 italic">No farmers in database.</p>`;
+                return;
+            }
+
+            grid.innerHTML = farmersList.map(f => `
+                <div class="glass-card p-6 rounded-3xl text-center hover:shadow-xl transition-all">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto text-green-700 font-black text-2xl mb-4 border-2 border-green-200">
+                        ${f.name[0]}
+                    </div>
+                    <h4 class="font-black text-lg text-gray-800">${f.name}</h4>
+                    <p class="text-xs text-gray-400 font-bold mb-6">${f.mobile}</p>
+                    <div class="flex justify-center gap-2">
+                        <a href="tel:${f.mobile}" class="p-3 bg-blue-50 text-blue-600 rounded-2xl hover:bg-blue-100 transition-all"><i data-lucide="phone" class="w-5 h-5"></i></a>
+                        <a href="https://wa.me/91${f.mobile}" class="p-3 bg-green-50 text-green-600 rounded-2xl hover:bg-green-100 transition-all"><i data-lucide="message-circle" class="w-5 h-5"></i></a>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        };
+
+        function updateFarmerSuggestions() {
+            const list = document.getElementById('farmer-suggest');
+            const uniqueNames = [...new Set(userData.works.map(w => w.farmer))];
+            list.innerHTML = uniqueNames.map(n => `<option value="${n}">`).join('');
+        }
+
+        // --- EXPENSES LOGIC ---
+        window.saveExpense = async (e) => {
+            e.preventDefault();
+            const exp = {
+                userId: currentUser.uid,
+                category: document.getElementById('e-type').value,
+                amount: Number(document.getElementById('e-amt').value),
+                date: document.getElementById('e-date').value,
+                timestamp: Date.now()
+            };
+            try {
+                await addDoc(collection(db, "expenses"), exp);
+                notify("Expense Recorded", "success");
+                e.target.reset();
+            } catch (err) {
+                notify("Error recording expense", "error");
+            }
+        };
+
+        window.renderExpenseList = () => {
+            const list = document.getElementById('expense-list');
+            list.innerHTML = userData.expenses.map(e => `
+                <div class="flex justify-between items-center p-4 bg-white border border-gray-100 rounded-2xl hover:bg-red-50/30 transition-all">
+                    <div>
+                        <p class="font-black text-gray-800">${e.category}</p>
+                        <p class="text-[10px] text-gray-400 font-bold uppercase">${e.date}</p>
+                    </div>
+                    <span class="text-red-600 font-black text-lg">-₹${e.amount}</span>
+                </div>
+            `).join('');
+        };
+
+        // --- RATES & PROFILE ---
+        function renderRateCardEditor() {
+            const editor = document.getElementById('rate-editor');
+            editor.innerHTML = Object.keys(userData.rates).map(key => `
+                <div class="flex items-center gap-4 bg-green-50 p-4 rounded-2xl border border-green-100">
+                    <span class="flex-1 font-bold text-green-800">${key}</span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-gray-400 font-black">₹</span>
+                        <input type="number" data-key="${key}" value="${userData.rates[key]}" class="rate-input w-24 p-2 rounded-xl bg-white border border-green-200 font-black text-center text-green-700">
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.saveRateCard = async () => {
+            const inputs = document.querySelectorAll('.rate-input');
+            const newRates = {};
+            inputs.forEach(i => newRates[i.dataset.key] = Number(i.value));
+            
+            try {
+                await updateDoc(doc(db, "users", currentUser.uid), { rates: newRates });
+                notify("Rates Updated!", "success");
+            } catch (err) {
+                notify("Update Failed", "error");
+            }
+        };
+
+        window.saveProfile = async () => {
+            const biz = document.getElementById('s-biz-name').value;
+            const upi = document.getElementById('s-upi').value;
+            try {
+                await updateDoc(doc(db, "users", currentUser.uid), { profile: { bizName: biz, upi: upi } });
+                notify("Profile Updated!", "success");
+            } catch (err) {
+                notify("Update Failed", "error");
+            }
+        };
+
+        // --- BACKUP & RESTORE ---
+        window.exportJSON = () => {
+            const blob = new Blob([JSON.stringify(userData)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `TractorWala_Backup_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+        };
+
+        window.importJSON = async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                try {
+                    const data = JSON.parse(event.target.result);
+                    // Bulk update to Firestore (Caution: Simplified approach for single user)
+                    notify("Restore initiated (Simulation)", "success");
+                    console.log("Restoring data:", data);
+                } catch (err) {
+                    notify("Invalid File", "error");
+                }
+            };
+            reader.readAsText(file);
+        };
+
+        // --- SHARE SYSTEM ---
+        window.shareDailyReport = () => {
+            const dRev = document.getElementById('d-rev').innerText;
+            const dExp = document.getElementById('d-exp').innerText;
+            const dProf = document.getElementById('d-prof').innerText;
+            const date = new Date().toLocaleDateString();
+            
+            const msg = `🚜 *TractorWala Daily Report* (${date})%0A%0A💰 *एकूण जमा:* ${dRev}%0A💸 *एकूण खर्च:* ${dExp}%0A📊 *निव्वळ नफा:* ${dProf}%0A%0A_Powered by TractorWala App_`;
+            window.open(`https://wa.me/?text=${msg}`);
+        };
+
+        // --- NAVIGATION & UI HELPERS ---
+        window.toggleSidebar = () => {
+            document.getElementById('sidebar').classList.toggle('open');
+        };
+
+        window.showModule = (mod) => {
+            document.querySelectorAll('.module').forEach(m => m.classList.add('hidden'));
+            document.getElementById(`mod-${mod}`).classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                btn.classList.remove('active-nav');
+                if (btn.dataset.module === mod) btn.classList.add('active-nav');
+            });
+
+            document.getElementById('current-title').innerText = mod.charAt(0).toUpperCase() + mod.slice(1).replace('-', ' ');
+            if (window.innerWidth < 768) toggleSidebar();
+        };
+
         window.setLang = (l) => {
-            currentLang = l;
+            lang = l;
             document.getElementById('lang-hero-tag').innerText = i18n[l].hero;
             document.querySelectorAll('.lang-nav-dash').forEach(el => el.innerText = i18n[l].nav_dash);
             document.querySelectorAll('.lang-nav-work').forEach(el => el.innerText = i18n[l].nav_work);
@@ -440,468 +1012,22 @@
             document.querySelectorAll('.lang-nav-rates').forEach(el => el.innerText = i18n[l].nav_rates);
         };
 
-        window.toggleSidebar = () => {
-            document.getElementById('sidebar').classList.toggle('open');
-        };
-
-        window.showModule = (mod) => {
-            activeModule = mod;
-            document.querySelectorAll('.module').forEach(m => m.classList.add('hidden'));
-            document.getElementById(`mod-${mod}`).classList.remove('hidden');
-            document.querySelectorAll('.nav-item').forEach(btn => {
-                btn.classList.remove('active-nav');
-                if(btn.dataset.module === mod) btn.classList.add('active-nav');
-            });
-            document.getElementById('current-module-title').innerText = mod.charAt(0).toUpperCase() + mod.slice(1);
-            if(window.innerWidth < 768) toggleSidebar();
-            
-            if(mod === 'rates') renderRatesEditor();
-            if(mod === 'farmers') renderFarmers();
-        };
-
-        // Firebase Auth
-        window.handleLogin = async () => {
-            try {
-                await signInWithPopup(auth, googleProvider);
-            } catch (err) {
-                showToast("Login failed: " + err.message, "error");
-            }
-        };
-
-        window.handleLogout = async () => {
-            await signOut(auth);
-            location.reload();
-        };
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                document.getElementById('auth-screen').classList.add('hidden');
-                document.getElementById('main-content').classList.remove('hidden');
-                document.getElementById('user-name').innerText = user.displayName;
-                document.getElementById('user-photo').src = user.photoURL;
-                document.getElementById('profile-img').src = user.photoURL;
-                initData();
-                lucide.createIcons();
-            } else {
-                document.getElementById('auth-screen').classList.remove('hidden');
-                document.getElementById('main-content').classList.add('hidden');
-            }
-        });
-
-        // Data Management
-        async function initData() {
-            if (!currentUser) return;
-            const uid = currentUser.uid;
-
-            // Load Profile
-            const pRef = doc(db, "users", uid);
-            onSnapshot(pRef, (snap) => {
-                if (snap.exists()) {
-                    profile = snap.data();
-                    document.getElementById('prof-biz-name').value = profile.bizName || "";
-                    document.getElementById('prof-upi').value = profile.upi || "";
-                }
-            });
-
-            // Load Rates
-            const rRef = doc(db, "rates", uid);
-            onSnapshot(rRef, (snap) => {
-                if (snap.exists()) rates = snap.data();
-            });
-
-            // Stream Works
-            const wQuery = query(collection(db, "works"), where("userId", "==", uid), orderBy("date", "desc"));
-            onSnapshot(wQuery, (snap) => {
-                works = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                updateDashboard();
-                renderWorkList();
-                updateFarmerDatalist();
-            }, (err) => console.error(err));
-
-            // Stream Expenses
-            const eQuery = query(collection(db, "expenses"), where("userId", "==", uid), orderBy("date", "desc"));
-            onSnapshot(eQuery, (snap) => {
-                expenses = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                updateDashboard();
-                renderExpenseList();
-            });
-        }
-
-        function updateDashboard() {
-            const now = new Date();
-            const todayStr = now.toISOString().split('T')[0];
-            const currentMonth = now.getMonth();
-            const currentYear = now.getFullYear();
-
-            document.getElementById('display-date').innerText = todayStr;
-
-            let dayRev = 0, dayExp = 0, monthRev = 0, monthExp = 0;
-
-            works.forEach(w => {
-                const wDate = new Date(w.date);
-                if (w.date === todayStr) dayRev += Number(w.total);
-                if (wDate.getMonth() === currentMonth && wDate.getFullYear() === currentYear) monthRev += Number(w.total);
-            });
-
-            expenses.forEach(e => {
-                const eDate = new Date(e.date);
-                if (e.date === todayStr) dayExp += Number(e.amount);
-                if (eDate.getMonth() === currentMonth && eDate.getFullYear() === currentYear) monthExp += Number(e.amount);
-            });
-
-            document.getElementById('stat-day-revenue').innerText = "₹" + dayRev;
-            document.getElementById('stat-day-expense').innerText = "₹" + dayExp;
-            document.getElementById('stat-month-revenue').innerText = "₹" + monthRev;
-            document.getElementById('stat-month-expense').innerText = "₹" + monthExp;
-            document.getElementById('stat-month-profit').innerText = "₹" + (monthRev - monthExp);
-
-            // Update Pendings
-            const pendingList = document.getElementById('pending-list');
-            const pendings = works.filter(w => (Number(w.total) - getPaidSum(w)) > 0);
-            if (pendings.length === 0) {
-                pendingList.innerHTML = `<p class="text-center text-gray-400 py-4">No pending payments</p>`;
-            } else {
-                pendingList.innerHTML = pendings.slice(0, 5).map(w => `
-                    <div class="flex justify-between items-center p-3 border border-red-100 rounded-xl bg-red-50/50">
-                        <div>
-                            <p class="font-bold text-sm">${w.customer}</p>
-                            <p class="text-xs text-gray-500">${w.date}</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-red-600 font-bold">₹${Number(w.total) - getPaidSum(w)}</p>
-                            <button onclick="openPayments('${w.id}')" class="text-[10px] text-blue-600 underline">Add Payment</button>
-                        </div>
-                    </div>
-                `).join('');
-            }
-        }
-
-        function getPaidSum(work) {
-            if (!work.payments) return 0;
-            return work.payments.reduce((acc, p) => acc + Number(p.amount), 0);
-        }
-
-        // Logic Modules
-        window.calcTotal = () => {
-            const qty = document.getElementById('work-qty').value;
-            const rate = document.getElementById('work-rate').value;
-            const total = qty * rate;
-            document.getElementById('work-total-display').innerText = "₹" + (total.toFixed(2));
-        };
-
-        window.applyRate = () => {
-            const type = document.getElementById('work-type').value;
-            if (rates[type]) {
-                document.getElementById('work-rate').value = rates[type];
-                calcTotal();
-            }
-        };
-
-        window.saveWork = async (e) => {
-            e.preventDefault();
-            const data = {
-                userId: currentUser.uid,
-                customer: document.getElementById('work-customer').value,
-                mobile: document.getElementById('work-mobile').value,
-                type: document.getElementById('work-type').value,
-                unit: document.getElementById('work-unit').value,
-                qty: document.getElementById('work-qty').value,
-                rate: document.getElementById('work-rate').value,
-                total: document.getElementById('work-qty').value * document.getElementById('work-rate').value,
-                date: new Date().toISOString().split('T')[0],
-                payments: []
-            };
-            try {
-                await addDoc(collection(db, "works"), data);
-                showToast("Work saved successfully!", "success");
-                e.target.reset();
-                document.getElementById('work-total-display').innerText = "₹0";
-                showModule('work-list');
-            } catch (err) {
-                showToast("Error saving work", "error");
-            }
-        };
-
-        window.renderWorkList = () => {
-            const container = document.getElementById('work-list-container');
-            const search = document.getElementById('work-search').value.toLowerCase();
-            const filterDate = document.getElementById('work-filter-date').value;
-
-            const filtered = works.filter(w => {
-                const matchSearch = w.customer.toLowerCase().includes(search);
-                const matchDate = filterDate ? w.date === filterDate : true;
-                return matchSearch && matchDate;
-            });
-
-            container.innerHTML = filtered.map(w => {
-                const pending = Number(w.total) - getPaidSum(w);
-                return `
-                <div class="glass-card p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
-                    <div>
-                        <div class="flex justify-between items-start mb-3">
-                            <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">${w.type}</span>
-                            <span class="text-xs text-gray-400">${w.date}</span>
-                        </div>
-                        <h4 class="font-bold text-lg">${w.customer}</h4>
-                        <p class="text-sm text-gray-500 mb-4">${w.qty} ${w.unit} × ₹${w.rate}</p>
-                    </div>
-                    <div class="space-y-3 pt-3 border-t border-gray-50">
-                        <div class="flex justify-between">
-                            <span class="text-gray-500 text-sm">Total:</span>
-                            <span class="font-bold">₹${w.total}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-500 text-sm">Pending:</span>
-                            <span class="font-bold ${pending > 0 ? 'text-red-600' : 'text-green-600'}">₹${pending}</span>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2 mt-4">
-                            <button onclick="openPayments('${w.id}')" class="bg-blue-50 text-blue-600 py-2 rounded-lg text-xs font-bold">Payments</button>
-                            <button onclick="generateInvoice('${w.id}')" class="bg-gray-50 text-gray-600 py-2 rounded-lg text-xs font-bold">Invoice</button>
-                        </div>
-                    </div>
-                </div>
-                `;
-            }).join('');
-        };
-
-        window.openPayments = (id) => {
-            const work = works.find(w => w.id === id);
-            const modal = document.getElementById('payment-modal');
-            const content = document.getElementById('payment-modal-content');
-            const pending = Number(work.total) - getPaidSum(work);
-
-            content.innerHTML = `
-                <div class="bg-gray-50 p-4 rounded-2xl">
-                    <p class="text-sm text-gray-500">Customer: <span class="font-bold text-gray-800">${work.customer}</span></p>
-                    <p class="text-sm text-gray-500">Total Bill: <span class="font-bold text-gray-800">₹${work.total}</span></p>
-                    <p class="text-lg font-bold text-red-600">Pending: ₹${pending}</p>
-                </div>
-                <div class="space-y-2">
-                    <h4 class="font-bold text-sm">Payment History</h4>
-                    <div class="space-y-1">
-                        ${work.payments.length ? work.payments.map((p, i) => `
-                            <div class="flex justify-between text-xs p-2 bg-white border rounded-lg">
-                                <span>${p.date}</span>
-                                <span>${p.method}</span>
-                                <span class="font-bold">₹${p.amount}</span>
-                            </div>
-                        `).join('') : '<p class="text-xs text-gray-400">No payments yet</p>'}
-                    </div>
-                </div>
-                <hr>
-                <div class="space-y-3">
-                    <h4 class="font-bold text-sm">Add New Payment</h4>
-                    <input type="number" id="pay-amt" class="w-full p-3 border rounded-xl" placeholder="Amount" max="${pending}">
-                    <select id="pay-method" class="w-full p-3 border rounded-xl">
-                        <option>Cash</option>
-                        <option>PhonePe/GPay</option>
-                        <option>Bank Transfer</option>
-                    </select>
-                    <button onclick="submitPayment('${id}')" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold">Receive Payment</button>
-                    <button onclick="shareReminder('${id}')" class="w-full border border-green-600 text-green-600 py-3 rounded-xl font-bold">Send Reminder</button>
-                </div>
-            `;
-            modal.classList.remove('hidden');
-        };
-
-        window.submitPayment = async (id) => {
-            const amt = Number(document.getElementById('pay-amt').value);
-            const method = document.getElementById('pay-method').value;
-            if(!amt || amt <= 0) return;
-
-            const work = works.find(w => w.id === id);
-            const updatedPayments = [...work.payments, { amount: amt, method, date: new Date().toISOString().split('T')[0] }];
-            
-            await updateDoc(doc(db, "works", id), { payments: updatedPayments });
-            closePaymentModal();
-            showToast("Payment recorded!", "success");
-        };
-
-        window.closePaymentModal = () => document.getElementById('payment-modal').classList.add('hidden');
-
-        // Rates Management
-        function renderRatesEditor() {
-            const container = document.getElementById('rates-form-container');
-            container.innerHTML = Object.keys(rates).map(key => `
-                <div class="flex items-center gap-3">
-                    <span class="flex-1 text-sm font-medium">${key}</span>
-                    <input type="number" data-key="${key}" value="${rates[key]}" class="w-32 p-3 border rounded-xl rate-input">
-                </div>
-            `).join('');
-        }
-
-        window.saveRates = async () => {
-            const newRates = {};
-            document.querySelectorAll('.rate-input').forEach(input => {
-                newRates[input.dataset.key] = Number(input.value);
-            });
-            await updateDoc(doc(db, "rates", currentUser.uid), newRates);
-            showToast("Rates updated", "success");
-        };
-
-        // Farmers Directory
-        window.renderFarmers = () => {
-            const grid = document.getElementById('farmers-grid');
-            const search = document.getElementById('farmer-search').value.toLowerCase();
-            
-            // Extract unique farmers from works
-            const farmerMap = new Map();
-            works.forEach(w => {
-                if(!farmerMap.has(w.mobile)) {
-                    farmerMap.set(w.mobile, { name: w.customer, mobile: w.mobile, village: 'N/A' });
-                }
-            });
-
-            const uniqueFarmers = Array.from(farmerMap.values()).filter(f => 
-                f.name.toLowerCase().includes(search) || f.mobile.includes(search)
-            );
-
-            grid.innerHTML = uniqueFarmers.map(f => `
-                <div class="glass-card p-4 rounded-2xl text-center space-y-3">
-                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto text-green-600 font-bold">
-                        ${f.name[0]}
-                    </div>
-                    <h4 class="font-bold">${f.name}</h4>
-                    <p class="text-xs text-gray-500">${f.mobile}</p>
-                    <div class="flex justify-center gap-2">
-                        <a href="tel:${f.mobile}" class="p-2 bg-blue-50 text-blue-600 rounded-full"><i data-lucide="phone" class="w-4 h-4"></i></a>
-                        <a href="https://wa.me/91${f.mobile}?text=Namaskar ${f.name}!" class="p-2 bg-green-50 text-green-600 rounded-full"><i data-lucide="message-circle" class="w-4 h-4"></i></a>
-                    </div>
-                </div>
-            `).join('');
-            lucide.createIcons();
-        };
-
-        function updateFarmerDatalist() {
-            const list = document.getElementById('farmers-list');
-            const uniqueNames = [...new Set(works.map(w => w.customer))];
-            list.innerHTML = uniqueNames.map(n => `<option value="${n}">`).join('');
-        }
-
-        // Reports & Sharing
-        window.shareDailyReport = () => {
-            const now = new Date().toISOString().split('T')[0];
-            const rev = document.getElementById('stat-day-revenue').innerText;
-            const exp = document.getElementById('stat-day-expense').innerText;
-            const msg = `🚜 *ट्रॅक्टरवाला दैनिक अहवाल* (${now})%0A%0A💰 *एकूण जमा:* ${rev}%0A💸 *एकूण खर्च:* ${exp}%0A📊 *आजचा नफा:* ₹${Number(rev.replace('₹','')) - Number(exp.replace('₹',''))}%0A%0A_Generated via TractorWala App_`;
-            window.open(`https://wa.me/?text=${msg}`);
-        };
-
-        window.shareReminder = (id) => {
-            const w = works.find(item => item.id === id);
-            const pending = Number(w.total) - getPaidSum(w);
-            const msg = `*पैसे भरण्याची आठवण*%0A%0Aनमस्ते ${w.customer},%0Aतुमच्या ट्रॅक्टर कामाचे (दि. ${w.date}) एकूण ₹${w.total} पैकी ₹${pending} येणे बाकी आहे. कृपया लवकरात लवकर जमा करावे.%0A%0A*Business:* ${profile.bizName}%0A*UPI:* ${profile.upi}`;
-            window.open(`https://wa.me/91${w.mobile}?text=${encodeURIComponent(msg)}`);
-        };
-
-        // Invoice System
-        window.generateInvoice = async (id) => {
-            const w = works.find(item => item.id === id);
-            const pending = Number(w.total) - getPaidSum(w);
-            
-            document.getElementById('inv-biz-name').innerText = profile.bizName;
-            document.getElementById('inv-owner-name').innerText = profile.owner;
-            document.getElementById('inv-date').innerText = "Date: " + w.date;
-            document.getElementById('inv-cust-name').innerText = w.customer;
-            document.getElementById('inv-cust-mobile').innerText = w.mobile;
-            document.getElementById('inv-total').innerText = "₹" + w.total;
-            document.getElementById('inv-paid').innerText = "₹" + getPaidSum(w);
-            document.getElementById('inv-pending').innerText = "₹" + pending;
-            document.getElementById('inv-items').innerHTML = `
-                <tr>
-                    <td class="p-2 border-b">${w.type} (${w.qty} ${w.unit})</td>
-                    <td class="p-2 border-b text-center">${w.unit}</td>
-                    <td class="p-2 border-b text-center">₹${w.rate}</td>
-                    <td class="p-2 border-b text-right">₹${w.total}</td>
-                </tr>
-            `;
-
-            // QR Code (Placeholder using upi scheme)
-            const upiUrl = `upi://pay?pa=${profile.upi}&pn=${encodeURIComponent(profile.bizName)}&am=${pending}&cu=INR`;
-            document.getElementById('inv-qr').innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(upiUrl)}" class="w-full h-full">`;
-
-            const element = document.getElementById('invoice-template');
-            const canvas = await html2canvas(element);
-            const imgData = canvas.toDataURL('image/png');
-            
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save(`Invoice_${w.customer}.pdf`);
-            showToast("Invoice Downloaded", "success");
-        };
-
-        // Expenses
-        window.saveExpense = async (e) => {
-            e.preventDefault();
-            const data = {
-                userId: currentUser.uid,
-                type: document.getElementById('exp-type').value,
-                amount: document.getElementById('exp-amount').value,
-                date: document.getElementById('exp-date').value
-            };
-            await addDoc(collection(db, "expenses"), data);
-            e.target.reset();
-            showToast("Expense Recorded", "success");
-        };
-
-        window.renderExpenseList = () => {
-            const container = document.getElementById('expense-list');
-            container.innerHTML = expenses.slice(0, 10).map(e => `
-                <div class="flex justify-between items-center p-3 border-b">
-                    <div>
-                        <p class="font-bold text-sm">${e.type}</p>
-                        <p class="text-[10px] text-gray-400">${e.date}</p>
-                    </div>
-                    <span class="text-red-600 font-bold">₹${e.amount}</span>
-                </div>
-            `).join('');
-        };
-
-        // Settings
-        window.saveProfile = async () => {
-            const bizName = document.getElementById('prof-biz-name').value;
-            const upi = document.getElementById('prof-upi').value;
-            await updateDoc(doc(db, "users", currentUser.uid), { bizName, upi, owner: currentUser.displayName });
-            showToast("Profile Updated", "success");
-        };
-
-        window.exportData = () => {
-            const data = { works, expenses, rates, profile };
-            const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `tractorwala_backup_${new Date().toLocaleDateString()}.json`;
-            a.click();
-        };
-
-        // Toast Helper
-        function showToast(msg, type = "success") {
-            const container = document.getElementById('toast-container');
+        function notify(msg, type = 'success') {
+            const box = document.getElementById('toast-box');
             const toast = document.createElement('div');
-            toast.className = `p-4 rounded-xl shadow-xl text-white font-bold flex items-center gap-2 transform translate-y-10 opacity-0 transition-all duration-300 ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}`;
-            toast.innerHTML = `<i data-lucide="${type === 'success' ? 'check-circle' : 'alert-circle'}" class="w-5 h-5"></i> ${msg}`;
-            container.appendChild(toast);
+            toast.className = `p-4 rounded-2xl shadow-2xl text-white font-bold flex items-center gap-3 transform translate-y-10 opacity-0 transition-all duration-300 ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}`;
+            toast.innerHTML = `<i data-lucide="${type === 'success' ? 'check-circle' : 'alert-circle'}"></i> ${msg}`;
+            box.appendChild(toast);
             lucide.createIcons();
-            
-            setTimeout(() => {
-                toast.classList.remove('translate-y-10', 'opacity-0');
-            }, 100);
-
+            setTimeout(() => { toast.classList.remove('translate-y-10', 'opacity-0'); }, 10);
             setTimeout(() => {
                 toast.classList.add('translate-y-10', 'opacity-0');
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
 
-        // Initialize view
+        // INITIAL MODULE
         showModule('dashboard');
-        setLang('mr');
 
     </script>
 </body>
