@@ -41,7 +41,6 @@
             background: linear-gradient(to top, rgba(6, 95, 70, 0.1), transparent);
         }
 
-        /* App UI Overrides */
         .app-bg { background-color: #f8fafc; color: #1e293b; }
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         .modal.active { display: flex; }
@@ -54,7 +53,7 @@
 
     <div id="toast" class="toast"></div>
 
-    <!-- LANDING PAGE (As Requested) -->
+    <!-- LANDING PAGE -->
     <div id="login-page" class="flex-1 flex flex-col main-gradient w-full">
         <header class="pt-8 px-6 text-center">
             <p class="text-[9px] font-bold tracking-[0.5em] text-emerald-500 uppercase mb-2">Exclusive Release</p>
@@ -88,23 +87,8 @@
                         <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
                         <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                     </svg>
-                    Google लॉगिन
+                    प्रवेश करा (Login)
                 </button>
-
-                <div class="grid grid-cols-3 gap-4 pt-4">
-                    <div class="text-center">
-                        <p class="text-lg">📈</p>
-                        <p class="text-[8px] font-bold text-white/30 uppercase mt-1">Reports</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-lg">⛽</p>
-                        <p class="text-[8px] font-bold text-white/30 uppercase mt-1">Fuel</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-lg">📑</p>
-                        <p class="text-[8px] font-bold text-white/30 uppercase mt-1">Billing</p>
-                    </div>
-                </div>
             </div>
         </main>
 
@@ -113,11 +97,10 @@
             <p class="text-[10px] font-black tracking-[0.3em] text-white/70 mb-2">
                 SOURABH BONGARDE SOFTWARE SOLUTIONS
             </p>
-            <p class="text-[8px] text-white/20 font-bold uppercase tracking-widest">Innovation for Rural Development</p>
         </footer>
     </div>
 
-    <!-- MAIN APP INTERFACE (Visible after login) -->
+    <!-- MAIN APP INTERFACE -->
     <div id="app-ui" class="hidden min-h-screen app-bg pb-24">
         <header class="bg-emerald-600 text-white p-6 rounded-b-[2.5rem] shadow-2xl">
             <div class="flex justify-between items-center mb-6">
@@ -125,9 +108,6 @@
                     <p class="text-xs opacity-80 uppercase tracking-widest">शेतकरी डॅशबोर्ड</p>
                     <h2 id="user-name" class="text-xl font-bold">लोड होत आहे...</h2>
                 </div>
-                <button id="logout-btn" class="bg-white/10 p-2 rounded-full backdrop-blur-md">
-                    <svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M16 17l5-5-5-5M21 12H9m4-9H5a2 2 0 00-2 2v14a2 2 0 002 2h8"/></svg>
-                </button>
             </div>
             
             <div class="bg-white/10 rounded-3xl p-5 backdrop-blur-sm grid grid-cols-3 gap-4">
@@ -147,26 +127,14 @@
         </header>
 
         <main class="px-5 mt-8">
-            <!-- Home Tab -->
             <div id="tab-home" class="tab-content active space-y-6">
                 <div class="flex justify-between items-center">
                     <h3 class="font-extrabold text-slate-800">अलीकडील कामे</h3>
                     <button onclick="exportToCSV()" class="text-emerald-600 text-xs font-bold uppercase tracking-tighter bg-emerald-50 px-3 py-1 rounded-full">Report CSV</button>
                 </div>
-
-                <div class="flex gap-2">
-                    <input type="text" id="job-search" placeholder="नाव शोधा..." class="flex-1 p-4 rounded-2xl bg-white shadow-sm border-none focus:ring-2 focus:ring-emerald-500 text-sm" oninput="filterJobs()">
-                    <select id="job-filter" class="p-4 rounded-2xl bg-white shadow-sm border-none text-xs font-bold" onchange="filterJobs()">
-                        <option value="all">सर्व</option>
-                        <option value="pending">उधारी</option>
-                        <option value="paid">जमा</option>
-                    </select>
-                </div>
-
                 <div id="job-list" class="space-y-4"></div>
             </div>
 
-            <!-- Expenses Tab -->
             <div id="tab-expenses" class="tab-content space-y-4">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="font-extrabold text-slate-800">खर्च तपशील</h3>
@@ -175,7 +143,6 @@
                 <div id="expense-list" class="space-y-3"></div>
             </div>
 
-            <!-- Fleet Tab -->
             <div id="tab-fleet" class="tab-content space-y-8">
                 <section>
                     <div class="flex justify-between items-center mb-4">
@@ -184,17 +151,9 @@
                     </div>
                     <div id="tractor-list" class="grid grid-cols-2 gap-3"></div>
                 </section>
-                <section>
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-extrabold text-slate-800">ड्रायव्हर्स</h3>
-                        <button onclick="openModal('driver')" class="text-emerald-600 text-xs font-bold">+ नवीन</button>
-                    </div>
-                    <div id="driver-list" class="grid grid-cols-2 gap-3"></div>
-                </section>
             </div>
         </main>
 
-        <!-- Bottom Navigation -->
         <nav class="fixed bottom-6 left-5 right-5 bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-3 flex justify-around items-center shadow-2xl z-50">
             <button onclick="switchTab('home')" class="nav-btn active p-3 text-emerald-400">
                 <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
@@ -220,9 +179,9 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, updateDoc, doc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = JSON.parse(__firebase_config);
         const app = initializeApp(firebaseConfig);
@@ -231,33 +190,37 @@
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'tractor-pwa-v2';
 
         let user = null;
-        let data = { jobs: [], expenses: [], tractors: [], drivers: [] };
-        let editingId = null;
+        let data = { jobs: [], expenses: [], tractors: [] };
 
-        // AUTH HANDLERS
-        document.getElementById('google-login-btn').onclick = () => {
-            const provider = new GoogleAuthProvider();
-            signInWithPopup(auth, provider).catch(e => console.error(e));
+        // FIX: The environment requires a specific login flow
+        const performLogin = async () => {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                console.error("Login failed:", error);
+            }
         };
 
-        document.getElementById('logout-btn').onclick = () => signOut(auth);
+        document.getElementById('google-login-btn').onclick = performLogin;
 
         onAuthStateChanged(auth, (u) => {
             if (u) {
                 user = u;
                 document.getElementById('login-page').classList.add('hidden');
                 document.getElementById('app-ui').classList.remove('hidden');
-                document.getElementById('user-name').innerText = u.displayName.split(' ')[0];
+                document.getElementById('user-name').innerText = "शेतकरी मित्र";
                 initData();
-            } else {
-                document.getElementById('login-page').classList.remove('hidden');
-                document.getElementById('app-ui').classList.add('hidden');
             }
         });
 
-        // DATA HANDLERS
         function initData() {
+            if (!user) return;
             const path = `artifacts/${appId}/users/${user.uid}`;
+            
             onSnapshot(query(collection(db, `${path}/jobs`), orderBy('timestamp', 'desc')), snap => {
                 data.jobs = snap.docs.map(d => ({id: d.id, ...d.data()}));
                 renderAll();
@@ -266,20 +229,14 @@
             onSnapshot(collection(db, `${path}/expenses`), snap => {
                 data.expenses = snap.docs.map(d => ({id: d.id, ...d.data()}));
                 renderAll();
-            });
+            }, e => console.error(e));
 
             onSnapshot(collection(db, `${path}/tractors`), snap => {
                 data.tractors = snap.docs.map(d => ({id: d.id, ...d.data()}));
                 renderAll();
-            });
-
-            onSnapshot(collection(db, `${path}/drivers`), snap => {
-                data.drivers = snap.docs.map(d => ({id: d.id, ...d.data()}));
-                renderAll();
-            });
+            }, e => console.error(e));
         }
 
-        // RENDERING
         function renderAll() {
             renderDashboard();
             renderJobList();
@@ -295,46 +252,32 @@
             document.getElementById('dash-profit').innerText = `₹${income - expense}`;
         }
 
-        window.renderJobList = (filtered = null) => {
+        window.renderJobList = () => {
             const list = document.getElementById('job-list');
-            const items = filtered || data.jobs;
-            if(!items.length) {
+            if(!data.jobs.length) {
                 list.innerHTML = `<div class="text-center py-10 text-slate-300 text-sm italic">कामे उपलब्ध नाहीत...</div>`;
                 return;
             }
-            list.innerHTML = items.map(j => {
-                const bal = j.totalAmount - j.paidAmount;
-                return `
-                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <h4 class="font-bold text-slate-800">${j.customerName}</h4>
-                                <p class="text-[10px] text-slate-400 uppercase font-bold">${j.workType || 'इतर काम'}</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-black text-slate-800">₹${j.totalAmount}</p>
-                                <p class="text-[10px] ${bal > 0 ? 'text-orange-500' : 'text-emerald-500'} font-bold uppercase">
-                                    ${bal > 0 ? 'बाकी: ₹' + bal : 'पूर्ण जमा'}
-                                </p>
-                            </div>
+            list.innerHTML = data.jobs.map(j => `
+                <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h4 class="font-bold text-slate-800">${j.customerName}</h4>
+                            <p class="text-[10px] text-slate-400 uppercase font-bold">${j.workType || 'काम'}</p>
                         </div>
-                        <div class="flex gap-2 pt-4 border-t border-slate-50">
-                            <button onclick="window.editJob('${j.id}')" class="flex-1 py-2 text-[10px] font-bold uppercase tracking-wider bg-slate-50 text-slate-500 rounded-xl">Edit</button>
-                            <button onclick="window.shareWhatsApp('${j.id}')" class="flex-1 py-2 text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-600 rounded-xl">WhatsApp</button>
-                            <button onclick="window.openInvoice('${j.id}')" class="flex-1 py-2 text-[10px] font-bold uppercase tracking-wider bg-slate-900 text-white rounded-xl">Bill</button>
+                        <div class="text-right">
+                            <p class="font-black text-slate-800">₹${j.totalAmount}</p>
+                            <p class="text-[10px] font-bold uppercase text-emerald-500">जमा: ₹${j.paidAmount}</p>
                         </div>
                     </div>
-                `;
-            }).join('');
+                </div>
+            `).join('');
         };
 
         window.renderExpenseList = () => {
             document.getElementById('expense-list').innerHTML = data.expenses.map(e => `
                 <div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm">
-                    <div>
-                        <p class="font-bold text-sm text-slate-700">${e.category || e.type}</p>
-                        <p class="text-[10px] text-slate-400">${e.note || '-'}</p>
-                    </div>
+                    <p class="font-bold text-sm text-slate-700">${e.type}</p>
                     <p class="font-bold text-red-500">₹${e.amount}</p>
                 </div>
             `).join('');
@@ -344,63 +287,36 @@
             document.getElementById('tractor-list').innerHTML = data.tractors.map(t => `
                 <div class="bg-white p-4 rounded-2xl shadow-sm text-center border-b-2 border-emerald-500">
                     <p class="text-xs font-bold text-slate-700">${t.name}</p>
-                    <p class="text-[10px] text-slate-400 font-mono">${t.number}</p>
-                </div>
-            `).join('');
-            document.getElementById('driver-list').innerHTML = data.drivers.map(d => `
-                <div class="bg-white p-4 rounded-2xl shadow-sm text-center border-b-2 border-blue-500">
-                    <p class="text-xs font-bold text-slate-700">${d.name}</p>
-                    <p class="text-[10px] text-slate-400">${d.phone}</p>
                 </div>
             `).join('');
         };
 
-// UI ACTIONS
         window.switchTab = (tab) => {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
             document.getElementById('tab-' + tab).classList.add('active');
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.replace('text-emerald-400', 'text-white/40'));
-            event.currentTarget.classList.replace('text-white/40', 'text-emerald-400');
-        };
-
-        window.showToast = (m) => {
-            const t = document.getElementById('toast');
-            t.innerText = m;
-            t.style.display = 'block';
-            setTimeout(() => t.style.display = 'none', 3000);
         };
 
         window.openModal = (type) => {
             const overlay = document.getElementById('modal-overlay');
             const body = document.getElementById('modal-body');
             overlay.classList.add('active');
-            editingId = null;
 
             if (type === 'job') {
                 body.innerHTML = `
                     <h3 class="font-black text-xl mb-6 text-slate-800">कामाची नोंद</h3>
                     <form id="job-form" class="space-y-4">
                         <input name="customerName" placeholder="ग्राहकाचे नाव" required class="w-full p-4 bg-slate-50 rounded-2xl border-none">
-                        <input name="customerPhone" placeholder="मोबाईल नंबर" type="tel" class="w-full p-4 bg-slate-50 rounded-2xl border-none">
-                        <div class="grid grid-cols-2 gap-3">
-                            <input name="totalAmount" type="number" placeholder="एकूण ₹" required class="w-full p-4 bg-slate-50 rounded-2xl border-none">
-                            <input name="paidAmount" type="number" placeholder="जमा ₹" required class="w-full p-4 bg-slate-50 rounded-2xl border-none">
-                        </div>
-                        <select name="workType" class="w-full p-4 bg-slate-50 rounded-2xl border-none text-slate-500">
-                            <option>नांगरणी</option><option>रोटाव्हेटर</option><option>पेरणी</option><option>इतर</option>
-                        </select>
-                        <button type="submit" class="w-full bg-emerald-600 text-white p-5 rounded-2xl font-black uppercase tracking-widest text-sm shadow-xl shadow-emerald-100">Save Job</button>
+                        <input name="totalAmount" type="number" placeholder="एकूण ₹" required class="w-full p-4 bg-slate-50 rounded-2xl border-none">
+                        <input name="paidAmount" type="number" placeholder="जमा ₹" required class="w-full p-4 bg-slate-50 rounded-2xl border-none">
+                        <button type="submit" class="w-full bg-emerald-600 text-white p-5 rounded-2xl font-black uppercase text-sm">Save Job</button>
                     </form>
                 `;
             } else if (type === 'expense') {
                 body.innerHTML = `
                     <h3 class="font-black text-xl mb-6 text-slate-800">खर्च नोंदवा</h3>
                     <form id="expense-form" class="space-y-4">
-                        <select name="type" class="w-full p-4 bg-slate-50 rounded-2xl border-none">
-                            <option value="diesel">डिझेल</option><option value="repair">दुरुस्ती</option><option value="salary">पगार</option>
-                        </select>
+                        <input name="type" placeholder="खर्चाचा प्रकार" required class="w-full p-4 bg-slate-50 rounded-2xl border-none">
                         <input name="amount" type="number" placeholder="रक्कम ₹" required class="w-full p-4 bg-slate-50 rounded-2xl border-none">
-                        <input name="note" placeholder="टिपणी (उदा. पंप वरून भरले)" class="w-full p-4 bg-slate-50 rounded-2xl border-none">
                         <button type="submit" class="w-full bg-red-500 text-white p-5 rounded-2xl font-black uppercase text-sm">Add Expense</button>
                     </form>
                 `;
@@ -409,7 +325,6 @@
                     <h3 class="font-black text-xl mb-6 text-slate-800">नवीन ट्रॅक्टर</h3>
                     <form id="tractor-form" class="space-y-4">
                         <input name="name" placeholder="उदा. Mahindra 575" required class="w-full p-4 bg-slate-50 rounded-2xl border-none">
-                        <input name="number" placeholder="गाडी नंबर (उदा. MH12 AB 1234)" required class="w-full p-4 bg-slate-50 rounded-2xl border-none">
                         <button type="submit" class="w-full bg-slate-900 text-white p-5 rounded-2xl font-black uppercase text-sm">Save Tractor</button>
                     </form>
                 `;
@@ -423,94 +338,29 @@
 
         async function handleForm(e, type) {
             e.preventDefault();
+            if (!user) return;
             const raw = Object.fromEntries(new FormData(e.target).entries());
-            if(raw.totalAmount) raw.totalAmount = Number(raw.totalAmount);
-            if(raw.paidAmount) raw.paidAmount = Number(raw.paidAmount);
-            if(raw.amount) raw.amount = Number(raw.amount);
-
             const path = `artifacts/${appId}/users/${user.uid}/${type}s`;
             try {
-                if(editingId) {
-                    await updateDoc(doc(db, path, editingId), raw);
-                    window.showToast("बदल जतन झाले!");
-                } else {
-                    raw.timestamp = serverTimestamp();
-                    await addDoc(collection(db, path), raw);
-                    window.showToast("यशस्वी नोंद!");
-                }
+                raw.timestamp = serverTimestamp();
+                await addDoc(collection(db, path), raw);
                 window.closeModal();
-            } catch(err) { window.showToast("Error: " + err.message); }
+            } catch(err) { console.error(err); }
         }
 
-        window.editJob = (id) => {
-            const j = data.jobs.find(x => x.id === id);
-            window.openModal('job');
-            editingId = id;
-            const f = document.getElementById('job-form');
-            Object.keys(j).forEach(k => { if(f.elements[k]) f.elements[k].value = j[k]; });
-        };
-
-        window.filterJobs = () => {
-            const q = document.getElementById('job-search').value.toLowerCase();
-            const f = document.getElementById('job-filter').value;
-            let res = data.jobs.filter(j => j.customerName.toLowerCase().includes(q));
-            if(f === 'pending') res = res.filter(j => (j.totalAmount - j.paidAmount) > 0);
-            if(f === 'paid') res = res.filter(j => (j.totalAmount - j.paidAmount) <= 0);
-            window.renderJobList(res);
-        };
-
-        window.openInvoice = (id) => {
-            const j = data.jobs.find(x => x.id === id);
-            const overlay = document.getElementById('modal-overlay');
-            const body = document.getElementById('modal-body');
-            overlay.classList.add('active');
-            body.innerHTML = `
-                <div class="p-2">
-                    <div class="text-center mb-6">
-                        <h2 class="text-lg font-black uppercase text-emerald-600">TractorWala Bill</h2>
-                        <p class="text-[10px] text-slate-400">Owner: ${user.displayName}</p>
-                    </div>
-                    <div class="space-y-2 text-sm mb-6 bg-slate-50 p-4 rounded-2xl">
-                        <p class="flex justify-between"><span>ग्राहक:</span><b>${j.customerName}</b></p>
-                        <p class="flex justify-between"><span>काम:</span><b>${j.workType}</b></p>
-                        <p class="flex justify-between"><span>एकूण बिल:</span><b>₹${j.totalAmount}</b></p>
-                        <p class="flex justify-between text-emerald-600"><span>जमा रक्कम:</span><b>₹${j.paidAmount}</b></p>
-                        <p class="flex justify-between border-t pt-2 font-black text-orange-600"><span>बाकी रक्कम:</span><b>₹${j.totalAmount-j.paidAmount}</b></p>
-                    </div>
-                    <div class="flex flex-col items-center gap-2">
-                        <div id="qr-code"></div>
-                        <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Scan to Pay UPI</p>
-                    </div>
-                    <button onclick="window.closeModal()" class="w-full mt-6 py-4 bg-slate-100 rounded-2xl text-xs font-bold uppercase">बंद करा</button>
-                </div>
-            `;
-            new QRCode(document.getElementById("qr-code"), {
-                text: `upi://pay?pa=7219561084@ybl&pn=TractorWala&am=${j.totalAmount-j.paidAmount}`,
-                width: 140,
-                height: 140
-            });
-        };
-
-        window.shareWhatsApp = (id) => {
-            const j = data.jobs.find(x => x.id === id);
-            const msg = `*TractorWala Bill*\n------------------\nग्राहक: ${j.customerName}\nकाम: ${j.workType}\nएकूण बिल: ₹${j.totalAmount}\nजमा: ₹${j.paidAmount}\n*बाकी रक्कम: ₹${j.totalAmount-j.paidAmount}*\n------------------\nधन्यवाद! 🙏`;
-            window.open(`https://wa.me/${j.customerPhone ? '91'+j.customerPhone : ''}?text=${encodeURIComponent(msg)}`);
-        };
-
         window.exportToCSV = () => {
-            let csv = "Date,Customer,Work,Total,Paid,Balance\n";
-            data.jobs.forEach(j => {
-                const date = j.timestamp ? new Date(j.timestamp.seconds*1000).toLocaleDateString() : 'New';
-                csv += `${date},${j.customerName},${j.workType},${j.totalAmount},${j.paidAmount},${j.totalAmount-j.paidAmount}\n`;
-            });
+            let csv = "Customer,Total,Paid\n";
+            data.jobs.forEach(j => { csv += `${j.customerName},${j.totalAmount},${j.paidAmount}\n`; });
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `TractorWala_Report_${new Date().toLocaleDateString()}.csv`;
+            a.download = `Report.csv`;
             a.click();
         };
 
     </script>
 </body>
 </html>
+
+                        
