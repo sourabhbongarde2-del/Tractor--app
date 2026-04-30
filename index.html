@@ -1,0 +1,2385 @@
+<!DOCTYPE html>
+<html lang="mr" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content="TractorWala — ट्रॅक्टर व्यवसायासाठी संपूर्ण डिजिटल व्यवस्थापक. काम नोंद, Invoice, पेमेंट ट्रॅकिंग सर्व एकाच ठिकाणी."/>
+<meta name="theme-color" content="#166534"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="TractorWala"/>
+<meta property="og:title" content="TractorWala — ट्रॅक्टर व्यवसाय App"/>
+<meta property="og:description" content="काम नोंद, Invoice, पेमेंट — सर्व एकाच ठिकाणी. मोफत."/>
+<meta property="og:type" content="website"/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚜</text></svg>"/>
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚜</text></svg>"/>
+<title>TractorWala v4 – ट्रॅक्टर व्यवसाय</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800;900&family=Noto+Sans+Devanagari:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
+<style>
+/* ====================================================
+   DESIGN SYSTEM – Premium Agrarian
+   ==================================================== */
+:root{
+  --g900:#052e16;--g800:#14532d;--g700:#166534;--g600:#15803d;
+  --g500:#16a34a;--g400:#22c55e;--g300:#4ade80;--g100:#dcfce7;--g50:#f0fdf4;
+  --amber:#f59e0b;--amber-d:#d97706;--amber-l:#fef3c7;
+  --red:#dc2626;--red-l:#fef2f2;
+  --blue:#2563eb;--blue-l:#eff6ff;
+  --slate50:#f8fafc;--slate100:#f1f5f9;--slate200:#e2e8f0;
+  --slate400:#94a3b8;--slate600:#475569;--slate800:#1e293b;--slate900:#0f172a;
+  --white:#ffffff;
+  --bg:var(--slate50);--surface:var(--white);--surface2:var(--g50);
+  --border:var(--slate200);--border2:var(--g100);
+  --txt:var(--slate900);--txt2:var(--slate600);--txt3:var(--slate400);
+  --brand:var(--g700);--brand2:var(--g500);--brand-l:var(--g100);
+  --shadow-sm:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);
+  --shadow:0 4px 16px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.05);
+  --shadow-lg:0 12px 40px rgba(0,0,0,.14),0 4px 14px rgba(0,0,0,.08);
+  --r:14px;--r-sm:9px;--r-xs:6px;
+  --transition:all .22s cubic-bezier(.4,0,.2,1);
+  --font-display:'Baloo 2',sans-serif;
+  --font-body:'Noto Sans Devanagari','Baloo 2',sans-serif;
+}
+[data-theme="dark"]{
+  --bg:#0a0f0b;--surface:#111a12;--surface2:#162019;
+  --border:#1e2e20;--border2:#1a2d1e;
+  --txt:#e8f5e9;--txt2:#9dc4a0;--txt3:#5a8460;
+  --brand-l:#143320;--amber-l:#2a1e00;--red-l:#2a0909;--blue-l:#0d1b3e;
+  --shadow:0 4px 16px rgba(0,0,0,.5);--shadow-lg:0 12px 40px rgba(0,0,0,.7);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:var(--font-body);background:var(--bg);color:var(--txt);min-height:100vh;line-height:1.5;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font-family:inherit}
+button{cursor:pointer}
+img{max-width:100%}
+.hidden{display:none!important}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--g400);border-radius:3px}
+
+/* ====================================================
+   LANDING PAGE — PROFESSIONAL CLEAN v4
+   ==================================================== */
+#landing{min-height:100vh;display:flex;flex-direction:column;background:#0a1a0f;position:relative;overflow:hidden}
+/* Subtle dark green gradient background — no rings, no animation */
+#landing::before{content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(135deg,#071209 0%,#0f2914 40%,#143318 70%,#0a1a0f 100%);
+}
+/* Geometric grid lines — purely decorative, no animation */
+#landing::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(34,197,94,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(34,197,94,.04) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+
+/* NAV */
+.land-nav{display:flex;align-items:center;justify-content:space-between;padding:24px 40px;position:relative;z-index:10;border-bottom:1px solid rgba(255,255,255,.06)}
+.land-logo-wrap{display:flex;align-items:center;gap:14px}
+.land-logo-icon{width:44px;height:44px;background:linear-gradient(135deg,#166534,#22c55e);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;box-shadow:0 4px 14px rgba(22,101,52,.4)}
+.land-logo-text h1{font-family:var(--font-display);font-size:1.5rem;font-weight:900;color:#fff;line-height:1;letter-spacing:-.3px}
+.land-logo-text span{font-size:.65rem;color:rgba(255,255,255,.4);letter-spacing:2px;text-transform:uppercase;display:block;margin-top:2px}
+.land-nav-badge{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);color:#4ade80;padding:6px 16px;border-radius:6px;font-size:.7rem;font-weight:700;letter-spacing:.5px}
+
+/* HERO */
+.land-hero{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:64px 24px 48px;position:relative;z-index:5;flex:1}
+/* Green accent line above heading */
+.hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:#4ade80;padding:7px 18px;border-radius:6px;font-size:.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:28px}
+.hero-tag i{font-size:.8rem}
+.hero-h1{font-family:var(--font-display);font-size:clamp(2.2rem,6vw,3.8rem);font-weight:900;color:#fff;line-height:1.08;margin-bottom:20px;letter-spacing:-1px;max-width:680px}
+.hero-h1 .h1-accent{color:#22c55e}
+.hero-p{color:rgba(255,255,255,.6);font-size:clamp(.92rem,2vw,1.08rem);max-width:480px;margin:0 auto 36px;line-height:1.8;font-weight:400}
+/* CTA Button */
+.hero-btns{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:52px}
+.google-btn{display:inline-flex;align-items:center;gap:12px;background:#fff;color:#111;padding:15px 32px;border-radius:8px;font-size:.95rem;font-weight:700;border:none;box-shadow:0 4px 20px rgba(0,0,0,.3);transition:var(--transition);cursor:pointer;letter-spacing:-.2px}
+.google-btn:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.google-btn:active{transform:scale(.98)}
+.google-btn img{width:20px;height:20px}
+
+/* Stats row */
+.hero-stats{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:0;overflow:hidden;max-width:520px;width:100%}
+.hero-stat{text-align:center;padding:18px 28px;flex:1;min-width:100px;border-right:1px solid rgba(255,255,255,.07)}
+.hero-stat:last-child{border-right:none}
+.hero-stat-val{font-family:var(--font-display);font-size:1.4rem;font-weight:900;color:#22c55e;line-height:1}
+.hero-stat-lbl{font-size:.65rem;color:rgba(255,255,255,.4);margin-top:4px;text-transform:uppercase;letter-spacing:.8px}
+
+/* FEATURES */
+.land-features{padding:0 40px 48px;position:relative;z-index:5}
+.feat-divider{height:1px;background:rgba(255,255,255,.06);margin:0 0 40px}
+.feat-section-title{margin-bottom:32px}
+.feat-section-title h2{font-family:var(--font-display);font-size:clamp(1.2rem,3vw,1.7rem);font-weight:800;color:#fff;margin-bottom:6px;letter-spacing:-.3px}
+.feat-section-title p{color:rgba(255,255,255,.4);font-size:.82rem}
+.feat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.06);border-radius:12px;overflow:hidden;max-width:1000px}
+@media(max-width:900px){.feat-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.feat-grid{grid-template-columns:repeat(2,1fr)}}
+.feat-card{background:#0d1f11;padding:24px 20px;color:#fff;transition:background .2s;border:none;border-radius:0}
+.feat-card::before{display:none}
+.feat-card:hover{background:#122819;transform:none}
+.feat-icon-wrap{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin:0 0 12px;font-size:1.3rem}
+.fi-green{background:rgba(34,197,94,.15)}
+.fi-amber{background:rgba(245,158,11,.15)}
+.fi-blue{background:rgba(37,99,235,.15)}
+.fi-red{background:rgba(220,38,38,.15)}
+.fi-purple{background:rgba(139,92,246,.15)}
+.fi-teal{background:rgba(20,184,166,.15)}
+.fi-orange{background:rgba(249,115,22,.15)}
+.fi-pink{background:rgba(236,72,153,.15)}
+.feat-card h3{font-family:var(--font-display);font-size:.88rem;font-weight:700;margin-bottom:5px;color:#e2f5e8}
+.feat-card p{font-size:.7rem;color:rgba(255,255,255,.4);line-height:1.6;margin:0}
+
+/* FOOTER */
+.land-footer{background:rgba(0,0,0,.4);padding:18px 40px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;color:rgba(255,255,255,.35);font-size:.72rem;position:relative;z-index:5;border-top:1px solid rgba(255,255,255,.06)}
+.land-footer strong{color:rgba(255,255,255,.6);font-size:.75rem}
+.land-footer-links{display:flex;gap:20px}
+.land-footer-links a{color:rgba(255,255,255,.3);transition:color .2s}
+.land-footer-links a:hover{color:rgba(255,255,255,.7)}
+
+/* CONTENT */
+.content{flex:1;padding:18px;animation:fadeUp .28s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* CARDS */
+.card{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);border:1px solid var(--border);padding:18px;transition:var(--transition)}
+.card:hover{box-shadow:var(--shadow-lg)}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.card-ttl{font-family:var(--font-display);font-size:.95rem;font-weight:700;color:var(--txt)}
+
+/* QUICK ACTION BUTTONS */
+.quick-act-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 10px;border-radius:14px;border:none;cursor:pointer;transition:var(--transition);gap:5px;min-height:80px;box-shadow:var(--shadow)}
+.quick-act-btn:active{transform:scale(.96)}
+.quick-act-btn i{font-size:1.6rem;margin-bottom:2px}
+.qa-label{font-family:var(--font-display);font-size:.95rem;font-weight:800;line-height:1}
+.qa-sub{font-size:.68rem;opacity:.8}
+.qa-green{background:linear-gradient(135deg,var(--g700),var(--g500));color:#fff}
+.qa-green:hover{background:linear-gradient(135deg,var(--g800),var(--g600))}
+.qa-red{background:linear-gradient(135deg,#dc2626,#ef4444);color:#fff}
+.qa-amber{background:linear-gradient(135deg,var(--amber-d),var(--amber));color:#fff}
+.qa-blue{background:linear-gradient(135deg,var(--blue),#3b82f6);color:#fff}
+.qa-purple{background:linear-gradient(135deg,#7c3aed,#8b5cf6);color:#fff}
+
+/* STAT GRID */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.stat{background:var(--surface);border-radius:var(--r-sm);border:1px solid var(--border);padding:14px;display:flex;align-items:flex-start;gap:10px;transition:var(--transition);position:relative;overflow:hidden}
+.stat:hover{box-shadow:var(--shadow-lg);transform:translateY(-1px)}
+.stat-ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.ic-g{background:var(--g100);color:var(--g700)}
+.ic-r{background:var(--red-l);color:var(--red)}
+.ic-b{background:var(--blue-l);color:var(--blue)}
+.ic-a{background:var(--amber-l);color:var(--amber-d)}
+.stat-body{min-width:0}
+.stat-lbl{font-size:.7rem;color:var(--txt3);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stat-val{font-family:var(--font-display);font-size:1.35rem;font-weight:800;color:var(--txt);line-height:1.1;margin:1px 0}
+.stat-sub{font-size:.68rem;color:var(--txt3)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 17px;border-radius:var(--r-xs);font-size:.84rem;font-weight:600;border:none;cursor:pointer;transition:var(--transition);white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--g700);color:#fff}
+.btn-primary:hover{background:var(--g800)}
+.btn-outline{background:transparent;color:var(--brand);border:1.5px solid var(--g300)}
+.btn-outline:hover{background:var(--brand-l)}
+.btn-ghost{background:var(--slate100);color:var(--txt2);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--brand-l);color:var(--brand)}
+.btn-danger{background:var(--red-l);color:var(--red)}
+.btn-danger:hover{background:var(--red);color:#fff}
+.btn-amber{background:var(--amber-l);color:var(--amber-d)}
+.btn-amber:hover{background:var(--amber);color:#fff}
+.btn-wa{background:#25D366;color:#fff}
+.btn-wa:hover{background:#128C7E}
+.btn-call{background:var(--blue-l);color:var(--blue)}
+.btn-call:hover{background:var(--blue);color:#fff}
+.btn-sm{padding:6px 12px;font-size:.77rem;border-radius:var(--r-xs)}
+.btn-xs{padding:4px 9px;font-size:.7rem;border-radius:5px}
+.btn-ico{width:32px;height:32px;padding:0;justify-content:center;border-radius:7px}
+.btn-full{width:100%;justify-content:center}
+.btn-lg{padding:13px 24px;font-size:.95rem;border-radius:var(--r-sm)}
+
+/* FORMS */
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:.78rem;font-weight:600;color:var(--txt2);margin-bottom:5px}
+.fc{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--r-xs);font-size:.88rem;background:var(--bg);color:var(--txt);outline:none;transition:var(--transition)}
+.fc:focus{border-color:var(--brand);background:var(--surface);box-shadow:0 0 0 3px rgba(22,101,52,.12)}
+.fc::placeholder{color:var(--txt3)}
+select.fc{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2394a3b8' d='M6 8L0 0h12z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.total-box{background:var(--surface2);border:2px solid var(--g300);border-radius:var(--r-xs);padding:11px 13px;font-family:var(--font-display);font-size:1.3rem;font-weight:800;color:var(--g700)}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto;border-radius:var(--r-sm);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+thead th{background:var(--surface2);color:var(--g700);padding:10px 12px;text-align:left;font-weight:700;font-size:.71rem;text-transform:uppercase;letter-spacing:.6px;white-space:nowrap;border-bottom:2px solid var(--border2)}
+tbody tr{border-top:1px solid var(--border);transition:var(--transition)}
+tbody tr:hover{background:var(--surface2)}
+tbody td{padding:9px 12px;color:var(--txt);vertical-align:middle}
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:.69rem;font-weight:700;gap:4px}
+.bg-g{background:var(--g100);color:var(--g700)}
+.bg-a{background:var(--amber-l);color:var(--amber-d)}
+.bg-r{background:var(--red-l);color:var(--red)}
+.bg-b{background:var(--blue-l);color:var(--blue)}
+.pending-tr td:first-child{border-left:3px solid var(--amber)}
+
+/* STATUS BADGES */
+.status-scheduled{background:#eff6ff;color:#2563eb;padding:2px 8px;border-radius:20px;font-size:.68rem;font-weight:700}
+.status-in_progress{background:var(--amber-l);color:var(--amber-d);padding:2px 8px;border-radius:20px;font-size:.68rem;font-weight:700}
+.status-completed{background:var(--g100);color:var(--g700);padding:2px 8px;border-radius:20px;font-size:.68rem;font-weight:700}
+
+/* MODALS */
+.moverlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(6px)}
+.modal{background:var(--surface);border-radius:var(--r);width:100%;max-width:500px;max-height:92vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:mIn .24s ease}
+@keyframes mIn{from{opacity:0;transform:scale(.96) translateY(12px)}to{opacity:1;transform:none}}
+.m-head{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:2}
+.m-ttl{font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--txt)}
+.m-close{background:none;border:none;font-size:1.1rem;color:var(--txt3);cursor:pointer;padding:5px;border-radius:6px;transition:var(--transition)}
+.m-close:hover{background:var(--red-l);color:var(--red)}
+.m-body{padding:18px}
+.m-foot{padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+
+/* SEARCH + FILTER BAR */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.f-btn{padding:6px 13px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);color:var(--txt2);font-size:.76rem;font-weight:600;cursor:pointer;transition:var(--transition)}
+.f-btn.active,.f-btn:hover{background:var(--g700);border-color:var(--g700);color:#fff}
+.search-wrap{position:relative;flex:1;min-width:180px}
+.search-wrap i{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--txt3);font-size:.82rem;pointer-events:none}
+.search-wrap .fc{padding-left:32px}
+
+/* TOAST */
+#toasts{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:7px;pointer-events:none}
+.toast{display:flex;align-items:center;gap:9px;padding:11px 17px;border-radius:10px;color:#fff;font-size:.83rem;font-weight:600;box-shadow:var(--shadow-lg);animation:tIn .3s ease;pointer-events:all;max-width:340px}
+.toast.ok{background:var(--g700)}.toast.err{background:var(--red)}.toast.warn{background:var(--amber-d)}
+@keyframes tIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+
+/* PAYMENT HISTORY */
+.pay-hist{display:flex;flex-direction:column;gap:7px;margin-top:8px}
+.pay-item{display:flex;align-items:center;gap:9px;padding:9px 12px;background:var(--surface2);border-radius:8px;border-left:3px solid var(--g500)}
+.pay-amt{font-weight:700;color:var(--g700);font-size:.9rem}
+.pay-dt{font-size:.7rem;color:var(--txt3);margin-left:auto}
+
+/* PROGRESS */
+.prog{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin:4px 0}
+.prog-bar{height:100%;background:linear-gradient(90deg,var(--g600),var(--g400));border-radius:3px;transition:width .5s ease}
+.prog-bar.red{background:linear-gradient(90deg,var(--red),#f87171)}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:36px 20px;color:var(--txt3)}
+.empty i{font-size:2.8rem;margin-bottom:10px;opacity:.3;display:block}
+.empty p{font-size:.88rem}
+
+/* TABS */
+.tabs{display:flex;gap:3px;background:var(--border);border-radius:9px;padding:3px;margin-bottom:16px;max-width:400px}
+.tab{flex:1;padding:8px;border-radius:7px;border:none;background:transparent;font-size:.8rem;font-weight:600;color:var(--txt2);cursor:pointer;transition:var(--transition)}
+.tab.active{background:var(--surface);color:var(--brand);box-shadow:var(--shadow-sm)}
+
+/* SECTION HEADER */
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.sec-ttl{font-family:var(--font-display);font-size:1.1rem;font-weight:800;color:var(--txt);letter-spacing:-.3px}
+
+/* INVOICE */
+.inv-doc{background:#fff;color:#1a1a1a;padding:36px 40px;font-family:'Noto Sans Devanagari',sans-serif;max-width:700px;margin:0 auto;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 8px 40px rgba(0,0,0,.1);position:relative;overflow:hidden}
+.inv-doc::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,#052e16,#166534,#22c55e,#f59e0b,#22c55e,#166534);background-size:300% auto;animation:invBar 4s linear infinite}
+@keyframes invBar{to{background-position:300% center}}
+.inv-doc::after{content:'TractorWala';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-30deg);font-family:'Baloo 2',sans-serif;font-size:5rem;font-weight:900;color:rgba(22,101,52,.04);pointer-events:none;white-space:nowrap;letter-spacing:-2px}
+.inv-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;padding-bottom:20px;border-bottom:2px solid #f0fdf4;position:relative}
+.inv-header::after{content:'';position:absolute;bottom:-2px;left:0;width:80px;height:2px;background:linear-gradient(90deg,#166534,#22c55e)}
+.inv-brand{display:flex;align-items:center;gap:14px}
+.inv-logo{width:72px;height:72px;border-radius:14px;object-fit:cover;border:3px solid #dcfce7;box-shadow:0 4px 16px rgba(22,101,52,.2)}
+.inv-biz-info h2{font-family:'Baloo 2',sans-serif;font-size:1.3rem;font-weight:900;color:#166534;line-height:1;margin-bottom:3px}
+.inv-biz-info p{font-size:.75rem;color:#666;line-height:1.6;margin:0}
+.inv-meta{text-align:right}
+.inv-badge{display:inline-block;background:linear-gradient(135deg,#052e16,#166534);color:#fff;padding:5px 18px;border-radius:6px;font-size:.7rem;font-weight:800;letter-spacing:2px;margin-bottom:8px}
+.inv-meta-no{font-family:'Baloo 2',sans-serif;font-size:1.1rem;font-weight:800;color:#1a1a1a}
+.inv-meta-date{font-size:.75rem;color:#888;margin-top:2px}
+.inv-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.inv-info-box{background:linear-gradient(135deg,#f8fafc,#f0fdf4);border:1px solid #e2e8f0;border-radius:10px;padding:14px;position:relative;overflow:hidden}
+.inv-info-box::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,#166534,#22c55e)}
+.inv-info-lbl{font-size:.62rem;color:#166534;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+.inv-info-val{font-size:.92rem;font-weight:700;color:#1a1a1a;line-height:1.3}
+.inv-info-sub{font-size:.74rem;color:#666;margin-top:3px}
+.inv-tbl{width:100%;border-collapse:collapse;margin-bottom:20px;border-radius:10px;overflow:hidden;box-shadow:0 1px 8px rgba(0,0,0,.06)}
+.inv-tbl thead tr{background:linear-gradient(135deg,#052e16,#166534)}
+.inv-tbl th{color:#fff;padding:11px 14px;text-align:left;font-size:.7rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase}
+.inv-tbl td{padding:11px 14px;border-bottom:1px solid #f0f0f0;font-size:.86rem;color:#333}
+.inv-tbl tbody tr:last-child td{border-bottom:none}
+.inv-tbl tbody tr:nth-child(even) td{background:#f8fffe}
+.inv-tbl tbody tr:hover td{background:#f0fdf4}
+.inv-summary-wrap{display:flex;justify-content:flex-end;margin-bottom:18px}
+.inv-sum{background:linear-gradient(135deg,#f8fafc,#f0fdf4);border:1px solid #dcfce7;border-radius:12px;padding:16px 20px;min-width:260px}
+.inv-sum-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:.84rem;color:#555}
+.inv-sum-row.big{font-weight:800;font-size:1.15rem;border-top:2px solid #166534;margin-top:8px;padding-top:10px}
+.inv-sum-row.big.green{color:#166534}
+.inv-sum-row.big.red{color:#dc2626}
+.inv-notes{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:12px 14px;font-size:.8rem;color:#92400e;margin-bottom:16px}
+.inv-upi-row{display:flex;align-items:center;gap:20px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px 16px;margin-bottom:16px}
+.inv-upi-info h4{font-size:.78rem;font-weight:800;color:#166534;margin-bottom:4px}
+.inv-upi-info p{font-size:.74rem;color:#555;line-height:1.6;margin:0}
+.inv-stamp{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:2px dashed #86efac;border-radius:10px;padding:14px 18px;text-align:center;margin-bottom:14px}
+.inv-stamp p{color:#166534;font-weight:700;font-size:.84rem;margin:0}
+.inv-footer{text-align:center;font-size:.68rem;color:#bbb;padding-top:12px;border-top:1px solid #f0f0f0;line-height:1.7}
+
+/* REPORT CARD */
+.rep-card{background:linear-gradient(135deg,var(--g900),var(--g700));color:#fff;border-radius:var(--r);padding:20px}
+.rep-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.12);font-size:.9rem}
+.rep-row:last-child{border-bottom:none;font-weight:800;font-size:1.05rem;color:var(--amber)}
+
+/* PROFILE */
+.prof-avatar{width:76px;height:76px;border-radius:50%;border:3px solid var(--brand);object-fit:cover;display:block;margin:0 auto 10px}
+
+/* SPINNER */
+.spin{width:38px;height:38px;border:4px solid var(--border);border-top-color:var(--brand);border-radius:50%;animation:spin .7s linear infinite;margin:48px auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* APP SHELL */
+#app{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column;min-width:0;padding-bottom:70px}
+.topbar{background:var(--g900);padding:12px 18px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100}
+.tb-logo{font-family:var(--font-display);font-size:1rem;font-weight:900;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:6px;flex-shrink:0}
+.tb-logo i{color:var(--amber)}
+.page-ttl{font-family:var(--font-display);font-size:1.15rem;font-weight:800;color:#fff;flex:1;letter-spacing:-.3px}
+
+/* OFFLINE BANNER */
+#offlineBanner{background:#dc2626;color:#fff;text-align:center;padding:8px;font-size:.82rem;font-weight:700;position:sticky;top:0;z-index:150}
+
+/* BOTTOM NAVIGATION */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 4px;padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -4px 20px rgba(0,0,0,.1);height:62px}
+.bn-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;cursor:pointer;color:var(--txt3);font-size:.6rem;font-weight:600;padding:6px 2px;transition:var(--transition);position:relative;min-width:0}
+.bn-btn i{font-size:1.2rem;transition:var(--transition)}
+.bn-btn.active{color:var(--brand)}
+.bn-btn.active i{transform:scale(1.15)}
+.bn-badge{position:absolute;top:4px;right:50%;transform:translateX(60%);background:var(--red);color:#fff;font-size:.55rem;font-weight:800;min-width:16px;height:16px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;padding:0 4px}
+.bn-add-btn{width:36px;height:36px;border-radius:50%;background:var(--g700);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1rem;box-shadow:0 4px 12px rgba(22,101,52,.4);transition:var(--transition)}
+.bn-btn.active .bn-add-btn{background:var(--g800)}
+.bn-desktop-foot{display:none}
+
+/* MORE DRAWER */
+.more-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;opacity:0;pointer-events:none;transition:opacity .3s}
+.more-overlay.show{opacity:1;pointer-events:all}
+.more-drawer{position:fixed;bottom:-100%;left:0;right:0;z-index:350;background:var(--surface);border-radius:20px 20px 0 0;box-shadow:var(--shadow-lg);transition:bottom .3s cubic-bezier(.4,0,.2,1);padding:0 0 env(safe-area-inset-bottom)}
+.more-drawer.open{bottom:0}
+.more-drawer-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 16px}
+.more-user-row{display:flex;align-items:center;gap:12px;padding:0 18px 16px;border-bottom:1px solid var(--border)}
+.more-avatar{width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid var(--brand);flex-shrink:0}
+.more-uname{font-weight:700;font-size:.9rem}
+.more-uemail{font-size:.72rem;color:var(--txt3)}
+.more-dark-btn{margin-left:auto;background:var(--surface2);border:none;padding:8px;border-radius:8px;cursor:pointer;font-size:1rem;color:var(--txt2)}
+.more-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:16px 18px}
+.more-item{display:flex;flex-direction:column;align-items:center;gap:7px;padding:14px 8px;border-radius:12px;background:var(--surface2);border:none;cursor:pointer;font-size:.75rem;font-weight:700;color:var(--txt2);transition:var(--transition)}
+.more-item:hover{background:var(--brand-l);color:var(--brand)}
+.more-item i{font-size:1.3rem;color:var(--brand)}
+.more-logout{display:flex;align-items:center;justify-content:center;gap:8px;width:calc(100% - 36px);margin:0 18px 18px;padding:13px;border-radius:var(--r-sm);background:var(--red-l);color:var(--red);border:none;cursor:pointer;font-weight:700;font-size:.88rem;transition:var(--transition)}
+.more-logout:hover{background:var(--red);color:#fff}
+.tog{width:32px;height:18px;border-radius:9px;background:var(--border);position:relative;transition:background .3s}
+[data-theme="dark"] .tog{background:var(--g600)}
+[data-theme="dark"] .tog::after{transform:translateX(14px)}
+.tog::after{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;top:2px;left:2px;transition:transform .3s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+
+/* INVOICE DARK MODE NOTE */
+[data-theme="dark"] .inv-doc-wrapper::before{content:'⚠️ Invoice print साठी हलक्या पार्श्वभूमीवर दिसेल';display:block;text-align:center;font-size:.72rem;color:rgba(255,255,255,.5);padding:6px;margin-bottom:8px}
+
+/* PRINT */
+@media print{
+  #landing,#app .bottom-nav,#app .topbar,.more-overlay,.more-drawer,#toasts{display:none!important}
+  .main{padding:0!important}
+  .inv-doc{box-shadow:none!important;max-width:100%!important}
+  body{background:white!important}
+}
+
+/* DESKTOP */
+@media(min-width:768px){
+  #app{flex-direction:row}
+  .bottom-nav{position:fixed;left:0;top:0;bottom:0;right:auto;width:200px;flex-direction:column;align-items:flex-start;height:100vh;border-top:none;border-right:1px solid rgba(255,255,255,.07);background:var(--g900);padding:0 10px;overflow-y:auto;padding-bottom:20px}
+  .main{margin-left:200px}
+  .bn-btn{flex-direction:row;justify-content:flex-start;padding:11px 10px;width:100%;border-radius:10px;color:rgba(255,255,255,.6);font-size:.85rem;border-left:3px solid transparent}
+  .bn-btn i{font-size:1rem;width:20px;text-align:center}
+  .bn-btn span{font-size:.85rem}
+  .bn-btn.active{color:#fff;background:rgba(255,255,255,.08);border-left:3px solid var(--amber);font-weight:700}
+  .bn-btn.active i{color:var(--amber);transform:none}
+  .bn-add-btn{width:24px;height:24px;font-size:.85rem;background:none;box-shadow:none}
+  .bottom-nav::before{content:'🚜 TractorWala';display:block;padding:20px 20px 8px;font-family:var(--font-display);font-size:1rem;font-weight:900;color:#fff;letter-spacing:-.3px;border-bottom:1px solid rgba(255,255,255,.07);margin-bottom:8px}
+  .topbar{padding:14px 28px}
+  .tb-logo{display:none}
+  .content{padding:24px 28px}
+  .inv-doc{max-width:720px}
+  .bn-desktop-foot{display:flex;flex-direction:column;gap:6px;margin-top:auto;padding:10px 0;border-top:1px solid rgba(255,255,255,.07);width:100%}
+  .bn-foot-btn{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;background:transparent;border:none;color:rgba(255,255,255,.5);font-size:.8rem;cursor:pointer;width:100%;transition:var(--transition)}
+  .bn-foot-btn:hover{background:rgba(255,255,255,.08);color:#fff}
+  .bn-foot-btn.red:hover{background:rgba(220,38,38,.2);color:#f87171}
+  .more-drawer{max-width:320px;right:20px;left:auto;border-radius:16px;bottom:20px!important}
+  .more-drawer.open{bottom:20px!important}
+  .feat-grid{grid-template-columns:repeat(4,1fr)}
+  .land-nav{padding:24px 60px}
+  .land-hero{padding:72px 40px 56px}
+  .land-features{padding:0 60px 48px}
+}
+</style>
+</head>
+<body>
+<div id="toasts"></div>
+
+<!-- LANDING -->
+<div id="landing">
+  <nav class="land-nav">
+    <div class="land-logo-wrap">
+      <div class="land-logo-icon">🚜</div>
+      <div class="land-logo-text">
+        <h1>TractorWala</h1>
+        <span>Business Manager v4.0</span>
+      </div>
+    </div>
+    <div class="land-nav-badge">🇮🇳 Made in India</div>
+  </nav>
+  <div class="land-hero">
+    <div class="hero-tag">
+      <i class="fas fa-tractor"></i>
+      <span data-i18n="hero_chip">शेतकऱ्यांसाठी #1 Digital App</span>
+    </div>
+    <h1 class="hero-h1">आपला ट्रॅक्टर व्यवसाय<br><span class="h1-accent">डिजिटल करा</span></h1>
+    <p class="hero-p" data-i18n="hero_p">काम नोंदी, खर्च, पेमेंट वसुली, Invoice आणि शेतकरी खाते — सर्व एकाच ठिकाणी. सहज, सुरक्षित आणि मोफत.</p>
+    <div class="hero-btns">
+      <button class="google-btn" onclick="doLogin()">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G"/>
+        <span data-i18n="login_btn">Google ने Login करा</span>
+      </button>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-val">100%</div><div class="hero-stat-lbl">मोफत</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">🔒</div><div class="hero-stat-lbl">सुरक्षित</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">📱</div><div class="hero-stat-lbl">Mobile First</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">☁️</div><div class="hero-stat-lbl">Cloud Sync</div></div>
+    </div>
+  </div>
+  <section class="land-features">
+    <div class="feat-divider"></div>
+    <div class="feat-section-title">
+      <h2 data-i18n="feat_title">सर्व सुविधा एकाच ठिकाणी</h2>
+      <p>ट्रॅक्टर व्यवसायासाठी लागणारे सर्व tools एका app मध्ये</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card"><div class="feat-icon-wrap fi-green">🚜</div><h3>काम नोंद</h3><p>तास, एकर, गुंठा, ट्रिप — सर्व प्रकारच्या कामांची नोंद</p></div>
+      <div class="feat-card"><div class="feat-icon-wrap fi-amber">💰</div><h3>पेमेंट ट्रॅकिंग</h3><p>आंशिक पेमेंट, उधार खाते आणि बाकी वसुली</p></div>
+      <div class="feat-card"><div class="feat-icon-wrap fi-red">💸</div><h3>खर्च व्यवस्थापन</h3><p>डिझेल, दुरुस्ती, टायर इतर खर्चांचे रेकॉर्ड</p></div>
+      <div class="feat-card"><div class="feat-icon-wrap fi-blue">🧾</div><h3>Multi-Item Invoice</h3><p>GST, PDF, WhatsApp शेअर करता येणारे Invoice</p></div>
+      <div class="feat-card"><div class="feat-icon-wrap fi-teal">🌾</div><h3>शेतकरी Database</h3><p>ग्राहकांची संपर्क माहिती व कामाचा इतिहास</p></div>
+      <div class="feat-card"><div class="feat-icon-wrap fi-purple">📊</div><h3>Chart अहवाल</h3><p>दैनिक, साप्ताहिक व मासिक नफा-तोटा Chart सहित</p></div>
+      <div class="feat-card"><div class="feat-icon-wrap fi-orange">🚜</div><h3>ट्रॅक्टर Fleet</h3><p>एकाधिक ट्रॅक्टरचे व्यवस्थापन व Insurance ट्रॅकिंग</p></div>
+      <div class="feat-card"><div class="feat-icon-wrap fi-pink">☁️</div><h3>Cloud Backup</h3><p>सर्व डेटा सुरक्षित Firebase Cloud मध्ये</p></div>
+    </div>
+  </section>
+  <footer class="land-footer">
+    <div>
+      <strong>© Sourabh Bongarde Software Solutions Pvt. Ltd.</strong>
+      TractorWala v4.0 — Production Ready
+    </div>
+    <div class="land-footer-links">
+      <a href="mailto:sourabhbongarde2@gmail.com"><i class="fas fa-envelope"></i> sourabhbongarde2@gmail.com</a>
+      <a href="tel:7875817356"><i class="fas fa-phone"></i> 7875817356</a>
+    </div>
+  </footer>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+  <div class="more-overlay" id="moreOverlay" onclick="closeMore()"></div>
+  <div class="more-drawer" id="moreDrawer">
+    <div class="more-drawer-handle"></div>
+    <div class="more-user-row">
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%23166534'/%3E%3Ctext x='20' y='26' text-anchor='middle' font-size='18' fill='white'%3E👤%3C/text%3E%3C/svg%3E" class="more-avatar" id="sbAvatar"/>
+      <div>
+        <div class="more-uname" id="sbName">—</div>
+        <div class="more-uemail" id="sbEmail">—</div>
+      </div>
+      <button class="more-dark-btn" onclick="toggleDark()"><i class="fas fa-moon"></i></button>
+    </div>
+    <div class="more-grid">
+      <button class="more-item" onclick="nav('invoice');closeMore()"><i class="fas fa-file-invoice"></i><span>Invoice</span></button>
+      <button class="more-item" onclick="nav('shetkari');closeMore()"><i class="fas fa-users"></i><span>शेतकरी DB</span></button>
+      <button class="more-item" onclick="nav('reports');closeMore()"><i class="fas fa-chart-bar"></i><span>अहवाल</span></button>
+      <button class="more-item" onclick="nav('rate-card');closeMore()"><i class="fas fa-tags"></i><span>दर कार्ड</span></button>
+      <button class="more-item" onclick="nav('backup');closeMore()"><i class="fas fa-cloud-download-alt"></i><span>Backup</span></button>
+      <button class="more-item" onclick="nav('profile');closeMore()"><i class="fas fa-user-cog"></i><span>प्रोफाइल</span></button>
+    </div>
+    <button class="more-logout" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> बाहेर पडा</button>
+  </div>
+
+  <main class="main">
+    <div id="offlineBanner" class="hidden">📡 इंटरनेट कनेक्शन नाही — डेटा सेव्ह होणार नाही</div>
+    <div class="topbar">
+      <div class="tb-logo"><i class="fas fa-tractor"></i> TractorWala</div>
+      <div class="page-ttl" id="pageTtl">डॅशबोर्ड</div>
+    </div>
+    <div class="content" id="content"><div class="spin"></div></div>
+  </main>
+
+  <nav class="bottom-nav" id="bottomNav">
+    <button class="bn-btn active" data-page="dashboard"><i class="fas fa-chart-pie"></i><span>डॅशबोर्ड</span></button>
+    <button class="bn-btn" data-page="work-entry"><div class="bn-add-btn"><i class="fas fa-plus"></i></div><span>काम नोंद</span></button>
+    <button class="bn-btn" data-page="expenses"><i class="fas fa-receipt"></i><span>खर्च</span></button>
+    <button class="bn-btn" data-page="payments"><i class="fas fa-rupee-sign"></i><span>पेमेंट</span><span class="bn-badge" id="pendBadge" style="display:none">0</span></button>
+    <button class="bn-btn" data-page="work-list"><i class="fas fa-list-alt"></i><span>यादी</span></button>
+    <button class="bn-btn" id="moreBtn" onclick="openMore()"><i class="fas fa-th-large"></i><span>अधिक</span></button>
+    <div class="bn-desktop-foot">
+      <button class="bn-foot-btn" onclick="toggleDark()"><i class="fas fa-moon"></i> Dark Mode <div class="tog" style="margin-left:auto"></div></button>
+      <button class="bn-foot-btn red" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> बाहेर पडा</button>
+    </div>
+  </nav>
+</div>
+
+<!-- ONBOARDING MODAL -->
+<div class="moverlay hidden" id="onboardModal" style="z-index:999">
+  <div class="modal" style="max-width:420px">
+    <div class="m-body" style="text-align:center;padding:28px">
+      <div style="font-size:3rem;margin-bottom:12px">🚜</div>
+      <h2 style="font-family:var(--font-display);font-size:1.4rem;margin-bottom:8px">TractorWala मध्ये स्वागत!</h2>
+      <p style="font-size:.9rem;color:var(--txt2);margin-bottom:24px">३ सोप्या पायऱ्यांमध्ये सुरू करा:</p>
+      <div style="text-align:left;display:flex;flex-direction:column;gap:12px;margin-bottom:24px">
+        <div style="display:flex;align-items:center;gap:12px;background:var(--surface2);border-radius:10px;padding:12px">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--g700);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">१</div>
+          <div><b>प्रोफाइल भरा</b><div style="font-size:.76rem;color:var(--txt3)">व्यवसाय नाव, UPI ID, पत्ता</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;background:var(--surface2);border-radius:10px;padding:12px">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--amber-d);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">२</div>
+          <div><b>दर कार्ड तयार करा</b><div style="font-size:.76rem;color:var(--txt3)">नांगरणी, पेरणी, वाहतूक इ.</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;background:var(--surface2);border-radius:10px;padding:12px">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0">३</div>
+          <div><b>पहिले काम नोंदवा</b><div style="font-size:.76rem;color:var(--txt3)">ग्राहक, काम, रक्कम एंटर करा</div></div>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full btn-lg" onclick="startOnboarding()"><i class="fas fa-arrow-right"></i> सुरू करा</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+/* ============================================================
+   FIREBASE CONFIG
+   ⚠️ PRODUCTION SECURITY CHECKLIST:
+   1. Google Cloud Console > APIs > restrict this key to your domain only
+   2. Firebase Console > Firestore Rules — set per-user rules:
+   rules_version = '2';
+   service cloud.firestore {
+     match /databases/{database}/documents {
+       match /{collection}/{docId} {
+         allow read, write: if request.auth != null
+           && resource.data.uid == request.auth.uid;
+         allow create: if request.auth != null
+           && request.resource.data.uid == request.auth.uid;
+       }
+     }
+   }
+   3. Firebase Console > App Check — enable for production
+   ============================================================ */
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import{getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import{getFirestore,collection,addDoc,getDocs,updateDoc,deleteDoc,doc,query,where}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const app=initializeApp({apiKey:"AIzaSyDjfVQEw5XT3lK7gb6oM5JQ84UNEeVNz1I",authDomain:"tractor--app.firebaseapp.com",projectId:"tractor--app",storageBucket:"tractor--app.firebasestorage.app",messagingSenderId:"864431539732",appId:"1:864431539732:web:39bcde2318404733ee8901"});
+const auth=getAuth(app),db=getFirestore(app),gp=new GoogleAuthProvider();
+
+/* STATE */
+let CU=null,LANG=localStorage.getItem('tw_lang')||'mr',DARK=localStorage.getItem('tw_dark')==='true',PROFILE=null;
+let PAGE='dashboard';
+let navHistory=[];
+let isSaving=false;
+if(DARK)document.documentElement.setAttribute('data-theme','dark');
+
+/* I18N */
+const L={
+  mr:{hero_chip:'शेतकऱ्यांसाठी #1 App',hero_h1a:'आपला ट्रॅक्टर',hero_h1b:'व्यवसाय डिजिटल करा',hero_p:'काम, खर्च, पेमेंट — सर्व एकाच ठिकाणी.',login_btn:'Google ने Login करा',feat_title:'सर्व सुविधा एकाच ठिकाणी'},
+  hi:{hero_chip:'किसानों के लिए #1 App',hero_h1a:'अपना ट्रैक्टर',hero_h1b:'व्यापार डिजिटल करें',hero_p:'काम, खर्च, भुगतान — सब एक जगह।',login_btn:'Google से Login करें',feat_title:'सभी सुविधाएं एक जगह'},
+  en:{hero_chip:'#1 App for Farmers',hero_h1a:'Digitize Your',hero_h1b:'Tractor Business',hero_p:'Work, expenses, payments — all in one place.',login_btn:'Login with Google',feat_title:'All Features in One Place'}
+};
+const t=k=>(L[LANG]||L.mr)[k]||k;
+window.setLang=function(l){
+  LANG=l;localStorage.setItem('tw_lang',l);
+  document.documentElement.lang=l;
+  document.documentElement.setAttribute('lang',l);
+  document.querySelectorAll('[data-i18n]').forEach(el=>{const v=L[l]?.[el.dataset.i18n];if(v)el.textContent=v;});
+  if(PAGE)render(PAGE);
+};
+
+/* HELPERS */
+const uid=()=>CU?.uid;
+const col=c=>collection(db,c);
+const uq=c=>{const u=uid();if(!u)throw new Error('User not logged in');return query(col(c),where('uid','==',u));};
+const fmt=n=>new Intl.NumberFormat('en-IN').format(Math.round(n||0));
+const fmtD=d=>d?new Date(d+'T00:00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'}):'—';
+const today=()=>new Date().toISOString().split('T')[0];
+const ym=()=>today().slice(0,7);
+
+function filterDates(arr,f,s,e){
+  if(f==='all')return arr;
+  const n=new Date(),sd=new Date(n);
+  if(f==='today'){return arr.filter(i=>i.date===today());}
+  if(f==='week'){sd.setDate(n.getDate()-6);sd.setHours(0,0,0,0);const ss=sd.toISOString().split('T')[0];return arr.filter(i=>i.date>=ss);}
+  if(f==='month'){return arr.filter(i=>i.date?.startsWith(ym()));}
+  if(f==='custom'&&s&&e){return arr.filter(i=>i.date>=s&&i.date<=e);}
+  return arr;
+}
+
+/* TOAST */
+window.toast=function(msg,type='ok',ms=3000){
+  const c=document.getElementById('toasts');
+  const d=document.createElement('div');
+  d.className=`toast ${type}`;
+  const ic={ok:'check-circle',err:'times-circle',warn:'exclamation-circle'}[type]||'info-circle';
+  d.innerHTML=`<i class="fas fa-${ic}"></i>${msg}`;
+  c.appendChild(d);
+  if(ms>0)setTimeout(()=>d.remove(),ms);
+  return d;
+};
+
+/* OFFLINE DETECTION */
+window.addEventListener('offline',()=>{
+  document.getElementById('offlineBanner')?.classList.remove('hidden');
+  toast('⚠️ इंटरनेट गेले! काम नोंदवू नका.','err',5000);
+});
+window.addEventListener('online',()=>{
+  document.getElementById('offlineBanner')?.classList.add('hidden');
+  toast('✅ इंटरनेट परत आले','ok');
+});
+if(!navigator.onLine)document.getElementById('offlineBanner')?.classList.remove('hidden');
+
+/* AUTH */
+window.doLogin=async()=>{try{await signInWithPopup(auth,gp);}catch(e){toast('Login failed: '+e.message,'err');}};
+window.doLogout=async()=>{
+  if(!confirm('बाहेर पडायचे आहे का?'))return;
+  await signOut(auth);CU=null;PROFILE=null;
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('landing').classList.remove('hidden');
+};
+
+onAuthStateChanged(auth,async u=>{
+  if(u){
+    CU=u;
+    document.getElementById('landing').classList.add('hidden');
+    document.getElementById('app').classList.remove('hidden');
+    document.getElementById('sbName').textContent=u.displayName||'User';
+    document.getElementById('sbEmail').textContent=u.email||'';
+    const avatarEl=document.getElementById('sbAvatar');
+    if(u.photoURL)avatarEl.src=u.photoURL;
+    else avatarEl.src=`https://ui-avatars.com/api/?name=${encodeURIComponent(u.displayName||'U')}&background=166534&color=fff`;
+    await loadProfile();
+    nav('dashboard');
+    updateBadge();
+    checkOnboarding();
+    history.pushState({page:'dashboard'},'','');
+  }
+});
+
+/* ONBOARDING CHECK */
+async function checkOnboarding(){
+  try{
+    const[rSnap,wSnap]=await Promise.all([getDocs(uq('rates')),getDocs(uq('works'))]);
+    if(rSnap.empty&&wSnap.empty){
+      document.getElementById('onboardModal')?.classList.remove('hidden');
+    }
+  }catch(e){}
+}
+window.startOnboarding=function(){
+  document.getElementById('onboardModal')?.classList.add('hidden');
+  nav('profile');
+  toast('प्रथम आपली माहिती भरा 👇','warn',4000);
+};
+
+/* BROWSER BACK BUTTON */
+window.addEventListener('popstate',()=>{
+  if(navHistory.length>0){
+    const prev=navHistory.pop();
+    PAGE=prev;
+    document.querySelectorAll('.bn-btn[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===prev));
+    const titles={dashboard:'डॅशबोर्ड','work-entry':'काम नोंद','work-list':'काम यादी','rate-card':'दर कार्ड',expenses:'खर्च',payments:'पेमेंट',invoice:'Invoice',shetkari:'शेतकरी DB',reports:'अहवाल',backup:'Backup',profile:'प्रोफाइल'};
+    document.getElementById('pageTtl').textContent=titles[prev]||prev;
+    render(prev);
+  }
+  history.pushState({page:PAGE},'','');
+});
+
+/* NAVIGATION */
+document.querySelectorAll('.bn-btn[data-page]').forEach(b=>{
+  b.addEventListener('click',()=>{nav(b.dataset.page);});
+});
+function nav(page){
+  if(PAGE&&PAGE!==page)navHistory.push(PAGE);
+  PAGE=page;
+  document.querySelectorAll('.bn-btn[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
+  const titles={dashboard:'डॅशबोर्ड','work-entry':'काम नोंद','work-list':'काम यादी','rate-card':'दर कार्ड',expenses:'खर्च',payments:'पेमेंट',invoice:'Invoice',shetkari:'शेतकरी DB',reports:'अहवाल',backup:'Backup',profile:'प्रोफाइल'};
+  document.getElementById('pageTtl').textContent=titles[page]||page;
+  history.pushState({page:page},'','');
+  render(page);
+}
+window.nav=nav;
+window.openMore=()=>{document.getElementById('moreDrawer').classList.add('open');document.getElementById('moreOverlay').classList.add('show');};
+window.closeMore=()=>{document.getElementById('moreDrawer').classList.remove('open');document.getElementById('moreOverlay').classList.remove('show');};
+window.toggleDark=()=>{DARK=!DARK;localStorage.setItem('tw_dark',DARK);document.documentElement.setAttribute('data-theme',DARK?'dark':'light');};
+
+function render(page){
+  const area=document.getElementById('content');
+  if(!uid()){area.innerHTML='<div class="spin"></div>';return;}
+  area.innerHTML='<div class="spin"></div>';
+  ({dashboard:pgDash,'work-entry':pgWorkEntry,'work-list':pgWorkList,'rate-card':pgRateCard,expenses:pgExpenses,payments:pgPayments,invoice:pgInvoice,shetkari:pgShetkari,reports:pgReports,backup:pgBackup,profile:pgProfile}[page]||pgDash)(area);
+}
+
+/* PROFILE LOAD */
+async function loadProfile(){
+  try{
+    const snap=await getDocs(uq('profiles'));
+    if(snap.empty){
+      const ref=await addDoc(col('profiles'),{uid:uid(),businessName:'माझा ट्रॅक्टर',ownerName:CU.displayName||'',phone:'',upiId:'',address:'',gstin:'',monthlyBudget:0,reminderDays:7,terms:'',lastInvNumber:0,createdAt:today()});
+      PROFILE={_id:ref.id,uid:uid(),businessName:'माझा ट्रॅक्टर',ownerName:CU.displayName||'',phone:'',upiId:'',address:'',gstin:'',monthlyBudget:0,reminderDays:7,terms:'',lastInvNumber:0};
+    }else{
+      PROFILE={_id:snap.docs[0].id,...snap.docs[0].data()};
+    }
+  }catch(e){PROFILE={businessName:'TractorWala',ownerName:'',upiId:'',phone:'',address:'',gstin:'',monthlyBudget:0,reminderDays:7,terms:'',lastInvNumber:0};}
+}
+const gp2=()=>PROFILE||{businessName:'TractorWala',ownerName:'',upiId:'',phone:'',address:'',gstin:'',monthlyBudget:0,reminderDays:7,terms:'',lastInvNumber:0};
+
+async function updateBadge(){
+  try{
+    const snap=await getDocs(uq('works'));let c=0;
+    snap.forEach(d=>{const w=d.data();const p=(w.payments||[]).reduce((s,x)=>s+x.amount,0);if(p<(w.total||0))c++;});
+    const b=document.getElementById('pendBadge');
+    if(b){b.textContent=c;b.style.display=c?'inline-flex':'none';}
+  }catch(e){}
+}
+
+/* ============================================================
+   DASHBOARD
+   ============================================================ */
+async function pgDash(area){
+  try{
+    const[wSnap,eSnap]=await Promise.all([getDocs(uq('works')),getDocs(uq('expenses'))]);
+    const works=[],expenses=[];
+    wSnap.forEach(d=>works.push({...d.data(),_id:d.id}));
+    eSnap.forEach(d=>expenses.push({...d.data(),_id:d.id}));
+
+    const td=today(),mn=ym()+'-01';
+    const mW=works.filter(w=>w.date&&w.date>=mn);
+    const mE=expenses.filter(e=>e.date&&e.date>=mn);
+    const tW=works.filter(w=>w.date===td);
+    const tE=expenses.filter(e=>e.date===td);
+    const mRev=mW.reduce((s,w)=>s+(w.total||0),0);
+    const mExp=mE.reduce((s,e)=>s+(e.amount||0),0);
+    const tRev=tW.reduce((s,w)=>s+(w.total||0),0);
+    const tExp=tE.reduce((s,e)=>s+(e.amount||0),0);
+    const pendW=works.filter(w=>{const p=(w.payments||[]).reduce((s,x)=>s+x.amount,0);return p<(w.total||0);});
+    const totPend=pendW.reduce((s,w)=>{const p=(w.payments||[]).reduce((ss,x)=>ss+x.amount,0);return s+((w.total||0)-p);},0);
+    const recent=works.sort((a,b)=>(b.date||'')>(a.date||'')?1:-1).slice(0,6);
+
+    // Reminder check
+    const reminderDays=PROFILE?.reminderDays||7;
+    if(reminderDays>0){
+      const overdue=pendW.filter(w=>{const d=(new Date()-new Date(w.date+'T00:00:00'))/(1000*60*60*24);return d>=reminderDays;});
+      if(overdue.length>0)setTimeout(()=>toast(`⏰ ${overdue.length} बाकी पेमेंट ${reminderDays}+ दिवसांपासून थकीत आहेत!`,'warn',6000),1000);
+    }
+
+    area.innerHTML=`
+    <!-- Global Search -->
+    <div class="search-wrap" style="margin-bottom:14px">
+      <i class="fas fa-search"></i>
+      <input class="fc" id="globalSearch" placeholder="🔍 ग्राहक / काम / मोबाइल शोधा..." oninput="globalSearchFn(this.value)"/>
+    </div>
+    <div id="globalSearchResults"></div>
+
+    <!-- Quick Actions -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px" class="quick-act-grid-desktop">
+      <button class="quick-act-btn qa-green" onclick="nav('work-entry')"><i class="fas fa-tractor"></i><div class="qa-label">काम नोंद</div><div class="qa-sub">नवीन काम जोडा</div></button>
+      <button class="quick-act-btn qa-red" onclick="nav('expenses')"><i class="fas fa-receipt"></i><div class="qa-label">खर्च नोंद</div><div class="qa-sub">नवीन खर्च जोडा</div></button>
+      <button class="quick-act-btn qa-amber" onclick="nav('payments')"><i class="fas fa-rupee-sign"></i><div class="qa-label">पेमेंट</div><div class="qa-sub">बाकी वसुली</div></button>
+      <button class="quick-act-btn qa-blue" onclick="nav('work-list')"><i class="fas fa-list-alt"></i><div class="qa-label">काम यादी</div><div class="qa-sub">सर्व काम पहा</div></button>
+      <button class="quick-act-btn qa-purple" onclick="nav('invoice')" style="grid-column:1/-1"><i class="fas fa-file-invoice"></i><div class="qa-label">Invoice</div><div class="qa-sub">बिल तयार करा</div></button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stat-grid">
+      <div class="stat"><div class="stat-ico ic-g"><i class="fas fa-rupee-sign"></i></div><div class="stat-body"><div class="stat-lbl">महिना उत्पन्न</div><div class="stat-val">₹${fmt(mRev)}</div><div class="stat-sub">${mW.length} काम</div></div></div>
+      <div class="stat"><div class="stat-ico ic-r"><i class="fas fa-arrow-down"></i></div><div class="stat-body"><div class="stat-lbl">महिना खर्च</div><div class="stat-val">₹${fmt(mExp)}</div><div class="stat-sub">${mE.length} नोंदी</div></div></div>
+      <div class="stat"><div class="stat-ico ${mRev-mExp>=0?'ic-b':'ic-r'}"><i class="fas fa-chart-line"></i></div><div class="stat-body"><div class="stat-lbl">महिना नफा</div><div class="stat-val">₹${fmt(mRev-mExp)}</div><div class="stat-sub">${mRev-mExp>=0?'✅ फायदा':'⚠️ तोटा'}</div></div></div>
+      <div class="stat"><div class="stat-ico ic-a"><i class="fas fa-clock"></i></div><div class="stat-body"><div class="stat-lbl">बाकी पेमेंट</div><div class="stat-val">₹${fmt(totPend)}</div><div class="stat-sub">${pendW.length} ग्राहक</div></div></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:13px;margin-bottom:14px">
+      <div class="card">
+        <div class="card-hdr"><span class="card-ttl">📅 आजचा सारांश</span>
+          <div style="display:flex;gap:5px">
+            <button class="btn btn-xs btn-wa" onclick="shareDailyWA()"><i class="fab fa-whatsapp"></i></button>
+            <button class="btn btn-xs btn-primary" onclick="dlDailyPDF()"><i class="fas fa-file-pdf"></i></button>
+          </div>
+        </div>
+        <div class="rep-card" style="border-radius:8px;padding:14px">
+          <div class="rep-row"><span>उत्पन्न</span><span>₹${fmt(tRev)}</span></div>
+          <div class="rep-row"><span>खर्च</span><span>₹${fmt(tExp)}</span></div>
+          <div class="rep-row"><span><b>नफा</b></span><span><b>₹${fmt(tRev-tExp)}</b></span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><span class="card-ttl">⏳ बाकी पेमेंट</span><button class="btn btn-sm btn-ghost" onclick="nav('payments')">सर्व</button></div>
+        ${pendW.length===0?`<div class="empty"><i class="fas fa-check-circle" style="color:var(--g500)"></i><p>सर्व पेमेंट पूर्ण!</p></div>`:
+        pendW.slice(0,4).map(w=>{const p=(w.payments||[]).reduce((s,x)=>s+x.amount,0);const b=w.total-p;
+          return`<div class="pay-item" style="cursor:pointer;flex-wrap:wrap;gap:6px" onclick="openPayModal('${w._id}')">
+            <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${w.customerName}</div>
+            <div style="font-size:.7rem;color:var(--txt3)">${w.workType} | ${fmtD(w.date)}</div></div>
+            <div class="pay-amt">₹${fmt(b)}</div>
+            ${w.mobile?`<a href="https://wa.me/91${w.mobile}?text=${encodeURIComponent(`🙏 नमस्कार ${w.customerName} जी,\n\nTractorWala – पेमेंट स्मरणपत्र\n\n📋 काम: ${w.workType}\n💰 बाकी रक्कम: ₹${fmt(b)}\n\nकृपया लवकरात लवकर पेमेंट करावे.\n\nधन्यवाद! 🚜`)}" target="_blank" class="btn btn-xs btn-wa btn-ico"><i class="fab fa-whatsapp"></i></a>`:''}
+          </div>`;}).join('')}
+      </div>
+    </div>
+
+    <!-- Recent works -->
+    <div class="card">
+      <div class="card-hdr"><span class="card-ttl">🕒 अलीकडील काम</span><button class="btn btn-sm btn-primary" onclick="nav('work-list')">सर्व पहा</button></div>
+      ${recent.length===0?`<div class="empty"><i class="fas fa-tractor"></i><p>अजून कोणतेही काम नाही.<br><button class="btn btn-sm btn-primary" onclick="nav('work-entry')" style="margin-top:8px">+ काम जोडा</button></p></div>`:`
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>ग्राहक</th><th>काम</th><th>एकूण</th><th>स्थिती</th><th>तारीख</th><th>क्रिया</th></tr></thead>
+        <tbody>${recent.map(w=>{const p=(w.payments||[]).reduce((s,x)=>s+x.amount,0);const b=w.total-p;return`<tr class="${b>0?'pending-tr':''}">
+          <td><b style="font-size:.85rem">${w.customerName}</b><br><small style="color:var(--txt3)">${w.mobile||''}</small></td>
+          <td style="font-size:.82rem">${w.workType}</td>
+          <td><b>₹${fmt(w.total)}</b></td>
+          <td><span class="badge ${b>0?'bg-a':'bg-g'}">${b>0?`₹${fmt(b)} बाकी`:'✅ पूर्ण'}</span></td>
+          <td style="font-size:.78rem;white-space:nowrap">${fmtD(w.date)}</td>
+          <td><div style="display:flex;gap:4px">
+            <button class="btn btn-xs btn-amber btn-ico" onclick="openPayModal('${w._id}')" title="पेमेंट"><i class="fas fa-rupee-sign"></i></button>
+            <button class="btn btn-xs btn-ghost btn-ico" onclick="openInvFor('${w._id}')" title="Invoice"><i class="fas fa-file-invoice"></i></button>
+          </div></td>
+        </tr>`;}).join('')}</tbody>
+      </table></div>`}
+    </div>
+    <div class="moverlay hidden" id="payModalWrap"><div class="modal"><div class="m-head"><span class="m-ttl">💰 पेमेंट</span><button class="m-close" onclick="closeM('payModalWrap')"><i class="fas fa-times"></i></button></div><div class="m-body" id="payModalBody"></div></div></div>`;
+
+    // Expose works for search
+    window._dashWorks=works;
+  }catch(e){area.innerHTML=`<div class="card"><p style="color:var(--red)"><b>Error:</b> ${e.message}</p></div>`;}
+}
+
+window.globalSearchFn=function(q){
+  const res=document.getElementById('globalSearchResults');if(!res)return;
+  if(!q||q.length<2){res.innerHTML='';return;}
+  const works=window._dashWorks||[];
+  const matches=works.filter(w=>(w.customerName||'').toLowerCase().includes(q.toLowerCase())||(w.mobile||'').includes(q)).slice(0,5);
+  res.innerHTML=matches.length===0
+    ?`<div class="card" style="padding:12px;color:var(--txt3);margin-bottom:12px">कोणताही निकाल नाही</div>`
+    :`<div class="card" style="padding:8px;margin-bottom:12px">${matches.map(w=>`
+      <div style="padding:9px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between;align-items:center" onclick="openPayModal('${w._id}');document.getElementById('globalSearchResults').innerHTML=''">
+        <div><b style="font-size:.9rem">${w.customerName}</b><div style="font-size:.72rem;color:var(--txt3)">${w.workType} | ${fmtD(w.date)}</div></div>
+        <b style="color:var(--g700)">₹${fmt(w.total)}</b>
+      </div>`).join('')}</div>`;
+};
+
+/* ============================================================
+   RATE CARD
+   ============================================================ */
+async function pgRateCard(area){
+  const snap=await getDocs(uq('rates'));
+  const rates=[];snap.forEach(d=>rates.push({...d.data(),_id:d.id}));
+  area.innerHTML=`
+  <div class="sec-hdr"><span class="sec-ttl">💳 दर कार्ड</span><button class="btn btn-primary" onclick="openRateM()"><i class="fas fa-plus"></i> नवीन दर</button></div>
+  <div class="card">
+    ${rates.length===0?`<div class="empty"><i class="fas fa-tags"></i><p>अजून कोणताही दर नाही<br><button class="btn btn-sm btn-primary" onclick="openRateM()" style="margin-top:8px">+ पहिला दर जोडा</button></p></div>`:`
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>काम प्रकार</th><th>युनिट</th><th>दर (₹)</th><th>नोट</th><th>क्रिया</th></tr></thead>
+      <tbody>${rates.map(r=>`<tr>
+        <td><b>${r.workType}</b></td>
+        <td><span class="badge bg-b">${r.unit}</span></td>
+        <td><b style="color:var(--g700)">₹${fmt(r.rate)}</b></td>
+        <td style="color:var(--txt3);font-size:.78rem">${r.notes||'—'}</td>
+        <td><div style="display:flex;gap:5px">
+          <button class="btn btn-xs btn-ghost btn-ico" onclick='openRateM(${JSON.stringify(r)})'><i class="fas fa-edit"></i></button>
+          <button class="btn btn-xs btn-danger btn-ico" onclick="delRate('${r._id}')"><i class="fas fa-trash"></i></button>
+        </div></td>
+      </tr>`).join('')}</tbody>
+    </table></div>`}
+  </div>
+  <div class="moverlay hidden" id="rateModal">
+    <div class="modal">
+      <div class="m-head"><span class="m-ttl" id="rateMTtl">नवीन दर</span><button class="m-close" onclick="closeM('rateModal')"><i class="fas fa-times"></i></button></div>
+      <div class="m-body">
+        <input type="hidden" id="rateId"/>
+        <div class="fg"><label class="fl">काम प्रकार *</label><input class="fc" id="rWT" placeholder="उदा: नांगरणी, पेरणी"/></div>
+        <div class="fr2">
+          <div class="fg"><label class="fl">युनिट *</label><select class="fc" id="rUnit"><option>तास</option><option>एकर</option><option>गुंठा</option><option>ट्रिप</option></select></div>
+          <div class="fg"><label class="fl">दर (₹) *</label><input class="fc" type="number" id="rAmt" placeholder="₹"/></div>
+        </div>
+        <div class="fg"><label class="fl">नोट</label><input class="fc" id="rNote" placeholder="वैकल्पिक"/></div>
+      </div>
+      <div class="m-foot"><button class="btn btn-ghost" onclick="closeM('rateModal')">रद्द करा</button><button class="btn btn-primary" onclick="saveRate()"><i class="fas fa-save"></i> सेव्ह</button></div>
+    </div>
+  </div>`;
+}
+window.openRateM=function(r=null){
+  document.getElementById('rateModal').classList.remove('hidden');
+  document.getElementById('rateId').value=r?._id||'';
+  document.getElementById('rateMTtl').textContent=r?'दर संपादित':'नवीन दर';
+  document.getElementById('rWT').value=r?.workType||'';
+  document.getElementById('rUnit').value=r?.unit||'तास';
+  document.getElementById('rAmt').value=r?.rate||'';
+  document.getElementById('rNote').value=r?.notes||'';
+};
+window.saveRate=async function(){
+  const id=document.getElementById('rateId').value;
+  const wt=document.getElementById('rWT').value.trim();
+  const amt=parseFloat(document.getElementById('rAmt').value)||0;
+  if(!wt||!amt){toast('काम प्रकार आणि दर आवश्यक','err');return;}
+  const d={uid:uid(),workType:wt,unit:document.getElementById('rUnit').value,rate:amt,notes:document.getElementById('rNote').value.trim(),updatedAt:today()};
+  try{
+    if(id)await updateDoc(doc(db,'rates',id),d);
+    else await addDoc(col('rates'),{...d,createdAt:today()});
+    closeM('rateModal');toast('दर सेव्ह झाला ✅');render('rate-card');
+  }catch(e){toast('Error: '+e.message,'err');}
+};
+window.delRate=async function(id){
+  if(!confirm('दर हटवायचा आहे का?'))return;
+  await deleteDoc(doc(db,'rates',id));toast('दर हटवला');render('rate-card');
+};
+
+/* ============================================================
+   WORK ENTRY
+   ============================================================ */
+let editWID=null;
+async function pgWorkEntry(area){
+  const[rSnap,sSnap,tSnap]=await Promise.all([getDocs(uq('rates')),getDocs(uq('shetkari')),getDocs(uq('tractors'))]);
+  const rates=[],farmers=[],tractors=[];
+  rSnap.forEach(d=>rates.push({...d.data(),_id:d.id}));
+  sSnap.forEach(d=>farmers.push({...d.data(),_id:d.id}));
+  tSnap.forEach(d=>tractors.push({...d.data(),_id:d.id}));
+
+  // Get past locations for datalist
+  let pastLocs=[];
+  try{const wSnap=await getDocs(uq('works'));wSnap.forEach(d=>{const loc=d.data().location;if(loc&&!pastLocs.includes(loc))pastLocs.push(loc);});}catch(e){}
+
+  area.innerHTML=`
+  <div class="sec-hdr"><span class="sec-ttl">🚜 ${editWID?'काम संपादित':'नवीन काम नोंद'}</span></div>
+  <div class="card" style="max-width:620px">
+    <div class="fr2">
+      <div class="fg"><label class="fl">ग्राहकाचे नाव *</label>
+        <input class="fc" id="wCust" list="farmL" placeholder="नाव टाका किंवा निवडा" oninput="autoFillFarmer()"/>
+        <datalist id="farmL">${farmers.map(f=>`<option value="${f.name}" data-mob="${f.mobile||''}">`).join('')}</datalist>
+      </div>
+      <div class="fg"><label class="fl">मोबाइल</label><input class="fc" type="tel" id="wMob" placeholder="मोबाइल नंबर"/></div>
+    </div>
+    <div class="fg"><label class="fl">काम प्रकार *</label>
+      <select class="fc" id="wWT" onchange="autoRate()">
+        <option value="">— काम निवडा —</option>
+        ${rates.map(r=>`<option value="${r.workType}" data-rate="${r.rate}" data-unit="${r.unit}">${r.workType} (₹${fmt(r.rate)}/${r.unit})</option>`).join('')}
+        <option value="__other__">इतर (स्वतः टाका)</option>
+      </select>
+    </div>
+    <div class="fg hidden" id="custWTG"><label class="fl">काम नाव *</label><input class="fc" id="wCustWT" placeholder="काम नाव लिहा"/></div>
+    <div class="fr3">
+      <div class="fg"><label class="fl">युनिट *</label>
+        <select class="fc" id="wUnit" onchange="calcTot()"><option>तास</option><option>एकर</option><option>गुंठा</option><option>ट्रिप</option></select></div>
+      <div class="fg"><label class="fl">प्रमाण *</label><input class="fc" type="number" id="wQty" step="0.1" min="0" placeholder="0" oninput="calcTot()"/></div>
+      <div class="fg"><label class="fl">दर (₹) *</label><input class="fc" type="number" id="wRate" placeholder="₹" oninput="calcTot()"/></div>
+    </div>
+    <div class="fr2">
+      <div class="fg"><label class="fl">एकूण रक्कम</label><div class="total-box" id="wTot">₹ 0</div></div>
+      <div class="fg"><label class="fl">तारीख *</label><input class="fc" type="date" id="wDate" value="${today()}"/></div>
+    </div>
+    <div class="fr2">
+      <div class="fg"><label class="fl">काम ठिकाण / गाव</label>
+        <input class="fc" id="wLoc" list="locList" placeholder="गाव / शेत / ठिकाण"/>
+        <datalist id="locList">${pastLocs.map(l=>`<option value="${l}">`).join('')}</datalist>
+      </div>
+      <div class="fg"><label class="fl">ट्रॅक्टर नंबर</label>
+        <select class="fc" id="wTractor">
+          <option value="">— ट्रॅक्टर निवडा —</option>
+          ${tractors.map(t=>`<option value="${t.tractorNumber||t._id}">${t.tractorNumber||''}${t.model?' — '+t.model:''}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+    <div class="fg"><label class="fl">काम स्थिती</label>
+      <select class="fc" id="wStatus">
+        <option value="scheduled">📅 नियोजित (Scheduled)</option>
+        <option value="in_progress">🔄 सुरू आहे (In Progress)</option>
+        <option value="completed" selected>✅ पूर्ण (Completed)</option>
+      </select>
+    </div>
+    <div class="fg"><label class="fl">नोट (वैकल्पिक)</label><textarea class="fc" id="wNote" rows="2" placeholder="अतिरिक्त माहिती"></textarea></div>
+
+    <!-- Advance Payment -->
+    <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:4px">
+      <div style="font-size:.82rem;font-weight:700;margin-bottom:10px;color:var(--g700)">💰 आगाऊ पेमेंट (वैकल्पिक)</div>
+      <div class="fr2">
+        <div class="fg"><label class="fl">आगाऊ रक्कम (₹)</label><input class="fc" type="number" id="wAdvance" placeholder="₹ 0"/></div>
+        <div class="fg"><label class="fl">पेमेंट पद्धत</label>
+          <select class="fc" id="wAdvMode">
+            <option value="cash">💵 रोख</option>
+            <option value="upi">📱 UPI</option>
+            <option value="bank">🏦 बँक</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:4px">
+      <button class="btn btn-primary btn-lg" id="saveWorkBtn" onclick="saveWork()"><i class="fas fa-save"></i> काम सेव्ह करा</button>
+      <button class="btn btn-ghost" onclick="resetWForm()"><i class="fas fa-redo"></i> रिसेट</button>
+    </div>
+  </div>`;
+
+  document.getElementById('wWT').addEventListener('change',function(){
+    document.getElementById('custWTG').classList.toggle('hidden',this.value!=='__other__');
+  });
+
+  if(editWID){
+    try{
+      const snap=await getDocs(uq('works'));
+      snap.forEach(d=>{if(d.id===editWID){
+        const w=d.data();
+        document.getElementById('wCust').value=w.customerName||'';
+        document.getElementById('wMob').value=w.mobile||'';
+        document.getElementById('wUnit').value=w.unit||'तास';
+        document.getElementById('wQty').value=w.quantity||0;
+        document.getElementById('wRate').value=w.rate||0;
+        document.getElementById('wDate').value=w.date||today();
+        document.getElementById('wNote').value=w.notes||'';
+        document.getElementById('wLoc').value=w.location||'';
+        document.getElementById('wStatus').value=w.status||'completed';
+        if(w.tractorNo)document.getElementById('wTractor').value=w.tractorNo;
+        document.getElementById('wTot').textContent='₹ '+fmt(w.total||0);
+        let found=false;
+        Array.from(document.getElementById('wWT').options).forEach(o=>{if(o.value===w.workType)found=true;});
+        if(found){document.getElementById('wWT').value=w.workType;}
+        else{document.getElementById('wWT').value='__other__';document.getElementById('custWTG').classList.remove('hidden');document.getElementById('wCustWT').value=w.workType||'';}
+      }});
+    }catch(e){}
+  }
+}
+window.autoFillFarmer=function(){
+  const v=document.getElementById('wCust').value;
+  const opt=document.querySelector(`#farmL option[value="${v}"]`);
+  if(opt&&opt.dataset.mob&&!document.getElementById('wMob').value){
+    document.getElementById('wMob').value=opt.dataset.mob;
+  }
+};
+window.autoRate=function(){
+  const opt=document.getElementById('wWT').selectedOptions[0];
+  if(opt?.dataset.rate){document.getElementById('wRate').value=opt.dataset.rate;document.getElementById('wUnit').value=opt.dataset.unit||'तास';}
+  calcTot();
+};
+window.calcTot=function(){
+  const q=parseFloat(document.getElementById('wQty')?.value)||0;
+  const r=parseFloat(document.getElementById('wRate')?.value)||0;
+  const el=document.getElementById('wTot');
+  if(el)el.textContent='₹ '+fmt(q*r);
+};
+window.resetWForm=function(){
+  editWID=null;
+  ['wCust','wMob','wQty','wRate','wNote','wCustWT','wLoc','wAdvance'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const wt=document.getElementById('wWT');if(wt)wt.value='';
+  const ud=document.getElementById('wUnit');if(ud)ud.value='तास';
+  const dt=document.getElementById('wDate');if(dt)dt.value=today();
+  const tot=document.getElementById('wTot');if(tot)tot.textContent='₹ 0';
+  const st=document.getElementById('wStatus');if(st)st.value='completed';
+  document.getElementById('custWTG')?.classList.add('hidden');
+};
+window.saveWork=async function(){
+  if(isSaving)return;
+  isSaving=true;
+  const btn=document.getElementById('saveWorkBtn');
+  if(btn){btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> सेव्ह होत आहे...';}
+  try{
+    const wt=document.getElementById('wWT').value==='__other__'?document.getElementById('wCustWT').value.trim():document.getElementById('wWT').value;
+    const cust=document.getElementById('wCust').value.trim();
+    const mob=document.getElementById('wMob').value.trim();
+    const unit=document.getElementById('wUnit').value;
+    const qty=parseFloat(document.getElementById('wQty').value)||0;
+    const rate=parseFloat(document.getElementById('wRate').value)||0;
+    const date=document.getElementById('wDate').value;
+    const note=document.getElementById('wNote').value.trim();
+    const location=document.getElementById('wLoc')?.value.trim()||'';
+    const tractorNo=document.getElementById('wTractor')?.value||'';
+    const status=document.getElementById('wStatus')?.value||'completed';
+    const advance=parseFloat(document.getElementById('wAdvance')?.value)||0;
+    const advMode=document.getElementById('wAdvMode')?.value||'cash';
+
+    if(!cust){toast('ग्राहकाचे नाव आवश्यक','err');return;}
+    if(!wt){toast('काम प्रकार आवश्यक','err');return;}
+    if(!qty||!rate){toast('प्रमाण आणि दर आवश्यक','err');return;}
+    if(!date){toast('तारीख आवश्यक','err');return;}
+
+    // Duplicate check
+    if(!editWID){
+      try{
+        const existSnap=await getDocs(uq('works'));
+        let dup=false;
+        existSnap.forEach(d=>{const w=d.data();if(w.customerName===cust&&w.date===date&&w.workType===wt)dup=true;});
+        if(dup){const proceed=confirm(`⚠️ ${cust} साठी ${fmtD(date)} रोजी "${wt}" आधीच नोंदवले आहे. तरीही जोडायचे आहे का?`);if(!proceed)return;}
+      }catch(e){}
+    }
+
+    const total=qty*rate;
+    const initialPayments=advance>0?[{amount:advance,date:date,note:'आगाऊ पेमेंट',mode:advMode}]:[];
+    const data={uid:uid(),customerName:cust,mobile:mob,workType:wt,unit,quantity:qty,rate,total,date,notes:note,location,tractorNo,status,updatedAt:today()};
+
+    if(editWID){
+      const snap=await getDocs(uq('works'));
+      let existing=[];
+      snap.forEach(d=>{if(d.id===editWID)existing=(d.data().payments||[]);});
+      await updateDoc(doc(db,'works',editWID),{...data,payments:existing});
+      toast('काम अपडेट झाले ✅');
+    }else{
+      await addDoc(col('works'),{...data,payments:initialPayments,createdAt:today()});
+      if(cust&&mob){
+        try{
+          const ss=await getDocs(uq('shetkari'));
+          let fnd=false;
+          ss.forEach(d=>{if(d.data().name===cust)fnd=true;});
+          if(!fnd)await addDoc(col('shetkari'),{uid:uid(),name:cust,mobile:mob,village:location||'',land:0,notes:'',createdAt:today()});
+        }catch(se){}
+      }
+      toast('काम सेव्ह झाले ✅');
+    }
+    editWID=null;
+    resetWForm();
+    updateBadge();
+  }catch(e){toast('Error: '+e.message,'err');}
+  finally{
+    isSaving=false;
+    if(btn){btn.disabled=false;btn.innerHTML='<i class="fas fa-save"></i> काम सेव्ह करा';}
+  }
+};
+
+/* ============================================================
+   WORK LIST
+   ============================================================ */
+let wlF='month',wlS='',wlSt='',wlEn='',wlSort={col:'date',dir:'desc'};
+async function pgWorkList(area){
+  const snap=await getDocs(uq('works'));
+  let works=[];snap.forEach(d=>works.push({...d.data(),_id:d.id}));
+  works.sort((a,b)=>(b.date||'')>(a.date||'')?1:-1);
+  let filtered=filterDates(works,wlF,wlSt,wlEn);
+  if(wlS)filtered=filtered.filter(w=>(w.customerName||'').toLowerCase().includes(wlS.toLowerCase())||(w.workType||'').toLowerCase().includes(wlS.toLowerCase())||(w.mobile||'').includes(wlS));
+
+  // Sort
+  filtered.sort((a,b)=>{
+    let va=a[wlSort.col]||'',vb=b[wlSort.col]||'';
+    if(typeof va==='number')return wlSort.dir==='asc'?va-vb:vb-va;
+    return wlSort.dir==='asc'?String(va).localeCompare(String(vb)):String(vb).localeCompare(String(va));
+  });
+
+  const totRev=filtered.reduce((s,w)=>s+(w.total||0),0);
+  const totPaid=filtered.reduce((s,w)=>s+(w.payments||[]).reduce((p,x)=>p+x.amount,0),0);
+  window._wlFiltered=filtered;
+
+  const sortHdr=(col,lbl)=>`<span style="cursor:pointer;user-select:none" onclick="wlSort={col:'${col}',dir:wlSort?.col==='${col}'&&wlSort.dir==='asc'?'desc':'asc'};render('work-list')">${lbl}${wlSort?.col===col?wlSort.dir==='asc'?' ↑':' ↓':' ↕'}</span>`;
+
+  area.innerHTML=`
+  <div class="sec-hdr"><span class="sec-ttl">📋 काम यादी</span>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-sm" onclick="exportWorkCSV()"><i class="fas fa-file-csv"></i> CSV</button>
+      <button class="btn btn-primary btn-sm" onclick="nav('work-entry')"><i class="fas fa-plus"></i> नवीन</button>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:13px">
+    <div class="filter-bar">
+      ${['all','today','week','month','custom'].map(f=>`<button class="f-btn ${wlF===f?'active':''}" onclick="wlF='${f}';render('work-list')">${{all:'सर्व',today:'आज',week:'आठवडा',month:'महिना',custom:'सानुकूल'}[f]}</button>`).join('')}
+    </div>
+    ${wlF==='custom'?`<div class="fr2" style="margin-bottom:10px"><div class="fg" style="margin:0"><input type="date" class="fc" value="${wlSt}" onchange="wlSt=this.value;render('work-list')"/></div><div class="fg" style="margin:0"><input type="date" class="fc" value="${wlEn}" onchange="wlEn=this.value;render('work-list')"/></div></div>`:''}
+    <div class="search-wrap"><i class="fas fa-search"></i><input class="fc" placeholder="ग्राहक / काम / मोबाइल शोधा..." value="${wlS}" oninput="wlS=this.value;render('work-list')"/></div>
+  </div>
+  <div class="stat-grid" style="margin-bottom:12px">
+    <div class="stat"><div class="stat-ico ic-g"><i class="fas fa-rupee-sign"></i></div><div class="stat-body"><div class="stat-lbl">एकूण</div><div class="stat-val">₹${fmt(totRev)}</div></div></div>
+    <div class="stat"><div class="stat-ico ic-b"><i class="fas fa-check"></i></div><div class="stat-body"><div class="stat-lbl">भरले</div><div class="stat-val">₹${fmt(totPaid)}</div></div></div>
+    <div class="stat"><div class="stat-ico ic-a"><i class="fas fa-clock"></i></div><div class="stat-body"><div class="stat-lbl">बाकी</div><div class="stat-val">₹${fmt(totRev-totPaid)}</div></div></div>
+    <div class="stat"><div class="stat-ico ic-r"><i class="fas fa-list"></i></div><div class="stat-body"><div class="stat-lbl">काम</div><div class="stat-val">${filtered.length}</div></div></div>
+  </div>
+  <div class="card">
+    ${filtered.length===0?`<div class="empty"><i class="fas fa-tractor"></i><p>कोणतेही काम सापडले नाही</p></div>`:`
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>${sortHdr('customerName','ग्राहक')}</th><th>काम</th><th>${sortHdr('total','एकूण')}</th><th>स्थिती</th><th>${sortHdr('date','तारीख')}</th><th>क्रिया</th></tr></thead>
+      <tbody>${filtered.map(w=>{const p=(w.payments||[]).reduce((s,x)=>s+x.amount,0);const b=w.total-p;
+        const statusLabel={scheduled:'📅 नियोजित',in_progress:'🔄 सुरू',completed:'✅ पूर्ण'}[w.status||'completed']||'✅ पूर्ण';
+        return`<tr class="${b>0?'pending-tr':''}">
+          <td><b style="font-size:.85rem">${w.customerName}</b>${w.mobile?`<br><small style="color:var(--txt3)">${w.mobile}</small>`:''}${w.location?`<br><small style="color:var(--txt3)">📍${w.location}</small>`:''}</td>
+          <td style="font-size:.82rem">${w.workType}${w.tractorNo?`<br><small style="color:var(--txt3)">🚜${w.tractorNo}</small>`:''}</td>
+          <td><b>₹${fmt(w.total)}</b></td>
+          <td><span class="badge ${b>0?'bg-a':'bg-g'}">${b>0?`₹${fmt(b)} बाकी`:'✅ पूर्ण'}</span><br><span style="font-size:.65rem;color:var(--txt3)">${statusLabel}</span></td>
+          <td style="font-size:.78rem;white-space:nowrap">${fmtD(w.date)}</td>
+          <td><div style="display:flex;gap:4px;flex-wrap:wrap">
+            <button class="btn btn-xs btn-amber btn-ico" onclick="openPayModal('${w._id}')" title="पेमेंट"><i class="fas fa-rupee-sign"></i></button>
+            <button class="btn btn-xs btn-ghost btn-ico" onclick="openInvFor('${w._id}')" title="Invoice"><i class="fas fa-file-invoice"></i></button>
+            <button class="btn btn-xs btn-ghost btn-ico" onclick="editWork('${w._id}')" title="संपादित"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-xs btn-danger btn-ico" onclick="delWork('${w._id}')" title="हटवा"><i class="fas fa-trash"></i></button>
+          </div></td>
+        </tr>`;}).join('')}</tbody>
+    </table></div>`}
+  </div>
+  <div class="moverlay hidden" id="payModalWrap"><div class="modal"><div class="m-head"><span class="m-ttl">💰 पेमेंट</span><button class="m-close" onclick="closeM('payModalWrap')"><i class="fas fa-times"></i></button></div><div class="m-body" id="payModalBody"></div></div></div>`;
+}
+window.exportWorkCSV=function(){
+  const filtered=window._wlFiltered||[];
+  const headers=['ग्राहक','मोबाइल','काम','युनिट','प्रमाण','दर','एकूण','भरले','बाकी','तारीख','स्थिती','ठिकाण','ट्रॅक्टर'];
+  const rows=filtered.map(w=>{const paid=(w.payments||[]).reduce((s,x)=>s+x.amount,0);
+    return[w.customerName,w.mobile||'',w.workType,w.unit,w.quantity,w.rate,w.total,paid,w.total-paid,w.date,w.status||'completed',w.location||'',w.tractorNo||''].join(',');
+  });
+  const csv=[headers.join(','),...rows].join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`TractorWala_KaamYadi_${today()}.csv`;a.click();
+  toast('CSV डाउनलोड झाले ✅');
+};
+window.editWork=function(id){editWID=id;nav('work-entry');};
+window.delWork=async function(id){
+  if(!confirm('हे काम कायमचे हटवायचे आहे का?'))return;
+  await deleteDoc(doc(db,'works',id));toast('काम हटवले','warn');render('work-list');updateBadge();
+};
+
+/* PAY MODAL */
+window.openPayModal=async function(workId){
+  const wrap=document.getElementById('payModalWrap');
+  const body=document.getElementById('payModalBody');
+  if(!wrap||!body)return;
+  wrap.classList.remove('hidden');
+  body.innerHTML='<div class="spin"></div>';
+  const modeIcon={cash:'💵',upi:'📱',bank:'🏦',cheque:'📝'};
+  try{
+    const snap=await getDocs(uq('works'));
+    let w=null;snap.forEach(d=>{if(d.id===workId)w={...d.data(),_id:d.id};});
+    if(!w){body.innerHTML='<p>काम सापडले नाही</p>';return;}
+    const paid=(w.payments||[]).reduce((s,x)=>s+x.amount,0);
+    const bal=(w.total||0)-paid;
+    const pct=w.total?Math.min(100,paid/w.total*100):100;
+    body.innerHTML=`
+    <div style="margin-bottom:16px">
+      <div style="font-size:1rem;font-weight:700;margin-bottom:4px">${w.customerName}</div>
+      <div style="font-size:.78rem;color:var(--txt3)">${w.workType} | ${fmtD(w.date)}${w.location?' | 📍'+w.location:''}</div>
+      <div style="display:flex;justify-content:space-between;margin:10px 0;flex-wrap:wrap;gap:8px">
+        <div><div style="font-size:.7rem;color:var(--txt3)">एकूण</div><div style="font-weight:800;font-size:1.1rem">₹${fmt(w.total)}</div></div>
+        <div><div style="font-size:.7rem;color:var(--txt3)">भरले</div><div style="font-weight:800;font-size:1.1rem;color:var(--g700)">₹${fmt(paid)}</div></div>
+        <div><div style="font-size:.7rem;color:var(--txt3)">बाकी</div><div style="font-weight:800;font-size:1.1rem;color:${bal>0?'var(--amber-d)':'var(--g700)'}">₹${fmt(bal)}</div></div>
+      </div>
+      <div class="prog" style="margin-top:8px"><div class="prog-bar" style="width:${pct}%"></div></div>
+    </div>
+
+    ${(w.payments||[]).length>0?`<div style="margin-bottom:14px">
+      <div style="font-size:.78rem;font-weight:700;color:var(--txt2);margin-bottom:7px">📋 पेमेंट इतिहास</div>
+      <div class="pay-hist">${(w.payments||[]).map((px,i)=>`
+        <div class="pay-item">
+          <span>${modeIcon[px.mode]||'💵'}</span>
+          <div style="flex:1"><div class="pay-amt">₹${fmt(px.amount)}</div>${px.note?`<div style="font-size:.7rem;color:var(--txt3)">${px.note}</div>`:''}</div>
+          <div class="pay-dt">${fmtD(px.date)}</div>
+          <button class="btn btn-xs btn-danger btn-ico" onclick="delPayment('${workId}',${i})"><i class="fas fa-trash"></i></button>
+        </div>`).join('')}</div>
+    </div>`:''}
+
+    ${bal>0?`<div style="border-top:1px solid var(--border);padding-top:14px">
+      <div style="font-size:.88rem;font-weight:700;margin-bottom:11px">+ नवीन पेमेंट जोडा</div>
+      <div class="fr2">
+        <div class="fg"><label class="fl">रक्कम (₹) *</label><input class="fc" type="number" id="npAmt" placeholder="₹" max="${bal}"/></div>
+        <div class="fg"><label class="fl">तारीख</label><input class="fc" type="date" id="npDate" value="${today()}"/></div>
+      </div>
+      <div class="fg"><label class="fl">नोट</label><input class="fc" id="npNote" placeholder="वैकल्पिक"/></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        ${['💵 रोख','📱 UPI','🏦 बँक ट्रान्सफर','📝 धनादेश'].map((m,i)=>`
+          <label style="display:flex;align-items:center;gap:5px;cursor:pointer;background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:7px 12px;font-size:.82rem;font-weight:600">
+            <input type="radio" name="payMode" value="${['cash','upi','bank','cheque'][i]}" ${i===0?'checked':''} style="accent-color:var(--brand)"/> ${m}
+          </label>`).join('')}
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="addPay('${workId}',false)"><i class="fas fa-plus"></i> पेमेंट जोडा</button>
+        <button class="btn btn-amber" onclick="addPay('${workId}',true)"><i class="fas fa-check"></i> पूर्ण भरा (₹${fmt(bal)})</button>
+        ${w.mobile?`<a href="https://wa.me/91${w.mobile}?text=${encodeURIComponent(`🙏 नमस्कार ${w.customerName} जी,\n\nTractorWala – पेमेंट स्मरणपत्र 🚜\n\n📋 काम: ${w.workType}\n💰 बाकी: ₹${fmt(bal)}\n\nकृपया लवकर पेमेंट करावे.\n\n🙏 ${gp2().businessName||'TractorWala'}`)}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i> WhatsApp</a>`:''}
+      </div>
+    </div>`:`<div style="text-align:center;padding:18px 0;color:var(--g700);font-weight:700"><i class="fas fa-check-circle" style="font-size:2.2rem;margin-bottom:8px;display:block"></i>पेमेंट पूर्ण! 🎉</div>`}
+    <div id="payReceiptArea"></div>`;
+  }catch(e){body.innerHTML=`<p style="color:var(--red)">Error: ${e.message}</p>`;}
+};
+
+window.addPay=async function(wid,full){
+  try{
+    const snap=await getDocs(uq('works'));
+    let w=null;snap.forEach(d=>{if(d.id===wid)w={...d.data(),_id:d.id};});
+    if(!w)return;
+    const paid=(w.payments||[]).reduce((s,x)=>s+x.amount,0);
+    const bal=(w.total||0)-paid;
+    const amt=full?bal:parseFloat(document.getElementById('npAmt')?.value)||0;
+    if(!amt||amt<=0){toast('रक्कम आवश्यक','err');return;}
+    if(amt>bal+0.01){toast(`जास्तीत जास्त ₹${fmt(bal)} भरता येते`,'warn');return;}
+    const mode=document.querySelector('input[name="payMode"]:checked')?.value||'cash';
+    const pay={amount:amt,date:document.getElementById('npDate')?.value||today(),note:document.getElementById('npNote')?.value||'',mode};
+    await updateDoc(doc(db,'works',wid),{payments:[...(w.payments||[]),pay],updatedAt:today()});
+    toast('पेमेंट जोडले ✅');
+    updateBadge();
+    // Show receipt
+    const modeMap={cash:'रोख',upi:'UPI',bank:'बँक ट्रान्सफर',cheque:'धनादेश'};
+    const modeIcon={cash:'💵',upi:'📱',bank:'🏦',cheque:'📝'};
+    const ra=document.getElementById('payReceiptArea');
+    if(ra)ra.innerHTML=`<div style="background:var(--surface2);border-radius:10px;padding:16px;text-align:center;margin-top:14px;border:2px dashed var(--g400)">
+      <div style="font-size:1.2rem;margin-bottom:4px">✅ पेमेंट पावती</div>
+      <div style="font-size:.82rem;color:var(--txt2)">${w.customerName} — ₹${fmt(amt)} — ${fmtD(today())}</div>
+      <div style="font-size:.78rem;color:var(--txt3);margin-top:4px">पद्धत: ${modeIcon[mode]||''} ${modeMap[mode]||mode}</div>
+      <button class="btn btn-wa btn-sm btn-full" style="margin-top:10px" onclick="sharePayReceiptWA('${w.customerName}',${amt},'${mode}','${w.workType}')">
+        <i class="fab fa-whatsapp"></i> पावती WhatsApp वर पाठवा
+      </button>
+    </div>`;
+    openPayModal(wid);
+  }catch(e){toast('Error: '+e.message,'err');}
+};
+window.sharePayReceiptWA=function(name,amt,mode,work){
+  const modeMap={cash:'रोख',upi:'UPI',bank:'बँक ट्रान्सफर',cheque:'धनादेश'};
+  const msg=`✅ *पेमेंट पावती — TractorWala*\n━━━━━━━━━━━━━━━\n👤 नाव: *${name}*\n📋 काम: ${work}\n💰 रक्कम: *₹${fmt(amt)}*\n💳 पद्धत: ${modeMap[mode]||mode}\n📅 तारीख: ${new Date().toLocaleDateString('mr-IN')}\n━━━━━━━━━━━━━━━\n🙏 धन्यवाद! TractorWala v4.0`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,'_blank');
+};
+window.delPayment=async function(wid,idx){
+  if(!confirm('पेमेंट हटवायचे आहे का?'))return;
+  try{
+    const snap=await getDocs(uq('works'));
+    let w=null;snap.forEach(d=>{if(d.id===wid)w={...d.data()};});
+    if(!w)return;
+    const pays=[...(w.payments||[])];pays.splice(idx,1);
+    await updateDoc(doc(db,'works',wid),{payments:pays});
+    toast('पेमेंट हटवले');updateBadge();openPayModal(wid);
+  }catch(e){toast('Error: '+e.message,'err');}
+};
+
+/* ============================================================
+   PAYMENTS PAGE
+   ============================================================ */
+let paySearch='';
+async function pgPayments(area){
+  const snap=await getDocs(uq('works'));
+  let works=[];snap.forEach(d=>works.push({...d.data(),_id:d.id}));
+  works.sort((a,b)=>(b.date||'')>(a.date||'')?1:-1);
+  const pend=works.filter(w=>{const p=(w.payments||[]).reduce((s,x)=>s+x.amount,0);return p<(w.total||0);});
+  const done=works.filter(w=>{const p=(w.payments||[]).reduce((s,x)=>s+x.amount,0);return p>=(w.total||0);});
+  window._payPend=pend;window._payDone=done;
+
+  area.innerHTML=`
+  <div class="sec-hdr"><span class="sec-ttl">💰 पेमेंट व्यवस्थापन</span></div>
+  <div class="search-wrap" style="margin-bottom:12px">
+    <i class="fas fa-search"></i>
+    <input class="fc" id="paySearch" placeholder="ग्राहक नाव / मोबाइल शोधा..." value="${paySearch}" oninput="paySearch=this.value;filterPayList()"/>
+  </div>
+  <div class="tabs"><button class="tab active" id="tabP" onclick="swTab('pend')">⏳ बाकी (${pend.length})</button><button class="tab" id="tabD" onclick="swTab('done')">✅ पूर्ण (${done.length})</button></div>
+  <div id="payTabArea">${renderPayList(paySearch?pend.filter(w=>(w.customerName||'').toLowerCase().includes(paySearch.toLowerCase())||(w.mobile||'').includes(paySearch)):pend,'pend')}</div>
+  <div class="moverlay hidden" id="payModalWrap"><div class="modal"><div class="m-head"><span class="m-ttl">💰 पेमेंट</span><button class="m-close" onclick="closeM('payModalWrap')"><i class="fas fa-times"></i></button></div><div class="m-body" id="payModalBody"></div></div></div>`;
+}
+window.filterPayList=function(){
+  const q=paySearch;
+  const tab=document.getElementById('tabP')?.classList.contains('active')?'pend':'done';
+  const src=tab==='pend'?(window._payPend||[]):(window._payDone||[]);
+  const filtered=q?src.filter(w=>(w.customerName||'').toLowerCase().includes(q.toLowerCase())||(w.mobile||'').includes(q)):src;
+  document.getElementById('payTabArea').innerHTML=renderPayList(filtered,tab);
+};
+function renderPayList(works,type){
+  if(!works.length)return`<div class="empty"><i class="fas fa-${type==='pend'?'clock':'check-circle'}"></i><p>कोणताही ${type==='pend'?'बाकी':'पूर्ण'} रेकॉर्ड नाही</p></div>`;
+  return`<div style="display:flex;flex-direction:column;gap:10px">${works.map(w=>{
+    const p=(w.payments||[]).reduce((s,x)=>s+x.amount,0);const b=(w.total||0)-p;const pct=w.total?Math.min(100,p/w.total*100):100;
+    return`<div class="card" style="padding:14px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap">
+        <div><div style="font-weight:700;font-size:.95rem">${w.customerName}</div>
+        <div style="font-size:.74rem;color:var(--txt3)">${w.workType} | ${fmtD(w.date)} ${w.mobile?'| 📞 '+w.mobile:''}${w.location?' | 📍'+w.location:''}</div></div>
+        <div style="text-align:right"><div style="font-size:.7rem;color:var(--txt3)">₹${fmt(w.total)}</div>
+        <div style="font-weight:800;font-size:1rem;color:${b>0?'var(--amber-d)':'var(--g700)'}">${b>0?'₹'+fmt(b)+' बाकी':'✅ पूर्ण'}</div></div>
+      </div>
+      <div class="prog" style="margin:9px 0"><div class="prog-bar" style="width:${pct}%"></div></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        ${type==='pend'?`<button class="btn btn-sm btn-primary" onclick="openPayModal('${w._id}')"><i class="fas fa-plus"></i> पेमेंट</button>`:''}
+        ${w.mobile?`<a href="https://wa.me/91${w.mobile}?text=${encodeURIComponent(`🙏 नमस्कार ${w.customerName} जी,\n\n💳 TractorWala पेमेंट स्मरणपत्र\n\n📋 काम: ${w.workType}\n⚠️ बाकी: ₹${fmt(b)}\n\nकृपया लवकर पेमेंट करावे. 🙏\n${gp2().businessName||'TractorWala'}`)}" target="_blank" class="btn btn-sm btn-wa"><i class="fab fa-whatsapp"></i> WA</a>
+        <a href="tel:${w.mobile}" class="btn btn-sm btn-call"><i class="fas fa-phone"></i> कॉल</a>`:''}
+        <button class="btn btn-sm btn-ghost" onclick="openInvFor('${w._id}')"><i class="fas fa-file-invoice"></i> Invoice</button>
+      </div>
+    </div>`;}).join('')}</div>`;
+}
+window.swTab=function(t){
+  document.getElementById('tabP').classList.toggle('active',t==='pend');
+  document.getElementById('tabD').classList.toggle('active',t==='done');
+  const q=paySearch;
+  const src=t==='pend'?(window._payPend||[]):(window._payDone||[]);
+  const filtered=q?src.filter(w=>(w.customerName||'').toLowerCase().includes(q.toLowerCase())||(w.mobile||'').includes(q)):src;
+  document.getElementById('payTabArea').innerHTML=renderPayList(filtered,t);
+};
+
+/* ============================================================
+   EXPENSES
+   ============================================================ */
+let exF='month',exS='',exSt='',exEn='';
+async function pgExpenses(area){
+  const[snap,wSnap]=await Promise.all([getDocs(uq('expenses')),getDocs(uq('works'))]);
+  let exps=[],works=[];
+  snap.forEach(d=>exps.push({...d.data(),_id:d.id}));
+  wSnap.forEach(d=>works.push({...d.data(),_id:d.id}));
+  exps.sort((a,b)=>(b.date||'')>(a.date||'')?1:-1);
+  let filtered=filterDates(exps,exF,exSt,exEn);
+  if(exS)filtered=filtered.filter(e=>(e.description||'').toLowerCase().includes(exS.toLowerCase())||(e.category||'').toLowerCase().includes(exS.toLowerCase()));
+  const total=filtered.reduce((s,e)=>s+(e.amount||0),0);
+  const catMap={};filtered.forEach(e=>{catMap[e.category||'इतर']=(catMap[e.category||'इतर']||0)+(e.amount||0);});
+  const cats=Object.entries(catMap).sort((a,b)=>b[1]-a[1]);
+  window._expWorks=works;
+
+  area.innerHTML=`
+  <div class="sec-hdr"><span class="sec-ttl">💸 खर्च</span><button class="btn btn-primary" onclick="openExpM()"><i class="fas fa-plus"></i> नवीन खर्च</button></div>
+  <div class="card" style="margin-bottom:12px">
+    <div class="filter-bar">
+      ${['all','today','week','month','custom'].map(f=>`<button class="f-btn ${exF===f?'active':''}" onclick="exF='${f}';render('expenses')">${{all:'सर्व',today:'आज',week:'आठवडा',month:'महिना',custom:'सानुकूल'}[f]}</button>`).join('')}
+    </div>
+    ${exF==='custom'?`<div class="fr2" style="margin-bottom:10px"><div class="fg" style="margin:0"><input type="date" class="fc" value="${exSt}" onchange="exSt=this.value;render('expenses')"/></div><div class="fg" style="margin:0"><input type="date" class="fc" value="${exEn}" onchange="exEn=this.value;render('expenses')"/></div></div>`:''}
+    <div class="search-wrap"><i class="fas fa-search"></i><input class="fc" placeholder="खर्च शोधा..." value="${exS}" oninput="exS=this.value;render('expenses')"/></div>
+  </div>
+  <div class="stat-grid" style="margin-bottom:12px">
+    <div class="stat"><div class="stat-ico ic-r"><i class="fas fa-rupee-sign"></i></div><div class="stat-body"><div class="stat-lbl">एकूण खर्च</div><div class="stat-val">₹${fmt(total)}</div></div></div>
+    <div class="stat"><div class="stat-ico ic-g"><i class="fas fa-list"></i></div><div class="stat-body"><div class="stat-lbl">नोंदी</div><div class="stat-val">${filtered.length}</div></div></div>
+    <div class="stat"><div class="stat-ico ic-b"><i class="fas fa-tags"></i></div><div class="stat-body"><div class="stat-lbl">श्रेणी</div><div class="stat-val">${cats.length}</div></div></div>
+    <div class="stat"><div class="stat-ico ic-a"><i class="fas fa-chart-pie"></i></div><div class="stat-body"><div class="stat-lbl">सर्वात मोठा</div><div class="stat-val" style="font-size:1rem">${cats[0]?cats[0][0]:'—'}</div></div></div>
+  </div>
+  ${cats.length>0?`<div class="card" style="margin-bottom:12px">
+    <div class="card-hdr"><span class="card-ttl">📊 श्रेणीनुसार</span></div>
+    ${cats.map(([cat,amt])=>`<div style="margin-bottom:9px">
+      <div style="display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:3px"><span style="font-weight:600">${cat}</span><span style="font-weight:700;color:var(--red)">₹${fmt(amt)} (${total?Math.round(amt/total*100):0}%)</span></div>
+      <div class="prog"><div class="prog-bar red" style="width:${total?amt/total*100:0}%"></div></div>
+    </div>`).join('')}
+  </div>`:''}
+  <div class="card">
+    ${filtered.length===0?`<div class="empty"><i class="fas fa-receipt"></i><p>कोणताही खर्च नाही</p></div>`:`
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>वर्णन</th><th>श्रेणी</th><th>रक्कम</th><th>तारीख</th><th>क्रिया</th></tr></thead>
+      <tbody>${filtered.map(e=>`<tr>
+        <td><b style="font-size:.85rem">${e.description}</b>${e.notes?`<br><small style="color:var(--txt3)">${e.notes}</small>`:''}</td>
+        <td><span class="badge bg-b">${e.category||'इतर'}</span></td>
+        <td><b style="color:var(--red)">₹${fmt(e.amount)}</b></td>
+        <td style="font-size:.75rem">${fmtD(e.date)}</td>
+        <td><div style="display:flex;gap:4px">
+          <button class="btn btn-xs btn-ghost btn-ico" onclick='openExpM(${JSON.stringify(e)})'><i class="fas fa-edit"></i></button>
+          <button class="btn btn-xs btn-danger btn-ico" onclick="delExp('${e._id}')"><i class="fas fa-trash"></i></button>
+        </div></td>
+      </tr>`).join('')}</tbody>
+    </table></div>`}
+  </div>
+
+  <div class="moverlay hidden" id="expModal">
+    <div class="modal">
+      <div class="m-head"><span class="m-ttl" id="expMTtl">नवीन खर्च</span><button class="m-close" onclick="closeM('expModal')"><i class="fas fa-times"></i></button></div>
+      <div class="m-body">
+        <input type="hidden" id="expId"/>
+        <div class="fg"><label class="fl">वर्णन *</label><input class="fc" id="expDesc" placeholder="खर्चाचे वर्णन"/></div>
+        <div class="fr2">
+          <div class="fg"><label class="fl">श्रेणी *</label>
+            <input class="fc" id="expCat" list="expCatL" placeholder="श्रेणी"/>
+            <datalist id="expCatL"><option value="डिझेल"><option value="दुरुस्ती"><option value="टायर"><option value="मजुरी"><option value="खते"><option value="बियाणे"><option value="इतर"></datalist>
+          </div>
+          <div class="fg"><label class="fl">रक्कम (₹) *</label><input class="fc" type="number" id="expAmt" placeholder="₹"/></div>
+        </div>
+        <div class="fr2">
+          <div class="fg"><label class="fl">तारीख</label><input class="fc" type="date" id="expDate" value="${today()}"/></div>
+          <div class="fg"><label class="fl">नोट</label><input class="fc" id="expNote" placeholder="वैकल्पिक"/></div>
+        </div>
+        <div class="fg"><label class="fl">संबंधित काम (वैकल्पिक)</label>
+          <select class="fc" id="expWork">
+            <option value="">— काम निवडा (वैकल्पिक) —</option>
+            ${(window._expWorks||[]).slice(0,20).map(w=>`<option value="${w._id}">${w.customerName} | ${w.workType} | ${fmtD(w.date)}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="m-foot"><button class="btn btn-ghost" onclick="closeM('expModal')">रद्द करा</button><button class="btn btn-primary" onclick="saveExp()"><i class="fas fa-save"></i> सेव्ह</button></div>
+    </div>
+  </div>`;
+}
+window.openExpM=function(e=null){
+  document.getElementById('expModal').classList.remove('hidden');
+  document.getElementById('expId').value=e?._id||'';
+  document.getElementById('expMTtl').textContent=e?'खर्च संपादित':'नवीन खर्च';
+  document.getElementById('expDesc').value=e?.description||'';
+  document.getElementById('expCat').value=e?.category||'';
+  document.getElementById('expAmt').value=e?.amount||'';
+  document.getElementById('expDate').value=e?.date||today();
+  document.getElementById('expNote').value=e?.notes||'';
+};
+window.saveExp=async function(){
+  const id=document.getElementById('expId').value;
+  const d={uid:uid(),description:document.getElementById('expDesc').value.trim(),category:document.getElementById('expCat').value.trim(),amount:parseFloat(document.getElementById('expAmt').value)||0,date:document.getElementById('expDate').value,notes:document.getElementById('expNote').value.trim(),workId:document.getElementById('expWork')?.value||'',updatedAt:today()};
+  if(!d.description||!d.amount){toast('वर्णन आणि रक्कम आवश्यक','err');return;}
+  try{
+    if(id)await updateDoc(doc(db,'expenses',id),d);
+    else await addDoc(col('expenses'),{...d,createdAt:today()});
+    closeM('expModal');toast('खर्च सेव्ह झाला ✅');
+    // Budget check
+    const pr=gp2();
+    if(pr.monthlyBudget>0){
+      const snap=await getDocs(uq('expenses'));let mt=0;
+      snap.forEach(dd=>{const e=dd.data();if(e.date?.startsWith(ym()))mt+=e.amount||0;});
+      if(mt>pr.monthlyBudget)toast(`⚠️ मासिक खर्च मर्यादा ओलांडली! ₹${fmt(mt)} / ₹${fmt(pr.monthlyBudget)}`,'warn',5000);
+    }
+    render('expenses');
+  }catch(e){toast('Error: '+e.message,'err');}
+};
+window.delExp=async function(id){
+  if(!confirm('हा खर्च हटवायचा आहे का?'))return;
+  await deleteDoc(doc(db,'expenses',id));toast('खर्च हटवला');render('expenses');
+};
+
+/* ============================================================
+   SHETKARI DATABASE
+   ============================================================ */
+let shkS='';
+async function pgShetkari(area){
+  const[snap,wSnap]=await Promise.all([getDocs(uq('shetkari')),getDocs(uq('works'))]);
+  let farmers=[],works=[];
+  snap.forEach(d=>farmers.push({...d.data(),_id:d.id}));
+  wSnap.forEach(d=>works.push({...d.data(),_id:d.id}));
+  let filtered=shkS?farmers.filter(f=>(f.name||'').toLowerCase().includes(shkS.toLowerCase())||(f.mobile||'').includes(shkS)||(f.village||'').toLowerCase().includes(shkS.toLowerCase())):farmers;
+
+  const farmerStats={};
+  works.forEach(w=>{
+    if(!farmerStats[w.customerName])farmerStats[w.customerName]={total:0,paid:0,count:0};
+    farmerStats[w.customerName].total+=(w.total||0);
+    farmerStats[w.customerName].paid+=(w.payments||[]).reduce((s,x)=>s+x.amount,0);
+    farmerStats[w.customerName].count++;
+  });
+  window._shkWorks=works;
+
+  area.innerHTML=`
+  <div class="sec-hdr"><span class="sec-ttl">🌾 शेतकरी डेटाबेस (${farmers.length})</span><button class="btn btn-primary" onclick="openShkM()"><i class="fas fa-plus"></i> नवीन</button></div>
+  <div class="card" style="margin-bottom:13px"><div class="search-wrap"><i class="fas fa-search"></i><input class="fc" placeholder="नाव / मोबाइल / गाव..." value="${shkS}" oninput="shkS=this.value;render('shetkari')"/></div></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px">
+    ${filtered.length===0?`<div class="empty" style="grid-column:1/-1"><i class="fas fa-users"></i><p>कोणताही शेतकरी सापडला नाही</p></div>`:
+    filtered.map(f=>`<div class="card" style="padding:14px;border-left:3px solid var(--g500)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <div style="width:42px;height:42px;border-radius:50%;background:var(--brand-l);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:1.1rem;font-weight:800;color:var(--brand);flex-shrink:0">${(f.name||'?').charAt(0).toUpperCase()}</div>
+        <div style="min-width:0"><div style="font-weight:700;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${f.name}</div><div style="font-size:.72rem;color:var(--txt3)">📍 ${f.village||'—'} ${f.land?'| '+f.land+' एकर':''} ${f.crop?'| 🌱 '+f.crop:''}</div></div>
+      </div>
+      ${farmerStats[f.name]?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px">
+        <span class="badge ${farmerStats[f.name].total-farmerStats[f.name].paid>0?'bg-a':'bg-g'}">₹${fmt(farmerStats[f.name].total-farmerStats[f.name].paid)} बाकी</span>
+        <span class="badge bg-b">${farmerStats[f.name].count} काम</span>
+        <span class="badge bg-g">₹${fmt(farmerStats[f.name].total)} एकूण</span>
+      </div>`:''}
+      ${f.mobile?`<div style="font-size:.82rem;color:var(--txt2);margin-bottom:9px">📞 ${f.mobile}</div>`:''}
+      ${f.notes?`<div style="font-size:.75rem;color:var(--txt3);margin-bottom:9px;line-height:1.4">${f.notes}</div>`:''}
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        ${f.mobile?`<a href="tel:${f.mobile}" class="btn btn-xs btn-call"><i class="fas fa-phone"></i> कॉल</a>
+        <a href="https://wa.me/91${f.mobile}?text=${encodeURIComponent(`🙏 नमस्कार ${f.name} जी!\n\n${gp2().businessName||'TractorWala'} – आपला ट्रॅक्टर व्यवसाय सहाय्यक.\n\nकाही काम असल्यास संपर्क करा.\n\nधन्यवाद! 🚜`)}" target="_blank" class="btn btn-xs btn-wa"><i class="fab fa-whatsapp"></i></a>`:''}
+        <button class="btn btn-xs btn-ghost" onclick="showFarmerHistory('${f.name}')"><i class="fas fa-history"></i> इतिहास</button>
+        <button class="btn btn-xs btn-ghost" onclick='openShkM(${JSON.stringify(f)})'><i class="fas fa-edit"></i></button>
+        <button class="btn btn-xs btn-danger" onclick="delShk('${f._id}')"><i class="fas fa-trash"></i></button>
+      </div>
+    </div>`).join('')}
+  </div>
+
+  <div class="moverlay hidden" id="shkModal">
+    <div class="modal">
+      <div class="m-head"><span class="m-ttl" id="shkMTtl">नवीन शेतकरी</span><button class="m-close" onclick="closeM('shkModal')"><i class="fas fa-times"></i></button></div>
+      <div class="m-body">
+        <input type="hidden" id="shkId"/>
+        <div class="fr2">
+          <div class="fg"><label class="fl">नाव *</label><input class="fc" id="shkName" placeholder="शेतकऱ्याचे नाव"/></div>
+          <div class="fg"><label class="fl">मोबाइल</label><input class="fc" type="tel" id="shkMob" placeholder="मोबाइल"/></div>
+        </div>
+        <div class="fr2">
+          <div class="fg"><label class="fl">गाव</label><input class="fc" id="shkVil" placeholder="गाव"/></div>
+          <div class="fg"><label class="fl">जमीन (एकर)</label><input class="fc" type="number" id="shkLand" placeholder="एकर"/></div>
+        </div>
+        <div class="fg"><label class="fl">मुख्य पीक</label>
+          <input class="fc" id="shkCrop" list="cropList" placeholder="गहू, ऊस, सोयाबीन..."/>
+          <datalist id="cropList"><option value="गहू"><option value="ऊस"><option value="सोयाबीन"><option value="कापूस"><option value="तूर"><option value="हरभरा"><option value="भात"><option value="मका"><option value="बाजरी"></datalist>
+        </div>
+        <div class="fg"><label class="fl">नोट</label><textarea class="fc" id="shkNote" rows="2" placeholder="वैकल्पिक"></textarea></div>
+      </div>
+      <div class="m-foot"><button class="btn btn-ghost" onclick="closeM('shkModal')">रद्द करा</button><button class="btn btn-primary" onclick="saveShk()"><i class="fas fa-save"></i> सेव्ह</button></div>
+    </div>
+  </div>
+
+  <div class="moverlay hidden" id="farmerHistModal">
+    <div class="modal" style="max-width:560px">
+      <div class="m-head"><span class="m-ttl" id="farmerHistTtl">काम इतिहास</span><button class="m-close" onclick="closeM('farmerHistModal')"><i class="fas fa-times"></i></button></div>
+      <div class="m-body" id="farmerHistBody"></div>
+    </div>
+  </div>`;
+}
+window.showFarmerHistory=function(name){
+  const modal=document.getElementById('farmerHistModal');
+  const body=document.getElementById('farmerHistBody');
+  const title=document.getElementById('farmerHistTtl');
+  if(!modal||!body)return;
+  modal.classList.remove('hidden');
+  title.textContent=`${name} — काम इतिहास`;
+  const works=(window._shkWorks||[]).filter(w=>w.customerName===name).sort((a,b)=>(b.date||'')>(a.date||'')?1:-1);
+  const totAmt=works.reduce((s,w)=>s+(w.total||0),0);
+  const totPaid=works.reduce((s,w)=>s+(w.payments||[]).reduce((p,x)=>p+x.amount,0),0);
+  if(!works.length){body.innerHTML='<div class="empty"><i class="fas fa-tractor"></i><p>कोणतेही काम नाही</p></div>';return;}
+  body.innerHTML=`
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+    <div class="stat" style="flex:1;min-width:120px"><div class="stat-ico ic-g"><i class="fas fa-rupee-sign"></i></div><div class="stat-body"><div class="stat-lbl">एकूण</div><div class="stat-val" style="font-size:1.1rem">₹${fmt(totAmt)}</div></div></div>
+    <div class="stat" style="flex:1;min-width:120px"><div class="stat-ico ic-a"><i class="fas fa-clock"></i></div><div class="stat-body"><div class="stat-lbl">बाकी</div><div class="stat-val" style="font-size:1.1rem">₹${fmt(totAmt-totPaid)}</div></div></div>
+  </div>
+  <div class="tbl-wrap"><table>
+    <thead><tr><th>तारीख</th><th>काम</th><th>एकूण</th><th>बाकी</th><th>क्रिया</th></tr></thead>
+    <tbody>${works.map(w=>{const p=(w.payments||[]).reduce((s,x)=>s+x.amount,0);const b=w.total-p;return`<tr>
+      <td style="font-size:.78rem">${fmtD(w.date)}</td>
+      <td style="font-size:.82rem">${w.workType}</td>
+      <td><b>₹${fmt(w.total)}</b></td>
+      <td><span class="badge ${b>0?'bg-a':'bg-g'}">${b>0?'₹'+fmt(b):'✅'}</span></td>
+      <td><div style="display:flex;gap:4px">
+        <button class="btn btn-xs btn-amber btn-ico" onclick="closeM('farmerHistModal');openPayModal('${w._id}')"><i class="fas fa-rupee-sign"></i></button>
+        <button class="btn btn-xs btn-ghost btn-ico" onclick="openInvFor('${w._id}');closeM('farmerHistModal')"><i class="fas fa-file-invoice"></i></button>
+      </div></td>
+    </tr>`;}).join('')}</tbody>
+  </table></div>`;
+};
+window.openShkM=function(f=null){
+  document.getElementById('shkModal').classList.remove('hidden');
+  document.getElementById('shkId').value=f?._id||'';
+  document.getElementById('shkMTtl').textContent=f?'शेतकरी संपादित':'नवीन शेतकरी';
+  document.getElementById('shkName').value=f?.name||'';
+  document.getElementById('shkMob').value=f?.mobile||'';
+  document.getElementById('shkVil').value=f?.village||'';
+  document.getElementById('shkLand').value=f?.land||'';
+  document.getElementById('shkCrop').value=f?.crop||'';
+  document.getElementById('shkNote').value=f?.notes||'';
+};
+window.saveShk=async function(){
+  const id=document.getElementById('shkId').value;
+  const d={uid:uid(),name:document.getElementById('shkName').value.trim(),mobile:document.getElementById('shkMob').value.trim(),village:document.getElementById('shkVil').value.trim(),land:parseFloat(document.getElementById('shkLand').value)||0,crop:document.getElementById('shkCrop').value.trim(),notes:document.getElementById('shkNote').value.trim(),updatedAt:today()};
+  if(!d.name){toast('नाव आवश्यक','err');return;}
+  try{
+    if(id)await updateDoc(doc(db,'shetkari',id),d);
+    else await addDoc(col('shetkari'),{...d,createdAt:today()});
+    closeM('shkModal');toast('शेतकरी सेव्ह झाला ✅');render('shetkari');
+  }catch(e){toast('Error: '+e.message,'err');}
+};
+window.delShk=async function(id){
+  if(!confirm('हा शेतकरी हटवायचा आहे का?'))return;
+  await deleteDoc(doc(db,'shetkari',id));toast('शेतकरी हटवला');render('shetkari');
+};
+
+/* ============================================================
+   INVOICE — Multi-Item + GST + Sequential Numbers
+   ============================================================ */
+let invItems=[{workType:'',unit:'तास',qty:0,rate:0}];
+
+async function pgInvoice(area){
+  const snap=await getDocs(uq('works'));
+  let works=[];snap.forEach(d=>works.push({...d.data(),_id:d.id}));
+  works.sort((a,b)=>(b.date||'')>(a.date||'')?1:-1);
+
+  // Load saved invoices
+  let invHistory=[];
+  try{const iSnap=await getDocs(uq('invoices'));iSnap.forEach(d=>invHistory.push({...d.data(),_id:d.id}));}catch(e){}
+  invHistory.sort((a,b)=>(b.date||'')>(a.date||'')?1:-1);
+
+  area.innerHTML=`
+  <div class="sec-hdr"><span class="sec-ttl">🧾 Invoice Generator</span></div>
+  <div class="card" style="margin-bottom:13px;max-width:640px">
+    <div class="fg"><label class="fl">काम निवडा (किंवा मॅन्युअल भरा)</label>
+      <select class="fc" id="invSel" onchange="loadWorkToInv()">
+        <option value="">— काम निवडा —</option>
+        ${works.map(w=>`<option value="${w._id}" ${window._invWID===w._id?'selected':''}>${w.customerName} | ${w.workType} | ₹${fmt(w.total)} | ${fmtD(w.date)}</option>`).join('')}
+      </select>
+    </div>
+    <div class="fr2">
+      <div class="fg"><label class="fl">ग्राहकाचे नाव</label><input class="fc" id="invCust" placeholder="ग्राहकाचे नाव"/></div>
+      <div class="fg"><label class="fl">मोबाइल</label><input class="fc" id="invMob" placeholder="मोबाइल"/></div>
+    </div>
+    <!-- Multi-item builder -->
+    <div style="font-size:.82rem;font-weight:700;margin-bottom:10px;color:var(--g700)">📋 काम यादी</div>
+    <div id="invItemsArea"></div>
+    <button class="btn btn-ghost btn-sm" onclick="addInvItem()" style="margin-bottom:14px"><i class="fas fa-plus"></i> आणखी काम जोडा</button>
+    <!-- GST -->
+    <div class="fg" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+        <input type="checkbox" id="invGST" style="accent-color:var(--brand);width:16px;height:16px" onchange="toggleGST(this.checked);calcInvTotal()"/>
+        <span class="fl" style="margin:0">GST लागू करा</span>
+      </label>
+      <div id="gstRateWrap" class="hidden">
+        <select class="fc" id="invGSTRate" style="width:auto" onchange="calcInvTotal()"><option value="5">5%</option><option value="12">12%</option><option value="18" selected>18%</option></select>
+      </div>
+    </div>
+    <div class="fg"><label class="fl">Invoice नोट</label><textarea class="fc" id="invNote" rows="2" placeholder="वैकल्पिक नोट"></textarea></div>
+    <button class="btn btn-primary btn-full btn-lg" onclick="renderInvoice()"><i class="fas fa-eye"></i> Invoice तयार करा</button>
+  </div>
+  <div id="invArea"></div>
+
+  ${invHistory.length>0?`<div class="card" style="margin-top:16px;max-width:700px">
+    <div class="card-hdr"><span class="card-ttl">📂 Invoice इतिहास</span></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Invoice #</th><th>ग्राहक</th><th>एकूण</th><th>तारीख</th></tr></thead>
+      <tbody>${invHistory.slice(0,10).map(i=>`<tr>
+        <td><b style="color:var(--g700)">${i.invNo||'—'}</b></td>
+        <td>${i.customerName||'—'}</td>
+        <td><b>₹${fmt(i.total)}</b></td>
+        <td style="font-size:.78rem">${fmtD(i.date)}</td>
+      </tr>`).join('')}</tbody>
+    </table></div>
+  </div>`:''}`;
+
+  renderInvItems();
+  if(window._invWID){setTimeout(()=>{loadWorkToInv();window._invWID=null;},100);}
+}
+
+window.toggleGST=function(v){document.getElementById('gstRateWrap')?.classList.toggle('hidden',!v);};
+
+window.addInvItem=function(){
+  invItems.push({workType:'',unit:'तास',qty:0,rate:0});
+  renderInvItems();
+};
+window.removeInvItem=function(i){
+  if(invItems.length===1){toast('कमीत कमी एक काम आवश्यक','warn');return;}
+  invItems.splice(i,1);renderInvItems();
+};
+function renderInvItems(){
+  const a=document.getElementById('invItemsArea');if(!a)return;
+  a.innerHTML=invItems.map((item,i)=>`
+    <div style="background:var(--surface2);border-radius:10px;padding:12px;margin-bottom:8px;border:1px solid var(--border)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <span style="font-size:.78rem;font-weight:700;color:var(--txt2)">काम ${i+1}</span>
+        ${invItems.length>1?`<button class="btn btn-xs btn-danger btn-ico" onclick="removeInvItem(${i})"><i class="fas fa-times"></i></button>`:''}
+      </div>
+      <div class="fg" style="margin-bottom:8px"><input class="fc" placeholder="काम प्रकार" value="${item.workType}" oninput="invItems[${i}].workType=this.value;calcInvTotal()"/></div>
+      <div class="fr3">
+        <div class="fg" style="margin-bottom:0"><input class="fc" type="number" placeholder="प्रमाण" value="${item.qty||''}" oninput="invItems[${i}].qty=parseFloat(this.value)||0;calcInvTotal()"/></div>
+        <div class="fg" style="margin-bottom:0"><input class="fc" type="number" placeholder="दर ₹" value="${item.rate||''}" oninput="invItems[${i}].rate=parseFloat(this.value)||0;calcInvTotal()"/></div>
+        <div style="padding:10px 0;font-weight:800;color:var(--g700);text-align:center">₹${fmt(item.qty*item.rate)}</div>
+      </div>
+    </div>`).join('');
+  calcInvTotal();
+}
+function calcInvTotal(){
+  const subtotal=invItems.reduce((s,i)=>s+i.qty*i.rate,0);
+  const gstEnabled=document.getElementById('invGST')?.checked;
+  const gstRate=parseFloat(document.getElementById('invGSTRate')?.value||0);
+  const gstAmt=gstEnabled?subtotal*gstRate/100:0;
+  window._invSubtotal=subtotal;window._invGST=gstAmt;window._invGSTRate=gstRate;window._invGSTEnabled=gstEnabled;
+}
+window.calcInvTotal=calcInvTotal;
+
+window.loadWorkToInv=function(){
+  const wid=document.getElementById('invSel')?.value;
+  if(!wid)return;
+  const works=window._dashWorks||[];
+  // Need fresh fetch if not available
+  getDocs(uq('works')).then(snap=>{
+    let w=null;snap.forEach(d=>{if(d.id===wid)w={...d.data(),_id:d.id};});
+    if(!w)return;
+    document.getElementById('invCust').value=w.customerName||'';
+    document.getElementById('invMob').value=w.mobile||'';
+    invItems=[{workType:w.workType,unit:w.unit||'तास',qty:w.quantity||0,rate:w.rate||0}];
+    renderInvItems();
+  });
+};
+
+window.renderInvoice=async function(){
+  const area=document.getElementById('invArea');if(!area)return;
+  const cust=document.getElementById('invCust').value.trim();
+  const mob=document.getElementById('invMob').value.trim();
+  const wid=document.getElementById('invSel')?.value||'';
+  const note=document.getElementById('invNote')?.value||'';
+  if(!cust){toast('ग्राहकाचे नाव आवश्यक','err');return;}
+  if(invItems.every(i=>!i.workType||!i.qty||!i.rate)){toast('कमीत कमी एक काम पूर्ण भरा','err');return;}
+
+  calcInvTotal();
+  const subtotal=window._invSubtotal||0;
+  const gstAmt=window._invGST||0;
+  const gstRate=window._invGSTRate||0;
+  const gstEnabled=window._invGSTEnabled||false;
+  const grandTotal=subtotal+gstAmt;
+
+  // Sequential invoice number
+  const pr=gp2();
+  const lastNum=(pr.lastInvNumber||0)+1;
+  const invNo=`TW-${String(lastNum).padStart(4,'0')}`;
+  try{
+    if(pr._id)await updateDoc(doc(db,'profiles',pr._id),{lastInvNumber:lastNum});
+    PROFILE.lastInvNumber=lastNum;
+  }catch(e){}
+
+  // Get paid if linked to work
+  let paid=0;
+  if(wid){
+    try{const snap=await getDocs(uq('works'));snap.forEach(d=>{if(d.id===wid){const w=d.data();paid=(w.payments||[]).reduce((s,x)=>s+x.amount,0);}});}catch(e){}
+  }
+  const bal=grandTotal-paid;
+  const upiStr=pr.upiId?`upi://pay?pa=${encodeURIComponent(pr.upiId)}&pn=${encodeURIComponent(pr.businessName||'TractorWala')}&am=${bal}&cu=INR`:'';
+
+  area.innerHTML=`
+  <div class="card" style="margin-bottom:14px;max-width:700px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <span style="font-size:.82rem;font-weight:700;color:var(--txt2);margin-right:4px">📤 Share:</span>
+      <button class="btn btn-wa btn-sm" onclick="shareInvWA()"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+      <button class="btn btn-primary btn-sm" onclick="dlInvPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
+      <button class="btn btn-ghost btn-sm" onclick="dlInvImg()"><i class="fas fa-image"></i> Image</button>
+      <button class="btn btn-amber btn-sm" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+    </div>
+  </div>
+  <div class="inv-doc-wrapper">
+  <div class="inv-doc" id="invDoc">
+    <div class="inv-header">
+      <div class="inv-brand">
+        ${pr.logoBase64?`<img src="${pr.logoBase64}" class="inv-logo" id="invLogoImg" alt="Logo"/>`:`<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-9ZsFmYknbpG7c5zTqKbSoBk9jekFP4b4yzIK43FUgQ&s=10" class="inv-logo" id="invLogoImg" alt="Logo" crossorigin="anonymous"/>`}
+        <div class="inv-biz-info">
+          <h2>${pr.businessName||'TractorWala'}</h2>
+          <p>${pr.ownerName?pr.ownerName+'<br>':''}${pr.phone?'📞 '+pr.phone+'<br>':''}${pr.address?pr.address+'<br>':''}${pr.gstin?'GSTIN: '+pr.gstin+'<br>':''}${pr.upiId?'💳 UPI: '+pr.upiId:''}</p>
+        </div>
+      </div>
+      <div class="inv-meta">
+        <div class="inv-badge">INVOICE</div>
+        <div class="inv-meta-no">#${invNo}</div>
+        <div class="inv-meta-date">Invoice: ${new Date().toLocaleDateString('en-IN')}</div>
+      </div>
+    </div>
+    <div class="inv-info-grid">
+      <div class="inv-info-box">
+        <div class="inv-info-lbl">Bill To — ग्राहक</div>
+        <div class="inv-info-val">${cust}</div>
+        ${mob?`<div class="inv-info-sub">📞 ${mob}</div>`:''}
+      </div>
+      <div class="inv-info-box">
+        <div class="inv-info-lbl">काम तपशील</div>
+        <div class="inv-info-val">${invItems.map(i=>i.workType).filter(Boolean).join(', ')}</div>
+        <div class="inv-info-sub">${invItems.length} काम नोंदी</div>
+      </div>
+    </div>
+    <table class="inv-tbl">
+      <thead><tr><th>#</th><th>काम प्रकार</th><th>प्रमाण</th><th>दर (₹)</th><th>एकूण (₹)</th></tr></thead>
+      <tbody>
+        ${invItems.filter(i=>i.workType&&i.qty&&i.rate).map((item,idx)=>`<tr><td>${idx+1}</td><td><b>${item.workType}</b></td><td>${item.qty} ${item.unit}</td><td>₹${fmt(item.rate)}</td><td><b style="color:#166534">₹${fmt(item.qty*item.rate)}</b></td></tr>`).join('')}
+      </tbody>
+    </table>
+    <div class="inv-summary-wrap">
+      <div class="inv-sum">
+        <div class="inv-sum-row"><span>उपएकूण</span><span>₹${fmt(subtotal)}</span></div>
+        ${gstEnabled?`<div class="inv-sum-row"><span>GST (${gstRate}%)</span><span>₹${fmt(gstAmt)}</span></div>`:''}
+        ${paid>0?`<div class="inv-sum-row" style="color:#166534"><span>✅ भरले</span><span style="font-weight:700">₹${fmt(paid)}</span></div>`:''}
+        <div class="inv-sum-row big ${bal>0?'red':'green'}">
+          <span>${bal>0?'⚠️ बाकी रक्कम':'✅ पूर्ण भरले'}</span>
+          <span>₹${fmt(bal>0?bal:grandTotal)}</span>
+        </div>
+      </div>
+    </div>
+    ${note?`<div class="inv-notes"><b>📝 नोट:</b> ${note}</div>`:''}
+    ${pr.terms?`<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px;margin-bottom:14px"><div style="font-size:.68rem;font-weight:800;color:#666;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px">📋 अटी व शर्ती</div><div style="font-size:.78rem;color:#555;line-height:1.6">${pr.terms}</div></div>`:''}
+    ${pr.upiId?`<div class="inv-upi-row">
+      <div id="invQR" style="flex-shrink:0"></div>
+      <div class="inv-upi-info">
+        <h4>💳 UPI Payment</h4>
+        <p>UPI ID: <b>${pr.upiId}</b><br>रक्कम: ₹${fmt(bal>0?bal:grandTotal)}</p>
+      </div>
+    </div>`:''}
+    <div class="inv-stamp">
+      <p>${bal<=0?'✅ पेमेंट पूर्ण — धन्यवाद!':'🙏 लवकरात लवकर पेमेंट करावे'}</p>
+      <small>TractorWala v4.0 — Digital Business Manager</small>
+    </div>
+    <div class="inv-footer">TractorWala v4.0 | ${pr.businessName||''} | sourabhbongarde2@gmail.com | 7875817356<br>© Sourabh Bongarde Software Solutions Pvt. Ltd.</div>
+  </div>
+  </div>`;
+
+  // QR Code
+  if(pr.upiId){
+    setTimeout(()=>{
+      const el=document.getElementById('invQR');
+      if(el)try{new QRCode(el,{text:upiStr,width:80,height:80,colorDark:'#166534'});}catch(e){}
+    },200);
+  }
+
+  // Save invoice to Firestore
+  try{
+    await addDoc(col('invoices'),{uid:uid(),invNo,customerName:cust,mobile:mob,workId:wid,items:invItems,total:grandTotal,paid,balance:bal,gstAmt,gstEnabled,date:today(),createdAt:today()});
+  }catch(e){}
+
+  window._curInv={cust,mob,invNo,items:invItems,grandTotal,paid,bal,note,pr};
+};
+
+window.shareInvWA=function(){
+  const d=window._curInv;if(!d){toast('पहिले Invoice तयार करा','warn');return;}
+  const lines=d.items.filter(i=>i.workType).map(i=>`• ${i.workType}: ${i.qty} × ₹${fmt(i.rate)} = ₹${fmt(i.qty*i.rate)}`).join('\n');
+  const msg=`🧾 *Invoice — ${d.pr.businessName||'TractorWala'}*\n━━━━━━━━━━━━━━━\n📋 Invoice: #${d.invNo}\n👤 ग्राहक: *${d.cust}*\n━━━━━━━━━━━━━━━\n${lines}\n━━━━━━━━━━━━━━━\n💰 एकूण: *₹${fmt(d.grandTotal)}*\n${d.paid>0?`✅ भरले: ₹${fmt(d.paid)}\n`:''} ${d.bal>0?`⚠️ बाकी: *₹${fmt(d.bal)}*\n`:'✅ पूर्ण भरले!\n'}\n${d.pr.upiId?`💳 UPI: ${d.pr.upiId}\n`:''}\n🙏 धन्यवाद!\n🚜 TractorWala v4.0`;
+  window.open(`https://api.whatsapp.com/send?${d.mob?'phone=91'+d.mob+'&':''}text=${encodeURIComponent(msg)}`,'_blank');
+};
+window.dlInvPDF=async function(){
+  const el=document.getElementById('invDoc');if(!el){toast('Invoice नाही','err');return;}
+  try{
+    const canvas=await html2canvas(el,{scale:2,useCORS:true,backgroundColor:'#fff'});
+    const img=canvas.toDataURL('image/png');
+    const{jsPDF}=window.jspdf;const pdf=new jsPDF('p','mm','a4');
+    const w=pdf.internal.pageSize.getWidth();
+    const h=(canvas.height*w)/canvas.width;
+    pdf.addImage(img,'PNG',0,0,w,Math.min(h,297));
+    const d=window._curInv;
+    pdf.save(`Invoice_${d?.invNo||'TW'}_${today()}.pdf`);toast('PDF डाउनलोड झाले ✅');
+  }catch(e){toast('PDF Error: '+e.message,'err');}
+};
+window.dlInvImg=async function(){
+  const el=document.getElementById('invDoc');if(!el){toast('Invoice नाही','err');return;}
+  try{
+    const canvas=await html2canvas(el,{scale:2,useCORS:true,backgroundColor:'#fff'});
+    const a=document.createElement('a');
+    a.href=canvas.toDataURL('image/png');
+    const d=window._curInv;
+    a.download=`Invoice_${d?.invNo||'TW'}_${today()}.png`;a.click();toast('Image डाउनलोड झाली ✅');
+  }catch(e){toast('Image Error: '+e.message,'err');}
+};
+
+/* ============================================================
+   REPORTS
+   ============================================================ */
+async function pgReports(area){
+  const[wSnap,eSnap]=await Promise.all([getDocs(uq('works')),getDocs(uq('expenses'))]);
+  let works=[],exps=[];
+  wSnap.forEach(d=>works.push({...d.data(),_id:d.id}));
+  eSnap.forEach(d=>exps.push({...d.data(),_id:d.id}));
+
+  const months=[];
+  for(let i=5;i>=0;i--){
+    const d=new Date();d.setMonth(d.getMonth()-i);
+    const key=d.toISOString().slice(0,7);
+    const lbl=d.toLocaleDateString('mr-IN',{month:'short',year:'2-digit'});
+    const mw=works.filter(w=>w.date?.startsWith(key));
+    const me=exps.filter(e=>e.date?.startsWith(key));
+    months.push({key,lbl,rev:mw.reduce((s,w)=>s+(w.total||0),0),exp:me.reduce((s,e)=>s+(e.amount||0),0),cnt:mw.length});
+  }
+
+  const custMap={};
+  works.forEach(w=>{if(!custMap[w.customerName])custMap[w.customerName]={total:0,paid:0,count:0};
+    custMap[w.customerName].total+=(w.total||0);
+    custMap[w.customerName].paid+=(w.payments||[]).reduce((s,x)=>s+x.amount,0);
+    custMap[w.customerName].count++;
+  });
+  const custArr=Object.entries(custMap).sort((a,b)=>b[1].total-a[1].total).slice(0,8);
+  const curMon=new Date().toISOString().slice(0,7);
+  const mW=works.filter(w=>w.date?.startsWith(curMon));
+  const mE=exps.filter(e=>e.date?.startsWith(curMon));
+  const mRev=mW.reduce((s,w)=>s+(w.total||0),0);
+  const mExp=mE.reduce((s,e)=>s+(e.amount||0),0);
+  window._repData={mRev,mExp,mProfit:mRev-mExp,cnt:mW.length};
+
+  const catMap={};exps.forEach(e=>{catMap[e.category||'इतर']=(catMap[e.category||'इतर']||0)+(e.amount||0);});
+  const catArr=Object.entries(catMap);
+
+  // Tractor utilization
+  const tractorUtil={};
+  works.forEach(w=>{
+    const t=w.tractorNo||'(अज्ञात)';
+    if(!tractorUtil[t])tractorUtil[t]={hours:0,revenue:0,jobs:0};
+    if(w.unit==='तास')tractorUtil[t].hours+=(w.quantity||0);
+    tractorUtil[t].revenue+=(w.total||0);
+    tractorUtil[t].jobs++;
+  });
+  const tractorEntries=Object.entries(tractorUtil).filter(([k])=>k!=='(अज्ञात)');
+
+  area.innerHTML=`
+  <div class="sec-hdr"><span class="sec-ttl">📊 अहवाल</span></div>
+  <div class="rep-card" style="margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:14px">
+      <h3 style="font-family:var(--font-display);font-size:1rem">📅 ${new Date().toLocaleDateString('mr-IN',{month:'long',year:'numeric'})} अहवाल</h3>
+      <div style="display:flex;gap:7px;flex-wrap:wrap">
+        <button class="btn btn-sm btn-wa" onclick="shareMonWA()"><i class="fab fa-whatsapp"></i> WA</button>
+        <button class="btn btn-sm" style="background:rgba(255,255,255,.2);color:#fff" onclick="dlMonPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
+        <button class="btn btn-sm" style="background:rgba(255,255,255,.2);color:#fff" onclick="dlAnnualPDF()"><i class="fas fa-file-pdf"></i> वार्षिक</button>
+      </div>
+    </div>
+    <div class="rep-row"><span>एकूण उत्पन्न</span><span>₹${fmt(mRev)}</span></div>
+    <div class="rep-row"><span>एकूण खर्च</span><span>₹${fmt(mExp)}</span></div>
+    <div class="rep-row"><span>एकूण काम</span><span>${mW.length}</span></div>
+    <div class="rep-row"><span><b>नफा / तोटा</b></span><span>₹${fmt(mRev-mExp)}</span></div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+    <div class="card">
+      <div class="card-hdr"><span class="card-ttl">📈 ६ महिने उत्पन्न vs खर्च</span></div>
+      <canvas id="revExpChart" style="max-height:260px"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><span class="card-ttl">🥧 खर्च श्रेणी</span></div>
+      <canvas id="expPieChart" style="max-height:260px"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><span class="card-ttl">🏆 शीर्ष ग्राहक</span></div>
+      ${custArr.length===0?`<div class="empty"><i class="fas fa-users"></i><p>डेटा नाही</p></div>`:
+      custArr.map(([name,d])=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)">
+        <div style="width:34px;height:34px;border-radius:50%;background:var(--brand-l);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:800;font-size:.9rem;color:var(--brand);flex-shrink:0">${name.charAt(0).toUpperCase()}</div>
+        <div style="flex:1;min-width:0"><div style="font-weight:600;font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${name}</div><div style="font-size:.7rem;color:var(--txt3)">${d.count} काम</div></div>
+        <div style="text-align:right"><div style="font-weight:700;font-size:.9rem;color:var(--g700)">₹${fmt(d.total)}</div><span class="badge ${d.total-d.paid>0?'bg-a':'bg-g'}" style="font-size:.65rem">₹${fmt(d.total-d.paid)} बाकी</span></div>
+      </div>`).join('')}
+    </div>
+    ${tractorEntries.length>0?`<div class="card">
+      <div class="card-hdr"><span class="card-ttl">🚜 ट्रॅक्टर उपयोग</span></div>
+      ${tractorEntries.map(([t,s])=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+        <div><b>${t}</b><br><span style="font-size:.72rem;color:var(--txt3)">${s.jobs} काम | ${s.hours} तास</span></div>
+        <b style="color:var(--g700)">₹${fmt(s.revenue)}</b>
+      </div>`).join('')}
+    </div>`:''}
+  </div>`;
+
+  // Charts
+  setTimeout(()=>{
+    try{
+      const ctx1=document.getElementById('revExpChart')?.getContext('2d');
+      if(ctx1&&window.Chart){new window.Chart(ctx1,{type:'bar',data:{labels:months.map(m=>m.lbl),datasets:[{label:'उत्पन्न',data:months.map(m=>m.rev),backgroundColor:'rgba(22,101,52,0.8)',borderRadius:6},{label:'खर्च',data:months.map(m=>m.exp),backgroundColor:'rgba(220,38,38,0.7)',borderRadius:6}]},options:{responsive:true,plugins:{legend:{position:'top'}},scales:{y:{beginAtZero:true,ticks:{callback:v=>'₹'+v}}}}});}
+    }catch(e){}
+    try{
+      const ctx2=document.getElementById('expPieChart')?.getContext('2d');
+      if(ctx2&&catArr.length&&window.Chart){new window.Chart(ctx2,{type:'pie',data:{labels:catArr.map(c=>c[0]),datasets:[{data:catArr.map(c=>c[1]),backgroundColor:['#166534','#dc2626','#2563eb','#f59e0b','#7c3aed','#0891b2','#db2777','#65a30d']}]},options:{responsive:true,plugins:{legend:{position:'bottom'}}}});}
+    }catch(e){}
+  },300);
+}
+window.shareMonWA=function(){
+  const d=window._repData||{};
+  const msg=`📊 *TractorWala – मासिक अहवाल*\n📅 ${new Date().toLocaleDateString('mr-IN',{month:'long',year:'numeric'})}\n━━━━━━━━━━━━━━━\n💰 उत्पन्न: ₹${fmt(d.mRev)}\n💸 खर्च: ₹${fmt(d.mExp)}\n📈 नफा: *₹${fmt(d.mProfit)}*\n🚜 काम: ${d.cnt}\n━━━━━━━━━━━━━━━\n🚜 TractorWala v4.0 – Digital Business Manager`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,'_blank');
+};
+window.shareDailyWA=async function(){
+  try{
+    const[wSnap,eSnap]=await Promise.all([getDocs(uq('works')),getDocs(uq('expenses'))]);
+    let works=[],exps=[];
+    wSnap.forEach(d=>works.push(d.data()));eSnap.forEach(d=>exps.push(d.data()));
+    const td=today();
+    const tw=works.filter(w=>w.date===td),te=exps.filter(e=>e.date===td);
+    const trev=tw.reduce((s,w)=>s+(w.total||0),0),texp=te.reduce((s,e)=>s+(e.amount||0),0);
+    const msg=`📊 *TractorWala – आजचा अहवाल*\n📅 ${new Date().toLocaleDateString('mr-IN')}\n━━━━━━━━━━━━━━━\n💰 उत्पन्न: ₹${fmt(trev)}\n💸 खर्च: ₹${fmt(texp)}\n📈 नफा: *₹${fmt(trev-texp)}*\n🚜 काम: ${tw.length}\n━━━━━━━━━━━━━━━\n🚜 TractorWala v4.0`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,'_blank');
+  }catch(e){toast('Error: '+e.message,'err');}
+};
+window.dlDailyPDF=async function(){
+  try{
+    const[wSnap,eSnap]=await Promise.all([getDocs(uq('works')),getDocs(uq('expenses'))]);
+    let works=[],exps=[];
+    wSnap.forEach(d=>works.push(d.data()));eSnap.forEach(d=>exps.push(d.data()));
+    const td=today();const tw=works.filter(w=>w.date===td),te=exps.filter(e=>e.date===td);
+    const trev=tw.reduce((s,w)=>s+(w.total||0),0),texp=te.reduce((s,e)=>s+(e.amount||0),0);
+    const{jsPDF}=window.jspdf;const pdf=new jsPDF();
+    pdf.setFillColor(22,101,52);pdf.rect(0,0,210,25,'F');
+    pdf.setTextColor(255,255,255);pdf.setFontSize(16);pdf.setFont('helvetica','bold');
+    pdf.text('TractorWala v4 - Daily Report',14,16);
+    pdf.setTextColor(0);pdf.setFontSize(11);pdf.setFont('helvetica','normal');
+    pdf.text(`Date: ${td}`,14,36);
+    pdf.setFillColor(240,253,244);pdf.rect(14,42,180,32,'F');
+    pdf.setFontSize(12);pdf.setFont('helvetica','bold');
+    pdf.setTextColor(22,101,52);pdf.text(`Revenue: Rs.${fmt(trev)}`,20,52);
+    pdf.setTextColor(220,38,38);pdf.text(`Expense: Rs.${fmt(texp)}`,20,62);
+    pdf.setTextColor(0);pdf.text(`Profit: Rs.${fmt(trev-texp)}`,20,72);
+    pdf.text(`Total Work: ${tw.length}`,110,52);
+    if(tw.length){let y=96;pdf.setFontSize(10);pdf.setFont('helvetica','bold');pdf.setTextColor(22,101,52);pdf.text('Work Details:',14,88);pdf.setFont('helvetica','normal');pdf.setTextColor(0);tw.forEach(w=>{pdf.text(`• ${w.customerName} | ${w.workType} | Rs.${fmt(w.total)}`,14,y);y+=8;});}
+    pdf.setFontSize(8);pdf.setTextColor(150);pdf.text('© TractorWala v4.0 - sourabhbongarde2@gmail.com | 7875817356',14,280);
+    pdf.save(`DailyReport_${td}.pdf`);toast('PDF डाउनलोड झाले ✅');
+  }catch(e){toast('PDF Error: '+e.message,'err');}
+};
+window.dlMonPDF=async function(){
+  const d=window._repData||{};
+  const{jsPDF}=window.jspdf;const pdf=new jsPDF();
+  pdf.setFillColor(22,101,52);pdf.rect(0,0,210,25,'F');
+  pdf.setTextColor(255,255,255);pdf.setFontSize(16);pdf.setFont('helvetica','bold');
+  pdf.text('TractorWala v4 - Monthly Report',14,16);
+  pdf.setTextColor(0);pdf.setFontSize(11);
+  pdf.text(`Month: ${new Date().toLocaleDateString('en-IN',{month:'long',year:'numeric'})}`,14,36);
+  pdf.setFillColor(240,253,244);pdf.rect(14,42,180,38,'F');
+  pdf.setFontSize(12);pdf.setFont('helvetica','bold');
+  pdf.setTextColor(22,101,52);pdf.text(`Revenue: Rs.${fmt(d.mRev)}`,20,54);
+  pdf.setTextColor(220,38,38);pdf.text(`Expense: Rs.${fmt(d.mExp)}`,20,64);
+  pdf.setTextColor(0);pdf.text(`Profit: Rs.${fmt(d.mProfit)}`,20,74);
+  pdf.text(`Total Works: ${d.cnt}`,120,54);
+  pdf.setFontSize(8);pdf.setTextColor(150);pdf.text('© TractorWala v4.0 - sourabhbongarde2@gmail.com',14,280);
+  pdf.save(`Monthly_${new Date().toISOString().slice(0,7)}.pdf`);toast('PDF डाउनलोड झाले ✅');
+};
+window.dlAnnualPDF=async function(){
+  try{
+    const[wSnap,eSnap]=await Promise.all([getDocs(uq('works')),getDocs(uq('expenses'))]);
+    let works=[],exps=[];
+    wSnap.forEach(d=>works.push(d.data()));eSnap.forEach(d=>exps.push(d.data()));
+    const yr=new Date().getFullYear();
+    const fyStart=new Date().getMonth()>=3?`${yr}-04-01`:`${yr-1}-04-01`;
+    const fyEnd=new Date().getMonth()>=3?`${yr+1}-03-31`:`${yr}-03-31`;
+    const fyWorks=works.filter(w=>w.date>=fyStart&&w.date<=fyEnd);
+    const fyExps=exps.filter(e=>e.date>=fyStart&&e.date<=fyEnd);
+    const totalRev=fyWorks.reduce((s,w)=>s+(w.total||0),0);
+    const totalExp=fyExps.reduce((s,e)=>s+(e.amount||0),0);
+    const catMap={};fyExps.forEach(e=>{catMap[e.category||'इतर']=(catMap[e.category||'इतर']||0)+(e.amount||0);});
+    const pr=gp2();
+    const{jsPDF}=window.jspdf;const pdf=new jsPDF();
+    pdf.setFillColor(22,101,52);pdf.rect(0,0,210,30,'F');
+    pdf.setTextColor(255,255,255);pdf.setFontSize(18);pdf.setFont('helvetica','bold');
+    pdf.text('TractorWala - Annual Income Statement',14,20);
+    pdf.setTextColor(0);pdf.setFontSize(12);pdf.setFont('helvetica','normal');
+    pdf.text(`Business: ${pr.businessName||'—'}`,14,45);
+    if(pr.gstin)pdf.text(`GSTIN: ${pr.gstin}`,14,54);
+    pdf.text(`Financial Year: ${fyStart.slice(0,4)}-${fyEnd.slice(0,4)}`,14,62);
+    pdf.text(`(For Income Tax / Bank Loan purposes)`,14,70);
+    pdf.setFillColor(240,253,244);pdf.rect(14,76,180,30,'F');
+    pdf.setFontSize(13);pdf.setFont('helvetica','bold');
+    pdf.setTextColor(22,101,52);pdf.text(`Total Revenue: Rs.${fmt(totalRev)}`,20,88);
+    pdf.setTextColor(220,38,38);pdf.text(`Total Expenses: Rs.${fmt(totalExp)}`,20,98);
+    pdf.setTextColor(0,100,0);pdf.text(`Net Profit: Rs.${fmt(totalRev-totalExp)}`,20,108);
+    pdf.setFontSize(11);pdf.setFont('helvetica','bold');pdf.setTextColor(0);
+    pdf.text('Expense Breakdown:',14,124);
+    pdf.setFont('helvetica','normal');let y=133;
+    Object.entries(catMap).forEach(([cat,amt])=>{pdf.text(`${cat}: Rs.${fmt(amt)}`,20,y);y+=8;});
+    pdf.setFontSize(8);pdf.setTextColor(150);pdf.text('© TractorWala v4.0 — For reference only. Consult CA for filing.',14,280);
+    pdf.save(`Annual_${fyStart.slice(0,4)}_${fyEnd.slice(0,4)}.pdf`);toast('वार्षिक PDF डाउनलोड झाले ✅');
+  }catch(e){toast('PDF Error: '+e.message,'err');}
+};
+
+/* ============================================================
+   BACKUP
+   ============================================================ */
+async function pgBackup(area){
+  const lastBk=localStorage.getItem('tw_lastBackup');
+  const daysSince=lastBk?Math.floor((new Date()-new Date(lastBk))/(1000*60*60*24)):null;
+  area.innerHTML=`
+  <div class="sec-hdr"><span class="sec-ttl">💾 Backup & Restore</span></div>
+  <div style="background:${daysSince===null||daysSince>7?'var(--red-l)':'var(--g50)'};border:1px solid ${daysSince===null||daysSince>7?'var(--red)':'var(--g300)'};border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:.84rem">
+    ${daysSince===null?'⚠️ <b>अजून Backup घेतला नाही!</b> आपला डेटा सुरक्षित करा.':daysSince===0?'✅ आजच Backup घेतला — डेटा सुरक्षित आहे.':`${daysSince>7?'⚠️':'✅'} शेवटचा Backup: <b>${daysSince} दिवसांपूर्वी</b> (${new Date(lastBk).toLocaleDateString('mr-IN')})`}
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:13px">
+    <div class="card" style="border-top:3px solid var(--g500)">
+      <div style="font-size:2rem;margin-bottom:10px">📤</div>
+      <div class="card-ttl" style="margin-bottom:8px">Export Backup</div>
+      <p style="font-size:.82rem;color:var(--txt2);margin-bottom:14px">सर्व डेटा JSON फाइलमध्ये डाउनलोड करा. सुरक्षित ठेवा.</p>
+      <button class="btn btn-primary btn-full" onclick="doExport()"><i class="fas fa-download"></i> JSON Download</button>
+    </div>
+    <div class="card" style="border-top:3px solid var(--blue)">
+      <div style="font-size:2rem;margin-bottom:10px">📥</div>
+      <div class="card-ttl" style="margin-bottom:8px">Import Backup</div>
+      <p style="font-size:.82rem;color:var(--txt2);margin-bottom:14px">JSON backup फाइल import करा.</p>
+      <div style="margin-bottom:10px">
+        <label style="display:flex;align-items:center;gap:8px;margin-bottom:6px;cursor:pointer">
+          <input type="radio" name="impMode" value="add" checked style="accent-color:var(--brand)"/>
+          <div><b style="font-size:.82rem">नवीन जोडा</b><div style="font-size:.72rem;color:var(--txt3)">विद्यमान डेटा ठेवा</div></div>
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+          <input type="radio" name="impMode" value="replace" style="accent-color:var(--red)"/>
+          <div><b style="font-size:.82rem;color:var(--red)">सर्व बदला ⚠️</b><div style="font-size:.72rem;color:var(--txt3)">विद्यमान डेटा हटवा</div></div>
+        </label>
+      </div>
+      <input type="file" id="impFile" accept=".json" style="display:none" onchange="doImport(this)"/>
+      <button class="btn btn-ghost btn-full" onclick="document.getElementById('impFile').click()"><i class="fas fa-upload"></i> JSON Import</button>
+    </div>
+    <div class="card" style="border-top:3px solid var(--red)">
+      <div style="font-size:2rem;margin-bottom:10px">🗑️</div>
+      <div class="card-ttl" style="margin-bottom:8px;color:var(--red)">डेटा साफ करा</div>
+      <p style="font-size:.82rem;color:var(--red);margin-bottom:14px">⚠️ हे undo करता येत नाही!</p>
+      <button class="btn btn-danger btn-full" onclick="doClear()"><i class="fas fa-trash-alt"></i> सर्व डेटा हटवा</button>
+    </div>
+  </div>`;
+}
+window.doExport=async function(){
+  const[wS,eS,rS,sS]=await Promise.all([getDocs(uq('works')),getDocs(uq('expenses')),getDocs(uq('rates')),getDocs(uq('shetkari'))]);
+  const bk={v:'4.0',at:new Date().toISOString(),works:[],expenses:[],rates:[],shetkari:[]};
+  wS.forEach(d=>bk.works.push({...d.data(),_id:d.id}));eS.forEach(d=>bk.expenses.push({...d.data(),_id:d.id}));
+  rS.forEach(d=>bk.rates.push({...d.data(),_id:d.id}));sS.forEach(d=>bk.shetkari.push({...d.data(),_id:d.id}));
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(bk,null,2)],{type:'application/json'}));
+  a.download=`TractorWala_v4_${today()}.json`;a.click();
+  localStorage.setItem('tw_lastBackup',new Date().toISOString());
+  toast(`Backup: ${bk.works.length} काम, ${bk.expenses.length} खर्च ✅`);
+  render('backup');
+};
+window.doImport=async function(inp){
+  const file=inp.files[0];if(!file)return;
+  const mode=document.querySelector('input[name="impMode"]:checked')?.value||'add';
+  const r=new FileReader();r.onload=async e=>{
+    try{
+      const bk=JSON.parse(e.target.result);
+      if(!bk.works||!bk.expenses){toast('Invalid file','err');return;}
+      if(!confirm(`Import: ${bk.works.length} काम, ${bk.expenses.length} खर्च?\nपद्धत: ${mode==='add'?'नवीन जोडा':'सर्व बदला'}`))return;
+      if(mode==='replace'){
+        const[wS,eS]=await Promise.all([getDocs(uq('works')),getDocs(uq('expenses'))]);
+        for(const d of wS.docs)await deleteDoc(doc(db,'works',d.id));
+        for(const d of eS.docs)await deleteDoc(doc(db,'expenses',d.id));
+      }
+      let n=0;
+      for(const w of bk.works){const{_id,...rest}=w;await addDoc(col('works'),{...rest,uid:uid()});n++;}
+      for(const e of bk.expenses){const{_id,...rest}=e;await addDoc(col('expenses'),{...rest,uid:uid()});n++;}
+      for(const r2 of(bk.rates||[])){const{_id,...rest}=r2;await addDoc(col('rates'),{...rest,uid:uid()});n++;}
+      for(const s of(bk.shetkari||[])){const{_id,...rest}=s;await addDoc(col('shetkari'),{...rest,uid:uid()});n++;}
+      toast(`${n} नोंदी import झाल्या ✅`);updateBadge();
+    }catch(ex){toast('Import Error: '+ex.message,'err');}
+  };r.readAsText(file);
+};
+window.doClear=async function(){
+  if(!confirm('⚠️ सर्व डेटा कायमचा हटवायचा आहे?'))return;
+  if(!confirm('अखेरची संधी — नक्की?'))return;
+  const[wS,eS]=await Promise.all([getDocs(uq('works')),getDocs(uq('expenses'))]);
+  let n=0;
+  for(const d of wS.docs){await deleteDoc(doc(db,'works',d.id));n++;}
+  for(const d of eS.docs){await deleteDoc(doc(db,'expenses',d.id));n++;}
+  toast(`${n} नोंदी हटवल्या`,'warn');updateBadge();
+};
+
+/* ============================================================
+   PROFILE — with Fleet, Logo, Budget, Reminders
+   ============================================================ */
+async function pgProfile(area){
+  const pr=gp2();
+  let tractors=[];
+  try{const tSnap=await getDocs(uq('tractors'));tSnap.forEach(d=>tractors.push({...d.data(),_id:d.id}));}catch(e){}
+
+  area.innerHTML=`
+  <div class="sec-hdr"><span class="sec-ttl">👤 प्रोफाइल</span></div>
+  <div style="max-width:500px">
+    <div class="card" style="margin-bottom:13px;text-align:center">
+      <img src="${CU?.photoURL||'https://ui-avatars.com/api/?name=U&background=166534&color=fff'}" class="prof-avatar" alt="Avatar" crossorigin="anonymous"/>
+      <div style="font-weight:700;font-size:1rem">${CU?.displayName||'User'}</div>
+      <div style="font-size:.78rem;color:var(--txt3)">${CU?.email||''}</div>
+    </div>
+    <div class="card" style="margin-bottom:13px">
+      <div class="card-hdr"><span class="card-ttl">🏢 व्यवसाय माहिती</span></div>
+      <input type="hidden" id="pDocId" value="${pr._id||''}"/>
+      <div class="fr2">
+        <div class="fg"><label class="fl">व्यवसायाचे नाव *</label><input class="fc" id="pBiz" value="${pr.businessName||''}"/></div>
+        <div class="fg"><label class="fl">मालकाचे नाव</label><input class="fc" id="pOwn" value="${pr.ownerName||''}"/></div>
+      </div>
+      <div class="fr2">
+        <div class="fg"><label class="fl">मोबाइल</label><input class="fc" type="tel" id="pPh" value="${pr.phone||''}"/></div>
+        <div class="fg"><label class="fl">UPI ID</label><input class="fc" id="pUpi" placeholder="yourname@upi" value="${pr.upiId||''}"/></div>
+      </div>
+      <div class="fg"><label class="fl">व्यवसायाचा पत्ता</label><textarea class="fc" id="pAddr" rows="2" placeholder="गाव, तालुका, जिल्हा, पिनकोड">${pr.address||''}</textarea></div>
+      <div class="fr2">
+        <div class="fg"><label class="fl">GSTIN (वैकल्पिक)</label><input class="fc" id="pGST" placeholder="27XXXXX" maxlength="15" value="${pr.gstin||''}"/></div>
+        <div class="fg"><label class="fl">मासिक खर्च मर्यादा (₹)</label><input class="fc" type="number" id="pBudget" placeholder="₹ 15000" value="${pr.monthlyBudget||''}"/></div>
+      </div>
+      <div class="fg"><label class="fl">Invoice अटी व शर्ती</label><textarea class="fc" id="pTerms" rows="3" placeholder="उदा: पेमेंट ७ दिवसांत करावे.">${pr.terms||''}</textarea></div>
+      ${pr.upiId?`<div class="fg"><label class="fl">UPI QR कोड</label><div id="profQR" style="margin-top:6px"></div></div>`:''}
+      <button class="btn btn-primary btn-full" onclick="saveProfile()"><i class="fas fa-save"></i> प्रोफाइल सेव्ह करा</button>
+    </div>
+
+    <!-- Logo Upload -->
+    <div class="card" style="margin-bottom:13px">
+      <div class="card-hdr"><span class="card-ttl">🖼️ व्यवसायाचा लोगो</span></div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <img id="logoPreview" src="${pr.logoBase64||''}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;border:2px solid var(--border);${!pr.logoBase64?'display:none':''}"/>
+        <div>
+          <input type="file" id="logoFile" accept="image/*" style="display:none" onchange="handleLogoUpload(this)"/>
+          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('logoFile').click()"><i class="fas fa-upload"></i> लोगो अपलोड करा</button>
+          <div style="font-size:.7rem;color:var(--txt3);margin-top:4px">JPG/PNG, max 200KB — Invoice वर दिसेल</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tractor Fleet -->
+    <div class="card" style="margin-bottom:13px">
+      <div class="card-hdr">
+        <span class="card-ttl">🚜 माझे ट्रॅक्टर</span>
+        <button class="btn btn-primary btn-sm" onclick="openTractorM()"><i class="fas fa-plus"></i> जोडा</button>
+      </div>
+      ${tractors.length===0?`<div class="empty" style="padding:20px"><i class="fas fa-tractor"></i><p>ट्रॅक्टर नाही</p></div>`:`
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${tractors.map(t=>`<div style="background:var(--surface2);border-radius:8px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+          <div><b style="font-size:.88rem">🚜 ${t.tractorNumber||'—'}</b><div style="font-size:.73rem;color:var(--txt3)">${t.model||'—'} | ${t.purchaseYear?t.purchaseYear+' साल':''}${t.insuranceExpiry?' | विमा: '+fmtD(t.insuranceExpiry):''}</div></div>
+          <div style="display:flex;gap:5px">
+            <button class="btn btn-xs btn-ghost btn-ico" onclick='openTractorM(${JSON.stringify(t)})'><i class="fas fa-edit"></i></button>
+            <button class="btn btn-xs btn-danger btn-ico" onclick="delTractor('${t._id}')"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>`).join('')}
+      </div>`}
+    </div>
+
+    <!-- Reminders -->
+    <div class="card" style="margin-bottom:13px">
+      <div class="card-hdr"><span class="card-ttl">🔔 स्वयं स्मरणपत्र सेटिंग</span></div>
+      <div class="fg">
+        <label class="fl">X दिवसांनंतर पेमेंट स्मरणपत्र</label>
+        <select class="fc" id="pReminderDays">
+          <option value="0" ${!pr.reminderDays||pr.reminderDays==0?'selected':''}>बंद</option>
+          <option value="3" ${pr.reminderDays==3?'selected':''}>३ दिवस</option>
+          <option value="7" ${!pr.reminderDays||pr.reminderDays==7?'selected':''}>७ दिवस</option>
+          <option value="15" ${pr.reminderDays==15?'selected':''}>१५ दिवस</option>
+          <option value="30" ${pr.reminderDays==30?'selected':''}>३० दिवस</option>
+        </select>
+      </div>
+      <p style="font-size:.78rem;color:var(--txt3)">Dashboard उघडल्यावर, X दिवसांपेक्षा जुन्या बाकी पेमेंटसाठी स्वयं सूचना येईल.</p>
+    </div>
+
+    <!-- Language -->
+    <div class="card" style="margin-bottom:13px">
+      <div class="card-hdr"><span class="card-ttl">🌐 भाषा निवडा</span></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn ${LANG==='mr'?'btn-primary':'btn-ghost'}" onclick="setLang('mr')">मराठी</button>
+        <button class="btn ${LANG==='hi'?'btn-primary':'btn-ghost'}" onclick="setLang('hi')">हिंदी</button>
+        <button class="btn ${LANG==='en'?'btn-primary':'btn-ghost'}" onclick="setLang('en')">English</button>
+      </div>
+    </div>
+    <div class="card" style="background:var(--surface2);border:1px solid var(--border2)">
+      <div style="text-align:center;font-size:.78rem;color:var(--txt3);line-height:2">
+        <div style="font-family:var(--font-display);font-size:1rem;font-weight:700;color:var(--brand);margin-bottom:4px">TractorWala v4.0</div>
+        📧 sourabhbongarde2@gmail.com<br>📞 7875817356<br>
+        <div style="margin-top:6px;font-size:.7rem">© Sourabh Bongarde Software Solutions Pvt. Ltd.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tractor Modal -->
+  <div class="moverlay hidden" id="tractorModal">
+    <div class="modal">
+      <div class="m-head"><span class="m-ttl" id="tractorMTtl">नवीन ट्रॅक्टर</span><button class="m-close" onclick="closeM('tractorModal')"><i class="fas fa-times"></i></button></div>
+      <div class="m-body">
+        <input type="hidden" id="tractorId"/>
+        <div class="fr2">
+          <div class="fg"><label class="fl">ट्रॅक्टर नंबर *</label><input class="fc" id="tNum" placeholder="MH-12 XX 0000"/></div>
+          <div class="fg"><label class="fl">मॉडेल</label><input class="fc" id="tModel" placeholder="Mahindra 575, Sonalika..."/></div>
+        </div>
+        <div class="fr2">
+          <div class="fg"><label class="fl">खरेदी वर्ष</label><input class="fc" type="number" id="tYear" placeholder="2020"/></div>
+          <div class="fg"><label class="fl">विमा समाप्ती</label><input class="fc" type="date" id="tIns"/></div>
+        </div>
+        <div class="fg"><label class="fl">नोट</label><textarea class="fc" id="tNote" rows="2" placeholder="वैकल्पिक"></textarea></div>
+      </div>
+      <div class="m-foot"><button class="btn btn-ghost" onclick="closeM('tractorModal')">रद्द करा</button><button class="btn btn-primary" onclick="saveTractor()"><i class="fas fa-save"></i> सेव्ह</button></div>
+    </div>
+  </div>`;
+
+  if(pr.upiId){
+    setTimeout(()=>{
+      const el=document.getElementById('profQR');
+      if(el)try{new QRCode(el,{text:`upi://pay?pa=${pr.upiId}&pn=${encodeURIComponent(pr.businessName||'TractorWala')}`,width:90,height:90,colorDark:'#166534'});}catch(e){}
+    },100);
+  }
+}
+window.saveProfile=async function(){
+  const docId=document.getElementById('pDocId').value;
+  const d={uid:uid(),businessName:document.getElementById('pBiz').value.trim(),ownerName:document.getElementById('pOwn').value.trim(),phone:document.getElementById('pPh').value.trim(),upiId:document.getElementById('pUpi').value.trim(),address:document.getElementById('pAddr')?.value.trim()||'',gstin:document.getElementById('pGST')?.value.trim()||'',monthlyBudget:parseFloat(document.getElementById('pBudget')?.value)||0,terms:document.getElementById('pTerms')?.value.trim()||'',reminderDays:parseInt(document.getElementById('pReminder')?.value)||7,updatedAt:today()};
+  try{
+    if(docId)await updateDoc(doc(db,'profiles',docId),d);
+    else{const ref=await addDoc(col('profiles'),{...d,createdAt:today()});d._id=ref.id;}
+    PROFILE={...PROFILE,...d};toast('प्रोफाइल सेव्ह झाले ✅');render('profile');
+  }catch(e){toast('Error: '+e.message,'err');}
+};
+window.handleLogoUpload=function(inp){
+  const file=inp.files[0];if(!file)return;
+  if(file.size>200*1024){toast('फाइल खूप मोठी आहे (max 200KB)','err');return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    PROFILE.logoBase64=e.target.result;
+    const prev=document.getElementById('logoPreview');
+    if(prev){prev.src=e.target.result;prev.style.display='block';}
+    const pr=gp2();
+    if(pr._id)updateDoc(doc(db,'profiles',pr._id),{logoBase64:e.target.result});
+    toast('लोगो अपलोड झाला ✅');
+  };
+  reader.readAsDataURL(file);
+};
+window.openTractorM=function(t=null){
+  document.getElementById('tractorModal').classList.remove('hidden');
+  document.getElementById('tractorMTtl').textContent=t?'ट्रॅक्टर संपादित':'नवीन ट्रॅक्टर';
+  document.getElementById('tractorId').value=t?._id||'';
+  document.getElementById('tNum').value=t?.tractorNumber||'';
+  document.getElementById('tModel').value=t?.model||'';
+  document.getElementById('tYear').value=t?.purchaseYear||'';
+  document.getElementById('tIns').value=t?.insuranceExpiry||'';
+  document.getElementById('tNote').value=t?.notes||'';
+};
+window.saveTractor=async function(){
+  const id=document.getElementById('tractorId').value;
+  const num=document.getElementById('tNum').value.trim();
+  if(!num){toast('ट्रॅक्टर नंबर आवश्यक','err');return;}
+  const d={uid:uid(),tractorNumber:num,model:document.getElementById('tModel').value.trim(),purchaseYear:document.getElementById('tYear').value||'',insuranceExpiry:document.getElementById('tIns').value||'',notes:document.getElementById('tNote').value.trim(),updatedAt:today()};
+  try{
+    if(id)await updateDoc(doc(db,'tractors',id),d);
+    else await addDoc(col('tractors'),{...d,createdAt:today()});
+    closeM('tractorModal');toast('ट्रॅक्टर सेव्ह झाला ✅');render('profile');
+  }catch(e){toast('Error: '+e.message,'err');}
+};
+window.delTractor=async function(id){
+  if(!confirm('हा ट्रॅक्टर हटवायचा आहे का?'))return;
+  await deleteDoc(doc(db,'tractors',id));toast('ट्रॅक्टर हटवला');render('profile');
+};
+
+/* UTILITY */
+window.closeM=function(id){document.getElementById(id)?.classList.add('hidden');};
+window.openInvFor=function(id){window._invWID=id;nav('invoice');};
+
+// Init
+setLang(LANG);
+</script>
+</body>
+</html>
