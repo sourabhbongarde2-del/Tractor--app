@@ -1,0 +1,33 @@
+{
+  "_instructions": "Yaha apne ad banners add/edit karo. 'image' me file path do (assets/ads/ folder me image daalo). 'link' optional hai - banner click pe khulne wala URL/page. 'active':false karke kisi banner ko temporarily band kar sakte ho. Ek hi 'placement' me 2 ya zyada banner ho to apne-aap slide hote hain (4 second interval) - alag se kuch karna nahi padta, sirf same placement use karo.",
+  "banners": [
+    {
+      "id": "ad1",
+      "image": "assets/ads/banner1.png",
+      "link": "",
+      "active": true,
+      "placement": "dashboard-top"
+    },
+    {
+      "id": "ad2",
+      "image": "assets/ads/banner2.png",
+      "link": "",
+      "active": true,
+      "placement": "dashboard-top"
+    },
+    {
+      "id": "ad3",
+      "image": "assets/ads/banner3.png",
+      "link": "",
+      "active": true,
+      "placement": "work-list-top"
+    },
+    {
+      "id": "ad4",
+      "image": "assets/ads/banner4.png",
+      "link": "",
+      "active": true,
+      "placement": "work-list-top"
+    }
+  ]
+}
