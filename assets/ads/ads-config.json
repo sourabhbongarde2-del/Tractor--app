@@ -28,6 +28,27 @@
       "link": "",
       "active": true,
       "placement": "work-list-top"
-    }
+    },
+    {
+      "id": "ad3",
+      "image": "assets/ads/banner3.png",
+      "link": "",
+      "active": true,
+      "placement": "dashboard-top"
+    },
+    {
+      "id": "ad4",
+      "image": "assets/ads/banner4.png",
+      "link": "",
+      "active": true,
+      "placement": "dashboard-top"
+    },
+    {
+      "id": "ad5",
+      "image": "assets/ads/banner5.png",
+      "link": "",
+      "active": true,
+      "placement": "dashboard-top"
+     }
   ]
 }
