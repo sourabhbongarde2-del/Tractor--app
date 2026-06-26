@@ -1,41 +1,65 @@
 {
   "_instructions": "Yaha apne ad banners add/edit karo. 'image' me file path do (assets/ads/ folder me image daalo). 'link' optional hai - banner click pe khulne wala URL/page. 'active':false karke kisi banner ko temporarily band kar sakte ho. Ek hi 'placement' me 2 ya zyada banner ho to apne-aap slide hote hain (4 second interval).",
   "banners": [
-    { "id": "ad1", "image": "assets/ads/bannerdashboard.png",      "link": "", "active": true, "placement": "dashboard-top" },
-    { "id": "ad2", "image": "assets/ads/bannerdashboardadd1.png",  "link": "", "active": true, "placement": "dashboard-top" },
-    { "id": "ad3", "image": "assets/ads/bannerdashboardadd2.png",  "link": "", "active": true, "placement": "dashboard-top" },
-    { "id": "ad4", "image": "assets/ads/bannerallpage1.png",       "link": "", "active": true, "placement": "dashboard-top" },
+    { "id": "ad1", "image": "assets/ads/bannerdashboard.png", "link": "", "active": true, "placement": "dashboard-top" },
+    { "id": "ad2", "image": "assets/ads/bannerdashboardadd1.png", "link": "", "active": true, "placement": "dashboard-top" },
+    { "id": "ad3", "image": "assets/ads/bannerdashboardadd2.png", "link": "", "active": true, "placement": "dashboard-top" },
+    { "id": "ad4", "image": "assets/ads/bannerallpage1.png", "link": "", "active": true, "placement": "dashboard-top" },
+    { "id": "ad5", "image": "assets/ads/bannerallpage2.png", "link": "", "active": true, "placement": "dashboard-top" },
+    { "id": "ad6", "image": "assets/ads/bannerallpage3.png", "link": "", "active": true, "placement": "dashboard-top" },
 
-    { "id": "ad5", "image": "assets/ads/bannerworklist.png",       "link": "", "active": true, "placement": "work-list-top" },
-    { "id": "ad6", "image": "assets/ads/bannerallpage1.png",       "link": "", "active": true, "placement": "work-list-top" },
+    { "id": "ad7", "image": "assets/ads/bannerworklist.png", "link": "", "active": true, "placement": "work-list-top" },
+    { "id": "ad8", "image": "assets/ads/bannerallpage1.png", "link": "", "active": true, "placement": "work-list-top" },
+    { "id": "ad9", "image": "assets/ads/bannerallpage2.png", "link": "", "active": true, "placement": "work-list-top" },
+    { "id": "ad10", "image": "assets/ads/bannerallpage3.png", "link": "", "active": true, "placement": "work-list-top" },
 
-    { "id": "ad7", "image": "assets/ads/bannernewwork.png",        "link": "", "active": true, "placement": "work-entry-top" },
-    { "id": "ad8", "image": "assets/ads/bannerallpage1.png",       "link": "", "active": true, "placement": "work-entry-top" },
+    { "id": "ad11", "image": "assets/ads/bannernewwork.png", "link": "", "active": true, "placement": "work-entry-top" },
+    { "id": "ad12", "image": "assets/ads/bannerallpage1.png", "link": "", "active": true, "placement": "work-entry-top" },
+    { "id": "ad13", "image": "assets/ads/bannerallpage2.png", "link": "", "active": true, "placement": "work-entry-top" },
+    { "id": "ad14", "image": "assets/ads/bannerallpage3.png", "link": "", "active": true, "placement": "work-entry-top" },
 
-    { "id": "ad9", "image": "assets/ads/bannerratecard.png",       "link": "", "active": true, "placement": "rate-card-top" },
-    { "id": "ad10","image": "assets/ads/bannerallpage2.png",       "link": "", "active": true, "placement": "rate-card-top" },
+    { "id": "ad15", "image": "assets/ads/bannerratecard.png", "link": "", "active": true, "placement": "rate-card-top" },
+    { "id": "ad16", "image": "assets/ads/bannerallpage1.png", "link": "", "active": true, "placement": "rate-card-top" },
+    { "id": "ad17", "image": "assets/ads/bannerallpage2.png", "link": "", "active": true, "placement": "rate-card-top" },
+    { "id": "ad18", "image": "assets/ads/bannerallpage3.png", "link": "", "active": true, "placement": "rate-card-top" },
 
-    { "id": "ad11","image": "assets/ads/bannerexpence.png",        "link": "", "active": true, "placement": "expenses-top" },
-    { "id": "ad12","image": "assets/ads/bannerallpage2.png",       "link": "", "active": true, "placement": "expenses-top" },
+    { "id": "ad19", "image": "assets/ads/bannerexpence.png", "link": "", "active": true, "placement": "expenses-top" },
+    { "id": "ad20", "image": "assets/ads/bannerallpage1.png", "link": "", "active": true, "placement": "expenses-top" },
+    { "id": "ad21", "image": "assets/ads/bannerallpage2.png", "link": "", "active": true, "placement": "expenses-top" },
+    { "id": "ad22", "image": "assets/ads/bannerallpage3.png", "link": "", "active": true, "placement": "expenses-top" },
 
-    { "id": "ad13","image": "assets/ads/bannerpayment.png",        "link": "", "active": true, "placement": "payments-top" },
-    { "id": "ad14","image": "assets/ads/bannerallpage2.png",       "link": "", "active": true, "placement": "payments-top" },
+    { "id": "ad23", "image": "assets/ads/bannerpayment.png", "link": "", "active": true, "placement": "payments-top" },
+    { "id": "ad24", "image": "assets/ads/bannerallpage1.png", "link": "", "active": true, "placement": "payments-top" },
+    { "id": "ad25", "image": "assets/ads/bannerallpage2.png", "link": "", "active": true, "placement": "payments-top" },
+    { "id": "ad26", "image": "assets/ads/bannerallpage3.png", "link": "", "active": true, "placement": "payments-top" },
 
-    { "id": "ad15","image": "assets/ads/bannerinvoice.png",        "link": "", "active": true, "placement": "invoice-top" },
-    { "id": "ad16","image": "assets/ads/bannerallpage3.png",       "link": "", "active": true, "placement": "invoice-top" },
+    { "id": "ad27", "image": "assets/ads/bannerinvoice.png", "link": "", "active": true, "placement": "invoice-top" },
+    { "id": "ad28", "image": "assets/ads/bannerallpage1.png", "link": "", "active": true, "placement": "invoice-top" },
+    { "id": "ad29", "image": "assets/ads/bannerallpage2.png", "link": "", "active": true, "placement": "invoice-top" },
+    { "id": "ad30", "image": "assets/ads/bannerallpage3.png", "link": "", "active": true, "placement": "invoice-top" },
 
-    { "id": "ad17","image": "assets/ads/bannershetkaridb.png",     "link": "", "active": true, "placement": "shetkari-top" },
-    { "id": "ad18","image": "assets/ads/bannerallpage3.png",       "link": "", "active": true, "placement": "shetkari-top" },
+    { "id": "ad31", "image": "assets/ads/bannershetkaridb.png", "link": "", "active": true, "placement": "shetkari-top" },
+    { "id": "ad32", "image": "assets/ads/bannerallpage1.png", "link": "", "active": true, "placement": "shetkari-top" },
+    { "id": "ad33", "image": "assets/ads/bannerallpage2.png", "link": "", "active": true, "placement": "shetkari-top" },
+    { "id": "ad34", "image": "assets/ads/bannerallpage3.png", "link": "", "active": true, "placement": "shetkari-top" },
 
-    { "id": "ad19","image": "assets/ads/bannerkhata.png",          "link": "", "active": true, "placement": "khata-top" },
-    { "id": "ad20","image": "assets/ads/bannerallpage3.png",       "link": "", "active": true, "placement": "khata-top" },
+    { "id": "ad35", "image": "assets/ads/bannerkhata.png", "link": "", "active": true, "placement": "khata-top" },
+    { "id": "ad36", "image": "assets/ads/bannerallpage1.png", "link": "", "active": true, "placement": "khata-top" },
+    { "id": "ad37", "image": "assets/ads/bannerallpage2.png", "link": "", "active": true, "placement": "khata-top" },
+    { "id": "ad38", "image": "assets/ads/bannerallpage3.png", "link": "", "active": true, "placement": "khata-top" },
 
-    { "id": "ad21","image": "assets/ads/bannerbackup.png",         "link": "", "active": true, "placement": "backup-top" },
-    { "id": "ad22","image": "assets/ads/bannerallpage1.png",       "link": "", "active": true, "placement": "backup-top" },
+    { "id": "ad39", "image": "assets/ads/bannerallpage1.png", "link": "", "active": true, "placement": "reports-top" },
+    { "id": "ad40", "image": "assets/ads/bannerallpage2.png", "link": "", "active": true, "placement": "reports-top" },
+    { "id": "ad41", "image": "assets/ads/bannerallpage3.png", "link": "", "active": true, "placement": "reports-top" },
 
-    { "id": "ad23","image": "assets/ads/bannerprofile.png",        "link": "", "active": true, "placement": "profile-top" },
-    { "id": "ad24","image": "assets/ads/bannerallpage1.png",       "link": "", "active": true, "placement": "profile-top" },
+    { "id": "ad42", "image": "assets/ads/bannerbackup.png", "link": "", "active": true, "placement": "backup-top" },
+    { "id": "ad43", "image": "assets/ads/bannerallpage1.png", "link": "", "active": true, "placement": "backup-top" },
+    { "id": "ad44", "image": "assets/ads/bannerallpage2.png", "link": "", "active": true, "placement": "backup-top" },
+    { "id": "ad45", "image": "assets/ads/bannerallpage3.png", "link": "", "active": true, "placement": "backup-top" },
 
-    { "id": "ad25","image": "assets/ads/bannerallpage3.png",       "link": "", "active": true, "placement": "reports-top" }
+    { "id": "ad46", "image": "assets/ads/bannerprofile.png", "link": "", "active": true, "placement": "profile-top" },
+    { "id": "ad47", "image": "assets/ads/bannerallpage1.png", "link": "", "active": true, "placement": "profile-top" },
+    { "id": "ad48", "image": "assets/ads/bannerallpage2.png", "link": "", "active": true, "placement": "profile-top" },
+    { "id": "ad49", "image": "assets/ads/bannerallpage3.png", "link": "", "active": true, "placement": "profile-top" }
   ]
 }
