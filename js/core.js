@@ -106,7 +106,7 @@ let _adsCache=null;
 async function loadAds(){
   if(_adsCache)return _adsCache;
   try{
-    const r=await fetch('assets/ads/ads-config.json');
+    const r=await fetch('assets/add/ads-config.json');
     const j=await r.json();
     _adsCache=(j.banners||[]).filter(b=>b.active);
   }catch(_){_adsCache=[];}
