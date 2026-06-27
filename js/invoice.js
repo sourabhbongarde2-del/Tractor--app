@@ -245,7 +245,12 @@ window.buildConsolidatedFromSelection=function(){
   </div>`;
 
   if(upiStr){
-    setTimeout(()=>{try{new QRCode(document.getElementById('invQR'),{text:upiStr,width:80,height:80,colorDark:'#166534',colorLight:'#fff'});}catch(_){}},100);
+    setTimeout(()=>{
+      const qrEl=document.getElementById('invQR');if(!qrEl)return;
+      if(typeof QRCode==='undefined'){console.error('QRCode library not loaded');return;}
+      try{new QRCode(qrEl,{text:upiStr,width:80,height:80,colorDark:'#166534',colorLight:'#fff'});}
+      catch(err){console.error('QR generation failed:',err);}
+    },150);
   }
   window._iW={customerName:name,mobile,workType:`${works.length} काम${periodLabel?' ('+periodLabel+')':''}`,quantity:'',unit:'',rate:'',total:totBiz,date:today(),notes:''};
   window._iB=totDue;window._iP=totPaidOnSelected;
@@ -310,7 +315,12 @@ async function buildSingleInv(wid){
     </div>`;
 
     if(upiStr){
-      setTimeout(()=>{try{new QRCode(document.getElementById('invQR'),{text:upiStr,width:80,height:80,colorDark:'#166534',colorLight:'#fff'});}catch(_){}},100);
+      setTimeout(()=>{
+      const qrEl=document.getElementById('invQR');if(!qrEl)return;
+      if(typeof QRCode==='undefined'){console.error('QRCode library not loaded');return;}
+      try{new QRCode(qrEl,{text:upiStr,width:80,height:80,colorDark:'#166534',colorLight:'#fff'});}
+      catch(err){console.error('QR generation failed:',err);}
+    },150);
     }
     window._iW=w;window._iB=bal;window._iP=paid;
   }catch(e){area.innerHTML=`<div class="card"><p style="color:var(--red)">${friendlyErr(e)}</p></div>`;}
