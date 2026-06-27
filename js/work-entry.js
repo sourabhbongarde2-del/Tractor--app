@@ -41,9 +41,9 @@ export async function pgWE(area){
   <div id="rowsWrap"></div>
 
   <div class="card" style="max-width:680px;margin-top:11px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-      <button class="btn bg2" onclick="window.addWorkRow()"><i class="fas fa-plus"></i> आणखी काम जोडा (एकाच ग्राहकाचे)</button>
-      <div style="text-align:right">
+    <div class="we-actions-row" style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+      <button class="btn bg2" onclick="window.addWorkRow()" style="flex:1 1 auto;min-width:0"><i class="fas fa-plus"></i> आणखी काम जोडा</button>
+      <div style="text-align:right;flex-shrink:0">
         <div class="sl">एकूण रक्कम (सर्व काम)</div>
         <div class="tot-box" id="wGrandTot" style="margin-top:2px">₹ 0</div>
       </div>
