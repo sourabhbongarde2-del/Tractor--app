@@ -304,6 +304,12 @@ tbody td{padding:9px 11px;color:var(--tx1);vertical-align:middle}
   table{font-size:.74rem}
   thead th{padding:7px 8px;font-size:.62rem}
   tbody td{padding:7px 8px}
+  /* Work Entry ka "+ आणखी काम जोडा" button aur total-amount box chhoti screen pe side-by-side
+     fit nahi hote the - total box overflow ho jata tha. Ab stack ho jate hain. */
+  .we-actions-row{flex-direction:column;align-items:stretch!important}
+  .we-actions-row button{width:100%}
+  .we-actions-row>div{text-align:left!important;width:100%}
+  .we-actions-row .tot-box{width:100%;box-sizing:border-box}
 }
 @media(max-width:380px){
   .sv{font-size:1.05rem}
