@@ -194,7 +194,15 @@ select.fc{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
 /* ============================================================
    TABLES / BADGES
    ============================================================ */
-.tw{overflow-x:auto;border-radius:var(--r8);border:1px solid var(--bdr)}
+.tw{overflow-x:auto;border-radius:var(--r8);border:1px solid var(--bdr);position:relative;-webkit-overflow-scrolling:touch}
+.tw table{min-width:100%}
+/* Mobile par jab table screen se wide ho, ek subtle right-edge fade dikhata hai taaki
+   user ko pata chale ki aur columns hain - bina iske last column "kati hui" jaisi lagti thi */
+.tw::after{
+  content:'';position:absolute;top:0;right:0;bottom:0;width:18px;
+  background:linear-gradient(to right,transparent,rgba(0,0,0,.06));
+  pointer-events:none;
+}
 table{width:100%;border-collapse:collapse;font-size:.8rem}
 thead th{background:var(--surf2);color:var(--g700);padding:9px 11px;text-align:left;font-weight:700;font-size:.68rem;text-transform:uppercase;letter-spacing:.7px;white-space:nowrap;border-bottom:2px solid var(--bdr2)}
 tbody tr{border-top:1px solid var(--bdr);transition:background .15s}
@@ -291,6 +299,11 @@ tbody td{padding:9px 11px;color:var(--tx1);vertical-align:middle}
   .qa-grid{grid-template-columns:1fr 1fr}
   .tbar-lang{display:none}
   .kh-sg{grid-template-columns:1fr 1fr 1fr}
+}
+@media(max-width:480px){
+  table{font-size:.74rem}
+  thead th{padding:7px 8px;font-size:.62rem}
+  tbody td{padding:7px 8px}
 }
 @media(max-width:380px){
   .sv{font-size:1.05rem}
