@@ -24,7 +24,7 @@ export async function pgProf(area){
         <div class="fg"><label class="fl">मोबाइल</label><input class="fc" type="tel" id="pPh" value="${pr.phone||''}"/></div>
         <div class="fg"><label class="fl">UPI ID</label><input class="fc" id="pUp" placeholder="yourname@upi" value="${pr.upiId||''}"/></div>
       </div>
-      ${pr.upiId?`<div class="fg"><label class="fl">UPI QR</label><div id="pQR" style="margin-top:5px"></div></div>`:''}
+      ${pr.upiId?`<div class="fg"><label class="fl">UPI QR</label><div id="pQR" style="margin-top:5px;min-height:86px;min-width:86px;display:inline-block"></div></div>`:''}
       <button class="btn bp bfw" onclick="window.saveProf()"><i class="fas fa-save"></i> प्रोफाइल सेव्ह करा</button>
     </div>
     <div class="card" style="margin-bottom:12px">
@@ -48,8 +48,18 @@ export async function pgProf(area){
   if(pr.upiId){
     setTimeout(()=>{
       const el=document.getElementById('pQR');if(!el)return;
-      try{new QRCode(el,{text:`upi://pay?pa=${pr.upiId}&pn=${encodeURIComponent(pr.businessName||'TractorWala')}`,width:86,height:86,colorDark:'#166534'});}catch(_){}
-    },100);
+      if(typeof QRCode==='undefined'){
+        el.innerHTML='<p style="font-size:.72rem;color:var(--tx3)">QR लोड होत नाही — इंटरनेट तपासा</p>';
+        console.error('QRCode library not loaded');
+        return;
+      }
+      try{
+        new QRCode(el,{text:`upi://pay?pa=${pr.upiId}&pn=${encodeURIComponent(pr.businessName||'TractorWala')}`,width:86,height:86,colorDark:'#166534'});
+      }catch(err){
+        console.error('QR generation failed:',err);
+        el.innerHTML='<p style="font-size:.72rem;color:var(--red)">QR तयार करता आला नाही</p>';
+      }
+    },150);
   }
 }
 window.saveProf=async function(){
