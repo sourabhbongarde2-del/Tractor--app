@@ -1,0 +1,114 @@
+rules_version = '2';
+
+// TractorWala Firestore Security Rules
+// =====================================
+// Har collection (works, expenses, rates, shetkari, profiles) me documents
+// "uid" field se owner ke saath tagged hote hain. Yeh rules ensure karte hain
+// ki sirf logged-in user apna khud ka data padh/likh sake - kisi aur ka data
+// kabhi access nahi ho sakta, chahe kisi ko document ID pata bhi ho.
+//
+// Lagane ka tareeka: Firebase Console -> Firestore Database -> Rules tab me
+// is poore file ka content paste karo aur "Publish" dabao.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: sirf authenticated user, aur document ka uid field unke khud ke uid se match kare
+    function isOwner(data) {
+      return request.auth != null && request.auth.uid == data.uid;
+    }
+
+    match /works/{docId} {
+      allow read, update, delete: if isOwner(resource.data);
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.uid;
+    }
+
+    match /expenses/{docId} {
+      allow read, update, delete: if isOwner(resource.data);
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.uid;
+    }
+
+    match /rates/{docId} {
+      allow read, update, delete: if isOwner(resource.data);
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.uid;
+    }
+
+    match /shetkari/{docId} {
+      allow read, update, delete: if isOwner(resource.data);
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.uid;
+    }
+
+    match /profiles/{docId} {
+      allow read, update, delete: if isOwner(resource.data);
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.uid;
+    }
+
+    // Auto-backup: har save/edit/delete ke baad ek chhota snapshot yahan likha jata hai.
+    // Sirf create aur read allowed hai - backups kabhi edit/delete nahi hote (history hai).
+    match /backups/{docId} {
+      allow read: if isOwner(resource.data);
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.uid;
+    }
+
+    // ===========================================================
+    // TRIAL + LOCK + MONTHLY SUBSCRIPTION SYSTEM
+    // ===========================================================
+    // Admin email - sirf yeh email unlockCodes collection me likh (naya code banaa) sakta hai.
+    // Yeh email Firebase Auth token me already verified hota hai (Google Login se), isliye
+    // customer apna email spoof nahi kar sakta - request.auth.token.email Google ne verify kiya hai.
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == 'sourabhbongarde2@gmail.com';
+    }
+
+    // licenses/{uid} - har customer ka trial/unlock status. Customer sirf apna record
+    // PADH sakta hai (status dikhane ke liye). LIKH sirf 2 tareeke se ho sakta hai:
+    //  1) Pehli baar create (trial shuru karte waqt) - khud apna uid+email+trialStart set kar sakta hai
+    //  2) Update sirf tabhi jab woh ek VALID, abhi tak use na hua code apply kar raha ho jo
+    //     unlockCodes collection me uske email ke against maujood hai. get() se us code document
+    //     ko seedha padh ke verify karte hain ki woh sach me unused hai aur sahi email ka hai -
+    //     customer khali "unlockedUntil" field me kuch bhi daal ke bypass nahi kar sakta.
+    match /licenses/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null && request.auth.uid == uid
+                    && request.resource.data.email == request.auth.token.email
+                    && request.resource.data.unlockedUntil == null;
+      allow update: if request.auth != null && request.auth.uid == uid
+                    && request.resource.data.email == resource.data.email
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['unlockedUntil','lastCode','lastUnlockAt'])
+                    // Naya unlockedUntil ek REAL, abhi-tak-unused code se hi aana chahiye -
+                    // wahi code document jiska ID client 'lastCode' field me bhej raha hai,
+                    // uska email match kare, used==false ho, aur uska 'validUntil' field
+                    // exactly request.resource.data.unlockedUntil ke barabar ho (taaki client
+                    // khud koi random future date na daal sake - sirf wahi date use ho sakti
+                    // hai jo admin ne us code document me khud likhi thi).
+                    && exists(/databases/$(database)/documents/unlockCodes/$(request.resource.data.lastCode))
+                    && get(/databases/$(database)/documents/unlockCodes/$(request.resource.data.lastCode)).data.email == request.auth.token.email
+                    && get(/databases/$(database)/documents/unlockCodes/$(request.resource.data.lastCode)).data.used == false
+                    && get(/databases/$(database)/documents/unlockCodes/$(request.resource.data.lastCode)).data.validUntil == request.resource.data.unlockedUntil;
+      allow write: if isAdmin();
+    }
+
+    // unlockCodes/{codeId} - Admin ke generate kiye codes. Customer sirf READ kar sakta hai
+    // (apna email match karne wala code dhundhne ke liye), kabhi likh/delete nahi sakta.
+    // Code "use" hone ka mark sirf admin ya khud Cloud-Function-jaisi trusted write se hota -
+    // is design me customer khud licenses/{uid} update karte waqt is document ko bhi
+    // simultaneously 'used:true' karega ek batched-write se (client se), isliye yahan bhi
+    // update allow karna padta hai lekin SIRF used:false->true, kuch aur field nahi badal sakta.
+    match /unlockCodes/{codeId} {
+      allow read: if request.auth != null;
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || (
+        request.auth != null &&
+        resource.data.email == request.auth.token.email &&
+        resource.data.used == false &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['used','usedAt','usedBy']) &&
+        request.resource.data.used == true
+      );
+    }
+
+    // Default: sab kuch deny (koi aur collection access nahi ho sakti)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

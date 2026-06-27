@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin</title>
+<meta name="robots" content="noindex, nofollow"/>
+<link rel="stylesheet" href="css/admin.css"/>
+</head>
+<body>
+
+<div class="adm-toast-c" id="admToast"></div>
+
+<!-- Login screen: koi bhi Google account se login kar sakta hai, lekin Firestore rules
+     aur is panel ka apna check sirf admin email ko data dekhne denge. -->
+<div class="adm-wrap" id="admLogin">
+  <div class="adm-center">
+    <h1 style="font-size:1.4rem;margin-bottom:8px;color:#fff">TractorWala Admin</h1>
+    <p style="color:#94a3b8;font-size:.85rem;margin-bottom:24px">Login करा code generate karne ke liye</p>
+    <button class="adm-login-btn" onclick="adminLogin()">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G"/>
+      Google ने Login करा
+    </button>
+  </div>
+</div>
+
+<!-- Access-denied screen: agar koi non-admin email login kare -->
+<div class="adm-wrap h" id="admDenied">
+  <div class="adm-center">
+    <h1 style="font-size:1.4rem;margin-bottom:8px;color:#f87171">⛔ Access Denied</h1>
+    <p style="color:#94a3b8;font-size:.85rem;margin-bottom:6px">Logged in as: <b id="admDeniedEmail" style="color:#fff"></b></p>
+    <p style="color:#64748b;font-size:.8rem;margin-bottom:20px">Yeh panel sirf admin account ke liye hai.</p>
+    <button class="adm-btn" onclick="adminLogout()">Logout</button>
+  </div>
+</div>
+
+<!-- Main admin panel -->
+<div class="adm-wrap h" id="admPanel">
+  <div class="adm-header">
+    <div><h1>🔧 TractorWala Admin</h1><span id="admEmail"></span></div>
+    <button class="adm-btn" style="background:#334155" onclick="adminLogout()">Logout</button>
+  </div>
+
+  <div class="adm-card">
+    <h2>नवीन Unlock Code बनवा</h2>
+    <div class="adm-fg">
+      <label>Customer Email (jis se woh app me login karta hai)</label>
+      <input type="email" id="admCustEmail" placeholder="customer@gmail.com"/>
+    </div>
+    <div class="adm-fg">
+      <label>Validity (दिवस)</label>
+      <select id="admDays">
+        <option value="30" selected>30 दिवस (मासिक)</option>
+        <option value="7">7 दिवस</option>
+        <option value="90">90 दिवस (3 महिने)</option>
+        <option value="365">365 दिवस (वर्षभर)</option>
+      </select>
+    </div>
+    <button class="adm-btn" id="admGenBtn" onclick="generateCode()">+ Code Generate करा</button>
+  </div>
+
+  <div class="adm-card">
+    <h2 style="display:flex;justify-content:space-between;align-items:center">
+      सर्व Codes
+      <button class="adm-copy-btn" onclick="refreshCodes()">🔄 Refresh</button>
+    </h2>
+    <div id="admCodesList"><div class="adm-spin"></div></div>
+  </div>
+</div>
+
+<script type="module" src="js/admin.js"></script>
+</body>
+</html>

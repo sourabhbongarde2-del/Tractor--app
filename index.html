@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>TractorWala — Business Manager</title>
+<meta name="theme-color" content="#166534"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Poppins:wght@400;500;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link rel="stylesheet" href="css/base.css"/>
+<link rel="stylesheet" href="css/landing.css"/>
+<link rel="stylesheet" href="css/invoice.css"/>
+<link rel="stylesheet" href="css/license.css"/>
+</head>
+<body>
+
+<div id="toast-c"></div>
+<div class="sb-ov" id="sbOv" onclick="sbClose()"></div>
+
+<!-- Universal payment-add modal — Dashboard, Work List, Payments aur Khata sab yahi use karte hain -->
+<div class="mo h" id="payMo">
+  <div class="md">
+    <div class="mh"><span class="mt">💰 पेमेंट</span><button class="mx" onclick="closeM('payMo')"><i class="fas fa-times"></i></button></div>
+    <div class="mb" id="payMoBody"><div class="spin"></div></div>
+  </div>
+</div>
+
+<!-- Trial/Subscription Lock Screen — trial khatam hone par poora app block ho jata hai.
+     Verification Firestore Security Rules me hai (server-side), yeh sirf UI hai. -->
+<div class="h" id="lockScreen">
+  <div class="lock-card">
+    <div class="lock-icon"><i class="fas fa-lock"></i></div>
+    <div class="lock-title">TractorWala Subscription</div>
+    <p class="lock-msg" id="lockMsg">तुमचा ट्रायल संपला आहे.</p>
+    <div class="lock-qr-box">
+      <img src="assets/payment/payment-qr.png" alt="Payment QR" onerror="this.src='assets/payment/payment-qr.svg'"/>
+      <div class="lock-price">₹300 / महिना</div>
+    </div>
+    <div class="lock-divider">पेमेंट केल्यावर</div>
+    <p style="font-size:.78rem;color:var(--tx2);margin-bottom:12px">पेमेंट स्क्रीनशॉट <b>WhatsApp 7875817356</b> वर पाठवा. तुम्हाला Unlock Code मिळेल, तो खाली टाका:</p>
+    <div class="lock-code-row">
+      <input class="fc" id="lockCodeInp" placeholder="UNLOCK CODE"/>
+      <button class="btn bp" id="lockRedeemBtn" onclick="redeemUnlockCode()"><i class="fas fa-unlock"></i> Unlock</button>
+    </div>
+    <p class="lock-help">कोड मिळाला नाही? <a href="https://wa.me/917875817356" target="_blank" style="color:var(--brand);font-weight:600">WhatsApp वर संपर्क करा</a></p>
+    <button class="btn bg2 bsm" style="margin-top:14px" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> बाहेर पडा</button>
+  </div>
+</div>
+
+<div id="land">
+  <nav class="l-nav">
+    <div class="l-logo">
+      <div class="svg-logo"><img src="assets/logo/logo.svg" alt="Logo" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-tractor\'></i>'"/></div>
+      <div class="l-logo-t"><h1>TractorWala</h1><p>Business Manager</p></div>
+    </div>
+  </nav>
+  <div class="l-hero">
+    <div class="l-chip"><i class="fas fa-tractor"></i> <span id="lChip">शेतकऱ्यांसाठी #1 ऍप</span></div>
+    <h1 class="l-h1"><span id="lH1a">आपला ट्रॅक्टर</span><br><em id="lH1b">व्यवसाय डिजिटल करा</em></h1>
+    <p class="l-sub" id="lSub">काम, खर्च, पेमेंट आणि उधार खाता — सर्व एकाच ठिकाणी. सहज, सुरक्षित आणि मोफत.</p>
+    <button class="l-login" onclick="doLogin()">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G"/>
+      <span id="lBtn">Google ने Login करा</span>
+    </button>
+    <div class="l-stats">
+      <div class="l-stat"><b>₹0</b><span id="lSt1">सेटअप फी</span></div>
+      <div class="l-stat"><b>100%</b><span id="lSt2">डेटा सुरक्षित</span></div>
+      <div class="l-stat"><b>24/7</b><span id="lSt3">कधीही वापरा</span></div>
+    </div>
+  </div>
+  <div class="l-flow">
+    <div class="l-flow-ttl" id="lFlowTtl">असे चालते</div>
+    <div class="l-flow-row">
+      <div class="l-step"><div class="n">पायरी १</div><div class="i">🚜</div><h3><span id="lf1">काम नोंदवा</span><br><small id="lf1d" style="opacity:.7;font-weight:400">शेतकरी, काम व दर टाका</small></h3></div>
+      <i class="fas fa-arrow-right l-arrow"></i>
+      <div class="l-step"><div class="n">पायरी २</div><div class="i">💰</div><h3><span id="lf2">पेमेंट ट्रॅक करा</span><br><small id="lf2d" style="opacity:.7;font-weight:400">बाकी आपोआप दिसते</small></h3></div>
+      <i class="fas fa-arrow-right l-arrow"></i>
+      <div class="l-step"><div class="n">पायरी ३</div><div class="i">🧾</div><h3><span id="lf3">रिपोर्ट पाठवा</span><br><small id="lf3d" style="opacity:.7;font-weight:400">WhatsApp / PDF वर</small></h3></div>
+    </div>
+  </div>
+  <footer class="l-foot">
+    <strong>TractorWala</strong> · sourabhbongarde2@gmail.com · 7875817356<br>
+    © Sourabh Bongarde Software Solutions Pvt. Ltd.
+  </footer>
+</div>
+
+<div id="app" class="h">
+  <aside class="sb" id="sb">
+    <div class="sb-top">
+      <div class="sb-logo">
+        <div class="svg-logo-sm"><img src="assets/logo/logo.svg" alt="Logo" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-tractor\'></i>'"/></div>
+        <div class="sb-logo-t"><h2>TractorWala</h2><small>BUSINESS MANAGER</small></div>
+      </div>
+      <button class="sb-x" onclick="sbClose()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="sb-user">
+      <div class="sb-av" id="sbAv">—</div>
+      <div><div class="sb-un" id="sbNm">—</div><div class="sb-em" id="sbEm">—</div></div>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-sec">मुख्य</div>
+      <button class="nb on" data-p="dashboard"><i class="fas fa-chart-pie"></i> डॅशबोर्ड</button>
+      <button class="nb" data-p="work-entry"><i class="fas fa-plus-circle"></i> काम नोंद</button>
+      <button class="nb" data-p="work-list"><i class="fas fa-list-alt"></i> काम यादी</button>
+      <button class="nb" data-p="rate-card"><i class="fas fa-tags"></i> दर कार्ड</button>
+      <div class="sb-sec">वित्त</div>
+      <button class="nb" data-p="expenses"><i class="fas fa-receipt"></i> खर्च</button>
+      <button class="nb" data-p="payments"><i class="fas fa-money-bill-wave"></i> पेमेंट <span class="nb-badge h" id="pendBadge">0</span></button>
+      <button class="nb" data-p="invoice"><i class="fas fa-file-invoice"></i> Invoice</button>
+      <div class="sb-sec">डेटा</div>
+      <button class="nb" data-p="shetkari"><i class="fas fa-users"></i> शेतकरी DB</button>
+      <button class="nb" data-p="khata"><i class="fas fa-book"></i> शेतकरी खाता</button>
+      <button class="nb" data-p="reports"><i class="fas fa-chart-bar"></i> अहवाल</button>
+      <button class="nb" data-p="backup"><i class="fas fa-cloud-download-alt"></i> Backup</button>
+      <div class="sb-sec">सेटिंग</div>
+      <button class="nb" data-p="profile"><i class="fas fa-user-cog"></i> प्रोफाइल</button>
+    </nav>
+    <div class="sb-bot">
+      <button class="sb-dark" onclick="toggleDark()"><i class="fas fa-moon"></i> डार्क मोड<div class="tog"></div></button>
+      <button class="sb-logout" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> बाहेर पडा</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="tbar">
+      <button class="tbar-menu" onclick="sbOpen()"><i class="fas fa-bars"></i></button>
+      <div class="tbar-ttl" id="pageTtl">डॅशबोर्ड</div>
+      <div class="tbar-acts">
+        <div class="tbar-lang">
+          <button id="lmr" onclick="setLang('mr')" class="on">म</button>
+          <button id="lhi" onclick="setLang('hi')">H</button>
+          <button id="len" onclick="setLang('en')">E</button>
+        </div>
+      </div>
+    </div>
+    <div id="trialBanner" class="h"></div>
+    <div class="ct" id="ct"><div class="spin"></div></div>
+  </main>
+
+  <!-- Sabse zyada use hone wale 5 shortcuts (Dashboard, Kaam, Payments, Khata, Shetkari).
+       Baki sab options (Rate Card, Expenses, Invoice, Reports, Backup, Profile) sidebar me hain. -->
+  <nav class="bnav" id="bnav">
+    <button class="bnav-btn on" data-p="dashboard"><i class="fas fa-chart-pie"></i><span>डॅशबोर्ड</span></button>
+    <button class="bnav-btn" data-p="work-entry"><i class="fas fa-plus-circle"></i><span>काम</span></button>
+    <button class="bnav-btn" data-p="payments"><i class="fas fa-money-bill-wave"></i><span>पेमेंट</span><span class="nb-badge h" id="pendBadge2">0</span></button>
+    <button class="bnav-btn" data-p="khata"><i class="fas fa-book"></i><span>खाता</span></button>
+    <button class="bnav-btn" data-p="shetkari"><i class="fas fa-users"></i><span>शेतकरी</span></button>
+  </nav>
+</div>
+
+<script type="module" src="js/core.js"></script>
+</body>
+</html>
