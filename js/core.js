@@ -295,7 +295,12 @@ function showTrialBanner(st){
 function showLockScreen(){
   const mo=document.getElementById('lockScreen');
   mo.classList.remove('h');
-  document.getElementById('lockMsg').textContent='तुमचा 7-दिवसांचा मोफत ट्रायल संपला आहे. कृपया ₹300/महिना पेमेंट करून सुरू ठेवा.';
+  const st=window._licStatus;
+  if(st&&st.mode==='disabled'){
+    document.getElementById('lockMsg').textContent='⚠️ तुमचे खाते तात्पुरते बंद केले गेले आहे. कृपया support शी संपर्क करा.';
+  }else{
+    document.getElementById('lockMsg').textContent='तुमचा 7-दिवसांचा मोफत ट्रायल संपला आहे. कृपया ₹300/महिना पेमेंट करून सुरू ठेवा.';
+  }
 }
 window.redeemUnlockCode=async function(){
   const inp=document.getElementById('lockCodeInp');
