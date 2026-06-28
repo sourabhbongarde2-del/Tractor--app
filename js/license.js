@@ -37,8 +37,13 @@ export async function ensureLicense(uid,email){
   return{_id:uid,...data};
 }
 
-// Status check: trial chal raha hai, expire ho gaya, ya paid-unlock active hai
+// Status check: trial chal raha hai, expire ho gaya, ya paid-unlock active hai.
+// Admin agar 'disabled:true' kar de to account turant block ho jata hai - chahe
+// trial/paid kuch bhi ho. Yeh Admin Panel ke "Disable" button se control hota hai.
 export function licenseStatus(lic){
+  if(lic.disabled===true){
+    return{active:false,mode:'disabled',expiresAt:null,daysLeft:0};
+  }
   const now=Date.now();
   if(lic.unlockedUntil && new Date(lic.unlockedUntil).getTime()>now){
     return{active:true,mode:'paid',expiresAt:lic.unlockedUntil,daysLeft:daysLeft(lic.unlockedUntil)};
