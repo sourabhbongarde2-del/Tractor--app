@@ -61,36 +61,36 @@ export async function pgWE(area){
 function renderRows(){
   const wrap=document.getElementById('rowsWrap');
   wrap.innerHTML=_rows.map((r,i)=>`
-  <div class="card" style="max-width:680px;margin-bottom:9px;position:relative" data-row="${r.id}">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:9px">
-      <span style="font-weight:700;font-size:.8rem;color:var(--tx2)">काम #${i+1}</span>
+  <div class="card we-row-card" data-row="${r.id}">
+    <div class="we-row-head">
+      <span class="we-row-num">काम #${i+1}</span>
+      <span class="we-row-amt" data-rowtot>₹ ${fmt((parseFloat(r.qty)||0)*(parseFloat(r.rate)||0))}</span>
       ${_rows.length>1?`<button class="btn br bic bxs" onclick="window.removeWorkRow('${r.id}')"><i class="fas fa-trash"></i></button>`:''}
     </div>
-    <div class="fg"><label class="fl">काम प्रकार *</label>
-      <select class="fc" data-f="workType" onchange="window.rowChange('${r.id}','workType',this.value);window.autoRate('${r.id}')">
-        <option value="">— काम निवडा —</option>
-        ${_rates.map(rt=>`<option value="${rt.workType}" data-r="${rt.rate}" data-u="${rt.unit}" ${r.workType===rt.workType?'selected':''}>${rt.workType} (₹${fmt(rt.rate)}/${rt.unit})</option>`).join('')}
-        <option value="__o__" ${r.workType==='__o__'?'selected':''}>इतर (स्वतः टाका)</option>
-      </select></div>
-    <div class="fg ${r.workType==='__o__'?'':'h'}" data-custwt><label class="fl">काम नाव *</label><input class="fc" data-f="customWT" value="${r.customWT}" oninput="window.rowChange('${r.id}','customWT',this.value)" placeholder="काम नाव लिहा"/></div>
-    <div class="fr3">
-      <div class="fg"><label class="fl">युनिट *</label>
+    <div class="fr2">
+      <div class="fg" style="margin-bottom:8px"><label class="fl">काम प्रकार *</label>
+        <select class="fc" data-f="workType" onchange="window.rowChange('${r.id}','workType',this.value);window.autoRate('${r.id}')">
+          <option value="">— काम निवडा —</option>
+          ${_rates.map(rt=>`<option value="${rt.workType}" data-r="${rt.rate}" data-u="${rt.unit}" ${r.workType===rt.workType?'selected':''}>${rt.workType} (₹${fmt(rt.rate)}/${rt.unit})</option>`).join('')}
+          <option value="__o__" ${r.workType==='__o__'?'selected':''}>इतर (स्वतः टाका)</option>
+        </select></div>
+      <div class="fg" style="margin-bottom:8px"><label class="fl">युनिट *</label>
         <select class="fc" data-f="unit" onchange="window.rowChange('${r.id}','unit',this.value)">
           ${['तास','एकर','गुंठा','ट्रिप'].map(u=>`<option ${r.unit===u?'selected':''}>${u}</option>`).join('')}
         </select></div>
-      <div class="fg"><label class="fl">प्रमाण *</label>
+    </div>
+    <div class="fg ${r.workType==='__o__'?'':'h'}" data-custwt style="margin-bottom:8px"><label class="fl">काम नाव *</label><input class="fc" data-f="customWT" value="${r.customWT}" oninput="window.rowChange('${r.id}','customWT',this.value)" placeholder="काम नाव लिहा"/></div>
+    <div class="fr3">
+      <div class="fg" style="margin-bottom:8px"><label class="fl">प्रमाण *</label>
         <div class="stepper-wrap">
           <button type="button" class="btn bg2 bic" onclick="window.stepRowQty('${r.id}',-1)"><i class="fas fa-minus"></i></button>
           <input class="fc" type="number" data-f="qty" step="0.1" min="0" value="${r.qty}" oninput="window.rowChange('${r.id}','qty',this.value)" placeholder="0"/>
           <button type="button" class="btn bg2 bic" onclick="window.stepRowQty('${r.id}',1)"><i class="fas fa-plus"></i></button>
         </div></div>
-      <div class="fg"><label class="fl">दर ₹ *</label><input class="fc" type="number" data-f="rate" value="${r.rate}" oninput="window.rowChange('${r.id}','rate',this.value)" placeholder="₹"/></div>
+      <div class="fg" style="margin-bottom:8px"><label class="fl">दर ₹ *</label><input class="fc" type="number" data-f="rate" value="${r.rate}" oninput="window.rowChange('${r.id}','rate',this.value)" placeholder="₹"/></div>
+      <div class="fg" style="margin-bottom:8px"><label class="fl">तारीख</label><input class="fc" type="date" data-f="date" value="${r.date}" onchange="window.rowChange('${r.id}','date',this.value)"/></div>
     </div>
-    <div class="fr2">
-      <div class="fg"><label class="fl">या कामाची रक्कम</label><div class="tot-box" data-rowtot style="font-size:1.05rem;padding:8px 11px">₹ ${fmt((parseFloat(r.qty)||0)*(parseFloat(r.rate)||0))}</div></div>
-      <div class="fg"><label class="fl">तारीख</label><input class="fc" type="date" data-f="date" value="${r.date}" onchange="window.rowChange('${r.id}','date',this.value)"/></div>
-    </div>
-    <div class="fg" style="margin-bottom:0"><label class="fl">नोट (वैकल्पिक)</label><input class="fc" data-f="note" value="${r.note}" oninput="window.rowChange('${r.id}','note',this.value)" placeholder="अतिरिक्त माहिती"/></div>
+    <div class="fg" style="margin-bottom:0"><input class="fc" data-f="note" value="${r.note}" oninput="window.rowChange('${r.id}','note',this.value)" placeholder="📝 नोट (वैकल्पिक)"/></div>
   </div>`).join('');
   updateGrandTotal();
 }
