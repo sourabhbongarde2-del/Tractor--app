@@ -191,6 +191,12 @@ select.fc{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
 .fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
 .tot-box{background:var(--surf2);border:2px solid var(--g200);border-radius:var(--r8);padding:10px 13px;font-family:var(--fd);font-size:1.3rem;font-weight:800;color:var(--g700)}
 
+/* Work Entry - compact multi-row card (each "काम #N" block) */
+.we-row-card{max-width:680px;margin-bottom:9px;padding:13px}
+.we-row-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.we-row-num{font-weight:700;font-size:.78rem;color:var(--tx2)}
+.we-row-amt{margin-left:auto;font-family:var(--fd);font-weight:800;font-size:.92rem;color:var(--g700);background:var(--surf2);border:1.5px solid var(--g200);border-radius:var(--r6);padding:3px 10px}
+
 /* ============================================================
    TABLES / BADGES
    ============================================================ */
