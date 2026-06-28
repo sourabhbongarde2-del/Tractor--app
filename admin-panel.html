@@ -41,30 +41,77 @@
     <button class="adm-btn" style="background:#334155" onclick="adminLogout()">Logout</button>
   </div>
 
-  <div class="adm-card">
-    <h2>नवीन Unlock Code बनवा</h2>
-    <div class="adm-fg">
-      <label>Customer Email (jis se woh app me login karta hai)</label>
-      <input type="email" id="admCustEmail" placeholder="customer@gmail.com"/>
-    </div>
-    <div class="adm-fg">
-      <label>Validity (दिवस)</label>
-      <select id="admDays">
-        <option value="30" selected>30 दिवस (मासिक)</option>
-        <option value="7">7 दिवस</option>
-        <option value="90">90 दिवस (3 महिने)</option>
-        <option value="365">365 दिवस (वर्षभर)</option>
-      </select>
-    </div>
-    <button class="adm-btn" id="admGenBtn" onclick="generateCode()">+ Code Generate करा</button>
+  <div class="adm-tabs">
+    <button class="adm-tab on" id="admTabCodes" onclick="window.admSwitchTab('codes')">🎫 Codes</button>
+    <button class="adm-tab" id="admTabUsers" onclick="window.admSwitchTab('users')">👥 Users (<span id="admUserCount">0</span>)</button>
   </div>
 
-  <div class="adm-card">
-    <h2 style="display:flex;justify-content:space-between;align-items:center">
-      सर्व Codes
-      <button class="adm-copy-btn" onclick="refreshCodes()">🔄 Refresh</button>
-    </h2>
-    <div id="admCodesList"><div class="adm-spin"></div></div>
+  <div id="admPaneCodes">
+    <div class="adm-card">
+      <h2>नवीन Unlock Code बनवा</h2>
+      <div class="adm-fg">
+        <label>Customer Email (jis se woh app me login karta hai)</label>
+        <input type="email" id="admCustEmail" placeholder="customer@gmail.com"/>
+      </div>
+      <div class="adm-fg">
+        <label>Validity (दिवस)</label>
+        <select id="admDays">
+          <option value="30" selected>30 दिवस (मासिक)</option>
+          <option value="7">7 दिवस</option>
+          <option value="90">90 दिवस (3 महिने)</option>
+          <option value="365">365 दिवस (वर्षभर)</option>
+        </select>
+      </div>
+      <button class="adm-btn" id="admGenBtn" onclick="generateCode()">+ Code Generate करा</button>
+    </div>
+
+    <div class="adm-card">
+      <h2 style="display:flex;justify-content:space-between;align-items:center">
+        सर्व Codes
+        <button class="adm-copy-btn" onclick="refreshCodes()">🔄 Refresh</button>
+      </h2>
+      <div id="admCodesList"><div class="adm-spin"></div></div>
+    </div>
+  </div>
+
+  <div id="admPaneUsers" class="h">
+    <div class="adm-card">
+      <div class="adm-fg" style="margin-bottom:0">
+        <input type="text" placeholder="Email से शोधा..." oninput="window.admFilterUsers(this.value)"/>
+      </div>
+    </div>
+    <div class="adm-card">
+      <h2 style="display:flex;justify-content:space-between;align-items:center">
+        सर्व Users
+        <button class="adm-copy-btn" onclick="refreshUsers()">🔄 Refresh</button>
+      </h2>
+      <div id="admUsersList"><div class="adm-spin"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit user modal: trial start/end aur paid-until dates manually edit karne ke liye -->
+<div class="adm-modal-ov h" id="admEditModal">
+  <div class="adm-modal">
+    <h2>User Edit करा</h2>
+    <p style="color:#94a3b8;font-size:.8rem;margin-bottom:14px" id="admEditEmail"></p>
+    <input type="hidden" id="admEditUid"/>
+    <div class="adm-fg">
+      <label>Trial Start Date</label>
+      <input type="date" id="admEditTrialStart"/>
+    </div>
+    <div class="adm-fg">
+      <label>Trial End Date</label>
+      <input type="date" id="admEditTrialEnd"/>
+    </div>
+    <div class="adm-fg">
+      <label>Paid Until (khali rakho agar paid nahi hai)</label>
+      <input type="date" id="admEditUnlockedUntil"/>
+    </div>
+    <div class="adm-modal-acts">
+      <button class="adm-btn" style="background:#334155" onclick="window.admCloseEditModal()">Cancel</button>
+      <button class="adm-btn" id="admSaveEditBtn" onclick="window.admSaveUserEdit()">Save</button>
+    </div>
   </div>
 </div>
 
