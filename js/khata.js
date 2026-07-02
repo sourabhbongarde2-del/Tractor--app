@@ -2,7 +2,7 @@
 // Farmer ke naam pe click karne se yahan aata hai: total kaam, total jama, baki rakam,
 // sab kaam ki list, aur seedha payment add karne ka form. Date-range consolidated
 // invoice bhi yahin se banta hai (1-tap button).
-import{getDocs,uq,fmt,fmtD,balOf,paidOf,waNum,today,toast,adBannerHTML,gProf,setKhFarmerName,friendlyErr}from'./core.js';
+import{getDocs,uq,fmt,fmtD,balOf,paidOf,waNum,today,toast,adBannerHTML,gProf,setKhFarmerName,friendlyErr,updateDoc,doc,db,autoBackup,lock,unlock}from'./core.js';
 
 export async function pgKhata(area){
   const name=window._khataName;
@@ -85,6 +85,7 @@ async function renderKhata(area,name){
 
     <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px">
       ${totDue>0.01?`<button class="btn bp" onclick="window.khOpenPayAll()"><i class="fas fa-rupee-sign"></i> पेमेंट जमा करा</button>`:''}
+      ${totDue>0.01?`<button class="btn ba" onclick="window.khOpenQuickPay()"><i class="fas fa-bolt"></i> थेट रक्कम जमा करा</button>`:''}
       ${mobile?`<a href="tel:${mobile}" class="btn bcl"><i class="fas fa-phone"></i> कॉल</a>`:''}
       ${mobile&&totDue>0.01?`<a href="https://wa.me/${waNum(mobile)}?text=${encodeURIComponent(`🙏 नमस्कार ${name} जी,\n\n🚜 ${gProf().businessName||'TractorWala'} – खाते स्मरणपत्र\n\n💰 एकूण काम: ₹${fmt(totBiz)}\n✅ जमा: ₹${fmt(totPaid)}\n⚠️ बाकी: ₹${fmt(totDue)}\n\nकृपया लवकरात लवकर पेमेंट करावे. 🙏\n— ${gProf().businessName||'TractorWala'}`)}" target="_blank" class="btn bwa"><i class="fab fa-whatsapp"></i> स्मरण पाठवा</a>`:''}
       <button class="btn bg2" onclick="window.khOpenInvoiceRange()"><i class="fas fa-file-invoice"></i> कालावधीचे Invoice बनवा</button>
@@ -115,6 +116,26 @@ async function renderKhata(area,name){
       <div class="md">
         <div class="mh"><span class="mt">पेमेंट जमा करा</span><button class="mx" onclick="closeM('khPayAllM')"><i class="fas fa-times"></i></button></div>
         <div class="mb" id="khPayAllBody"></div>
+      </div>
+    </div>
+
+    <!-- Quick direct-amount payment: seedha rakkam टाकून जमा — कुठल्या specific कामासाठी
+         ते निवडायची गरज नाही, सिस्टम आपोआप सर्वात जुन्या बाकी कामापासून वापरते (FIFO). -->
+    <div class="mo h" id="khQuickPayM">
+      <div class="md">
+        <div class="mh"><span class="mt">⚡ थेट रक्कम जमा करा</span><button class="mx" onclick="closeM('khQuickPayM')"><i class="fas fa-times"></i></button></div>
+        <div class="mb">
+          <p style="font-size:.78rem;color:var(--tx2);margin-bottom:12px">रक्कम टाका — ती आपोआप सर्वात जुन्या बाकी कामापासून सुरुवात करून जमा केली जाईल. एकूण बाकी: <b>₹${fmt(totDue)}</b></p>
+          <div class="fr2">
+            <div class="fg"><label class="fl">रक्कम (₹) *</label><input class="fc" type="number" id="khQpAmt" placeholder="₹" max="${totDue}"/></div>
+            <div class="fg"><label class="fl">तारीख</label><input class="fc" type="date" id="khQpDt" value="${today()}"/></div>
+          </div>
+          <div class="fg"><label class="fl">नोट</label><input class="fc" id="khQpNt" placeholder="वैकल्पिक"/></div>
+        </div>
+        <div class="mf">
+          <button class="btn bg2" onclick="closeM('khQuickPayM')">रद्द</button>
+          <button class="btn bp" id="khQpBtn" onclick="window.khSubmitQuickPay()"><i class="fas fa-check"></i> जमा करा</button>
+        </div>
       </div>
     </div>
 
@@ -167,6 +188,63 @@ window.khOpenPayAll=function(){
       <span class="pa">₹${fmt(balOf(w))}</span>
     </div>`).join('')}
   </div>`;
+};
+
+// "थेट रक्कम जमा करा" modal khol do — koi specific kaam choose karne ki zaroorat nahi
+window.khOpenQuickPay=function(){
+  document.getElementById('khQpAmt').value='';
+  document.getElementById('khQpNt').value='';
+  document.getElementById('khQuickPayM').classList.remove('h');
+};
+
+// Ek hi rakkam le kar farmer ke sab pending kaam me FIFO (sabse purane pehle) tarike se
+// baant deta hai - jaise ek asli khata book me hota hai. Har kaam ka payments[] array
+// update hota hai, isliye baaki poora app (reports, invoice, balance) automatically
+// sahi dikhta hai - koi naya data-model banane ki zaroorat nahi padi.
+window.khSubmitQuickPay=async function(){
+  if(!lock('khQuickPay'))return;
+  const btn=document.getElementById('khQpBtn');
+  if(btn)btn.disabled=true;
+  try{
+    const amtInput=parseFloat(document.getElementById('khQpAmt')?.value)||0;
+    if(amtInput<=0){toast('रक्कम आवश्यक','err');return;}
+    const date=document.getElementById('khQpDt')?.value||today();
+    const note=document.getElementById('khQpNt')?.value||'';
+    const name=window._khataName;
+
+    // Taaza data mangwao - taaki kisi doosre tab/device se abhi-abhi hui payment miss na ho
+    const snap=await getDocs(uq('works'));
+    let works=[];
+    snap.forEach(d=>{const w=d.data();if(w.customerName===name)works.push({...w,_id:d.id});});
+    works=works.filter(w=>balOf(w)>0.01);
+    works.sort((a,b)=>(a.date||'')>(b.date||'')?1:-1); // sabse jauna kaam pehle (FIFO)
+
+    if(works.length===0){toast('कोणतेही बाकी काम नाही','warn');return;}
+
+    const totalDue=works.reduce((s,w)=>s+balOf(w),0);
+    let remaining=amtInput;
+    if(remaining>totalDue+0.01){
+      toast(`जास्तीत जास्त ₹${fmt(totalDue)} (एकूण बाकी) जमा करता येईल`,'warn');
+      remaining=totalDue;
+    }
+
+    for(const w of works){
+      if(remaining<=0.01)break;
+      const bal=balOf(w);
+      const alloc=Math.min(bal,remaining);
+      const px={amount:alloc,date,note:note||'थेट जमा (खाते)'};
+      const newPayments=[...(w.payments||[]),px];
+      await updateDoc(doc(db,'works',w._id),{payments:newPayments,updatedAt:today()});
+      autoBackup('update','works',{...w,payments:newPayments});
+      remaining-=alloc;
+    }
+
+    toast('✅ पेमेंट जमा झाले');
+    window.closeM('khQuickPayM');
+    window.updBadge();
+    if(window._khataRefresh)window._khataRefresh();
+  }catch(e){toast(friendlyErr(e),'err');}
+  finally{unlock('khQuickPay');if(btn)btn.disabled=false;}
 };
 
 window.khOpenInvoiceRange=function(){
