@@ -47,6 +47,7 @@ body{font-family:'Poppins',sans-serif;background:#0f172a;color:#e2e8f0;min-heigh
 .adm-user-row.active{border-left-color:#16a34a}
 .adm-user-row.expired{border-left-color:#dc2626}
 .adm-user-main{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.adm-user-biz{font-size:.78rem;color:#cbd5e1}
 .adm-user-email{font-size:.85rem;color:#fff}
 .adm-user-meta{display:flex;gap:14px;font-size:.7rem;color:#64748b;flex-wrap:wrap}
 .adm-user-acts{display:flex;gap:8px;margin-top:4px}
