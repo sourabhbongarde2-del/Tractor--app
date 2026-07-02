@@ -71,6 +71,7 @@ img{max-width:100%;display:block}
 .nb.on{background:rgba(255,255,255,.1);color:#fff;font-weight:700;border-left-color:var(--g400)}
 .nb i{width:16px;text-align:center;font-size:.82rem;flex-shrink:0}
 .nb-badge{margin-left:auto;background:var(--amber);color:var(--g900);padding:1px 6px;border-radius:var(--r99);font-size:.62rem;font-weight:800}
+.nb-locked{opacity:.35;pointer-events:none}
 .sb-bot{padding:8px;border-top:1px solid rgba(255,255,255,.06)}
 .sb-dark{display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;border-radius:var(--r8);background:rgba(255,255,255,.05);color:rgba(255,255,255,.65);font-size:.78rem;margin-bottom:6px;transition:var(--ease)}
 .sb-dark:hover{background:rgba(255,255,255,.1)}
@@ -117,6 +118,7 @@ img{max-width:100%;display:block}
 .bnav-btn.on{color:var(--brand)}
 .bnav-btn.on i{transform:scale(1.15)}
 .bnav-btn .nb-badge{position:absolute;top:4px;right:14px;font-size:.55rem;padding:1px 4px}
+.bnav-btn-locked{opacity:.35;pointer-events:none}
 
 /* ============================================================
    CARDS / STATS / QUICK ACTIONS
