@@ -106,6 +106,15 @@ service cloud.firestore {
       );
     }
 
+    // settings/global - app-wide switches (jaise "free trial + lock system ON/OFF").
+    // Har logged-in customer isko READ kar sakta hai (app ko pata chalna chahiye ki
+    // lock lagana hai ya nahi). Sirf admin hi LIKH sakta hai - Admin Panel ke naye
+    // "Settings" tab se yeh document update hota hai.
+    match /settings/{docId} {
+      allow read: if request.auth != null;
+      allow write: if isAdmin();
+    }
+
     // Default: sab kuch deny (koi aur collection access nahi ho sakti)
     match /{document=**} {
       allow read, write: if false;
