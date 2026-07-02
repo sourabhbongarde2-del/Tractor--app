@@ -1,11 +1,12 @@
 // profile.js — Business profile (name, owner, UPI) + language switcher + app info
-import{addDoc,updateDoc,doc,db,col,uid,today,toast,lock,unlock,adBannerHTML,gProf,setProf,friendlyErr,LANG,CU}from'./core.js';
+import{addDoc,updateDoc,doc,db,col,uid,today,toast,lock,unlock,adBannerHTML,gProf,setProf,friendlyErr,LANG,CU,ONB,refreshOnboardState,nav}from'./core.js';
 
 export async function pgProf(area){
   const pr=gProf();
   const ad1=await adBannerHTML('profile-top');
+  const stepChip=(ONB.checked&&!ONB.profileDone)?`<span class="bx" style="background:var(--amber);color:#000;font-weight:800;margin-left:8px">पायरी 1/2</span>`:'';
   area.innerHTML=`
-  <div class="sh"><span class="st2">👤 प्रोफाइल</span></div>
+  <div class="sh"><span class="st2">👤 प्रोफाइल</span>${stepChip}</div>
   ${ad1}
   <div style="max-width:480px">
     <div class="card" style="margin-bottom:12px;text-align:center;padding:20px">
@@ -65,11 +66,24 @@ export async function pgProf(area){
 window.saveProf=async function(){
   if(!lock('saveProf'))return;
   const did=document.getElementById('pDId').value;
-  const d={uid:uid(),businessName:document.getElementById('pBz').value.trim(),ownerName:document.getElementById('pOw').value.trim(),phone:document.getElementById('pPh').value.trim(),upiId:document.getElementById('pUp').value.trim(),updatedAt:today()};
+  const phone=document.getElementById('pPh').value.trim();
+  const bz=document.getElementById('pBz').value.trim();
+  if(!bz){toast('व्यवसायाचे नाव आवश्यक आहे','err');unlock('saveProf');return;}
+  if(ONB.checked && !ONB.profileDone && !phone){toast('मोबाइल नंबर आवश्यक आहे — पुढच्या पायरीसाठी लागेल','err');unlock('saveProf');return;}
+  const d={uid:uid(),businessName:bz,ownerName:document.getElementById('pOw').value.trim(),phone,upiId:document.getElementById('pUp').value.trim(),updatedAt:today()};
   try{
     if(did)await updateDoc(doc(db,'profiles',did),d);
     else{const ref=await addDoc(col('profiles'),{...d,createdAt:today()});d._id=ref.id;}
-    setProf({...gProf(),...d});toast('प्रोफाइल सेव्ह ✅');window.render('profile');
+    setProf({...gProf(),...d});
+    toast('प्रोफाइल सेव्ह ✅');
+    const wasOnboarding=ONB.checked&&!ONB.profileDone;
+    await refreshOnboardState();
+    if(wasOnboarding&&ONB.profileDone&&!ONB.rateDone){
+      toast('छान! आता तुमचे दर कार्ड बनवा 💳','ok',4000);
+      nav('rate-card');
+    }else{
+      window.render('profile');
+    }
   }catch(e){toast(friendlyErr(e),'err');}
   finally{unlock('saveProf');}
 };
