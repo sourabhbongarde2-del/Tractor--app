@@ -14,6 +14,19 @@ export function setInvWID(v){invWID=v;}
 export function setKhFarmerName(v){khFarmerName=v;}
 if(DARK)document.documentElement.setAttribute('data-theme','dark');
 
+// ---- Onboarding gate: naya user pehle Profile, phir Rate Card poora kare tabhi
+// baaki poora app khulta hai. "Profile complete" ka signal = phone number bhara
+// gaya hai (yeh field kabhi auto-fill nahi hota, isliye reliable signal hai).
+export let ONB={profileDone:false,rateDone:false,checked:false};
+export async function refreshOnboardState(){
+  const p=gProf();
+  const profileDone=!!(p.phone&&p.phone.trim());
+  let rateDone=false;
+  try{const snap=await getDocs(uq('rates'));rateDone=!snap.empty;}catch(e){/* offline waghera - safe default false */}
+  ONB={profileDone,rateDone,checked:true};
+  return ONB;
+}
+
 // ---- i18n ----
 export const TX={
   mr:{lChip:'शेतकऱ्यांसाठी #1 ऍप',lH1a:'आपला ट्रॅक्टर',lH1b:'व्यवसाय डिजिटल करा',lSub:'काम, खर्च, पेमेंट — सर्व एकाच ठिकाणी.',lBtn:'Google ने Login करा',
@@ -180,13 +193,44 @@ const PAGE_MODULES={
 };
 
 export function nav(page){
+  // Onboarding gate: profile + rate-card poore hone tak baaki pages lock rehte hain.
+  // 'profile' aur 'rate-card' hamesha khule rehte hain taaki user waha ja hi sake.
+  if(ONB.checked && page!=='profile' && page!=='rate-card'){
+    if(!ONB.profileDone){
+      toast('आधी तुमची प्रोफाइल पूर्ण भरा 👤','warn');
+      page='profile';
+    }else if(!ONB.rateDone){
+      toast('आता तुमचे दर कार्ड (Rate Card) बनवा 💳','warn');
+      page='rate-card';
+    }
+  }
   PAGE=page;
   window._currentPage=page;
   document.querySelectorAll('.nb[data-p],.bnav-btn[data-p]').forEach(b=>b.classList.toggle('on',b.dataset.p===page));
   document.getElementById('pageTtl').textContent=t(page)||page;
+  renderOnboardBanner();
   render(page);
 }
 window.nav=nav;
+
+// Sidebar/bottom-nav ke baki buttons ko "locked" dikhata hai jab tak onboarding
+// poori na ho jaaye, aur ek chhota progress banner dikhata hai.
+function renderOnboardBanner(){
+  const el=document.getElementById('onboardBanner');
+  if(!el)return;
+  document.querySelectorAll('.nb[data-p],.bnav-btn[data-p]').forEach(b=>{
+    const locked=ONB.checked && !(ONB.profileDone&&ONB.rateDone) && b.dataset.p!=='profile' && b.dataset.p!=='rate-card';
+    b.classList.toggle(b.classList.contains('bnav-btn')?'bnav-btn-locked':'nb-locked',locked);
+  });
+  if(!ONB.checked || (ONB.profileDone&&ONB.rateDone)){el.classList.add('h');el.innerHTML='';return;}
+  el.classList.remove('h');
+  if(!ONB.profileDone){
+    el.innerHTML=`👋 सुरुवात करूया! <b>पायरी 1/2:</b> आधी तुमची प्रोफाइल भरा (व्यवसायाचे नाव, मोबाइल) — मग बाकी सर्व फीचर्स उघडतील.`;
+  }else{
+    el.innerHTML=`✅ प्रोफाइल पूर्ण! <b>पायरी 2/2:</b> आता किमान एक <b>दर कार्ड</b> (उदा: नांगरणी - ₹500/तास) बनवा — मग ॲप पूर्णपणे वापरता येईल.`;
+  }
+}
+window._renderOnboardBanner=renderOnboardBanner;
 
 export async function render(page){
   const area=document.getElementById('ct');
@@ -285,6 +329,7 @@ onAuthStateChanged(auth,async u=>{
       document.getElementById('sbAv').textContent=(u.displayName||u.email||'U').charAt(0).toUpperCase();
       showTrialBanner(st);
       await loadProf();
+      await refreshOnboardState();
       nav('dashboard');
       updBadge();
       return;
@@ -302,6 +347,7 @@ onAuthStateChanged(auth,async u=>{
     document.getElementById('sbAv').textContent=(u.displayName||u.email||'U').charAt(0).toUpperCase();
     showTrialBanner(st);
     await loadProf();
+    await refreshOnboardState();
     nav('dashboard');
     updBadge();
   }
