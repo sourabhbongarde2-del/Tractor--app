@@ -9,6 +9,18 @@ import{db,collection,addDoc,getDocs,doc,query,where,getDoc,setDoc,updateDoc,writ
 
 const TRIAL_DAYS=7;
 
+// ---- Global app settings (settings/global) ----
+// Admin Panel se "Free Trial + Lock System" poore app ke liye ON/OFF kiya ja sakta hai.
+// Jab tak Admin isko ON na kare, app sabke liye FREE rehta hai (koi trial-banner, koi
+// lock-screen nahi) - naya deployment / document na hone par bhi yeh safe (free) rehta hai.
+export async function getGlobalSettings(){
+  try{
+    const snap=await getDoc(doc(db,'settings','global'));
+    if(snap.exists())return{trialLockEnabled:false,...snap.data()};
+  }catch(e){/* network issue waghera - fail-safe: app free hi rakhte hain */}
+  return{trialLockEnabled:false};
+}
+
 function daysFromNow(n){
   const d=new Date();d.setDate(d.getDate()+n);
   return d.toISOString();
