@@ -151,14 +151,27 @@ async function loadCodes(){
 }
 window.refreshCodes=loadCodes;
 
-// ---- Users (licenses collection) ----
+// ---- Users (licenses collection, enriched with profiles data) ----
 let _usersCache=[];
 async function loadUsers(){
   const list=document.getElementById('admUsersList');
   list.innerHTML='<div class="adm-spin"></div>';
   try{
-    const snap=await getDocs(collection(db,'licenses'));
-    _usersCache=[];snap.forEach(d=>_usersCache.push({...d.data(),_uid:d.id}));
+    const [licSnap,profSnap]=await Promise.all([
+      getDocs(collection(db,'licenses')),
+      getDocs(collection(db,'profiles'))
+    ]);
+    // profiles collection me doc-id != uid hota hai (addDoc se auto-ID banta hai),
+    // isliye 'uid' field se map banate hain taaki email/license ke saath jod sakein
+    const profByUid={};
+    profSnap.forEach(d=>{const p=d.data();if(p.uid)profByUid[p.uid]=p;});
+
+    _usersCache=[];
+    licSnap.forEach(d=>{
+      const lic=d.data();
+      const prof=profByUid[d.id]||{};
+      _usersCache.push({...lic,_uid:d.id,businessName:prof.businessName||'',ownerName:prof.ownerName||'',phone:prof.phone||''});
+    });
     _usersCache.sort((a,b)=>(b.trialStart||'').localeCompare(a.trialStart||''));
     document.getElementById('admUserCount').textContent=_usersCache.length;
     renderUsers(_usersCache);
@@ -171,7 +184,7 @@ function userStatusInfo(u){
   const now=Date.now();
   if(u.unlockedUntil && new Date(u.unlockedUntil).getTime()>now)return{label:`Paid (${daysLeft(u.unlockedUntil)}d left)`,cls:'active'};
   if(u.trialEnd && new Date(u.trialEnd).getTime()>now)return{label:`Trial (${daysLeft(u.trialEnd)}d left)`,cls:'active'};
-  return{label:'Expired',cls:'expired'};
+  return{label:'Trial संपला - Payment हवे',cls:'expired'};
 }
 
 function renderUsers(users){
@@ -179,17 +192,22 @@ function renderUsers(users){
   if(users.length===0){list.innerHTML='<p class="adm-empty">अजून कोणताही user नाही.</p>';return;}
   list.innerHTML=users.map(u=>{
     const st=userStatusInfo(u);
+    const nameLine=[u.businessName,u.ownerName].filter(Boolean).join(' — ');
     return`<div class="adm-user-row ${st.cls}">
       <div class="adm-user-main">
         <b class="adm-user-email">${u.email||'—'}</b>
         <span class="adm-badge ${st.cls}">${st.label}</span>
       </div>
+      ${nameLine?`<div class="adm-user-biz">${nameLine}${u.phone?` · 📞 ${u.phone}`:''}</div>`:(u.phone?`<div class="adm-user-biz">📞 ${u.phone}</div>`:'')}
       <div class="adm-user-meta">
         <span>Trial: ${fmtDate(u.trialStart)} → ${fmtDate(u.trialEnd)}</span>
         ${u.unlockedUntil?`<span>Paid until: ${fmtDate(u.unlockedUntil)}</span>`:''}
       </div>
       <div class="adm-user-acts">
         <button class="adm-copy-btn" onclick="window.admEditUser('${u._uid}')"><i class="fas fa-edit"></i> Edit</button>
+        <button class="adm-btn adm-btn-sm" onclick="window.admExtendTrial('${u._uid}',7)">➕ 7 दिवस Trial</button>
+        <button class="adm-btn adm-btn-sm" onclick="window.admExtendTrial('${u._uid}',30)">➕ 30 दिवस Trial</button>
+        <button class="adm-btn adm-btn-sm adm-btn-danger" onclick="window.admForcePayment('${u._uid}')">💳 Payment आत्ता सुरू करा</button>
         ${u.disabled===true
           ?`<button class="adm-btn adm-btn-sm" onclick="window.admToggleDisable('${u._uid}',false)">Enable</button>`
           :`<button class="adm-btn adm-btn-sm adm-btn-danger" onclick="window.admToggleDisable('${u._uid}',true)">Disable</button>`}
@@ -197,6 +215,34 @@ function renderUsers(users){
     </div>`;
   }).join('');
 }
+
+// Ek click: is user ka trial turant "khatam" kar do (trialEnd = ata) - agar unke paas
+// koi active paid unlock nahi hai to unko agli baar app khaltach payment lock screen
+// disega (Global "Trial+Lock" switch ON hona zaroori hai Settings tab me).
+window.admForcePayment=async function(uid){
+  const u=_usersCache.find(x=>x._uid===uid);
+  if(!u)return;
+  if(!confirm(`${u.email} cha free trial आत्ता बंद करून Payment sathi lock karायचा? पुढच्या वेळी app ughadताच tyanna payment screen disel.`))return;
+  try{
+    await updateDoc(doc(db,'licenses',uid),{trialEnd:new Date().toISOString()});
+    toast('✅ Payment lock सुरू केला');
+    await loadUsers();
+  }catch(e){toast(friendlyErr(e),'err');}
+};
+
+// Ek click: is user ka trial +N din aage badha do (jo bhi bada ho - abhi ka trialEnd
+// ya aaj ki date - usme se N din judte hain, taaki already-expired user bhi turant use kar paye)
+window.admExtendTrial=async function(uid,days){
+  const u=_usersCache.find(x=>x._uid===uid);
+  if(!u)return;
+  try{
+    const base=Math.max(new Date(u.trialEnd||0).getTime(),Date.now());
+    const newEnd=new Date(base+days*86400000).toISOString();
+    await updateDoc(doc(db,'licenses',uid),{trialEnd:newEnd});
+    toast(`✅ Trial ${days} दिवसांनी वाढवला`);
+    await loadUsers();
+  }catch(e){toast(friendlyErr(e),'err');}
+};
 
 window.admFilterUsers=function(v){
   const fil=v?_usersCache.filter(u=>(u.email||'').toLowerCase().includes(v.toLowerCase())):_usersCache;
