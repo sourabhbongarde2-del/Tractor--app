@@ -44,6 +44,7 @@
   <div class="adm-tabs">
     <button class="adm-tab on" id="admTabCodes" onclick="window.admSwitchTab('codes')">🎫 Codes</button>
     <button class="adm-tab" id="admTabUsers" onclick="window.admSwitchTab('users')">👥 Users (<span id="admUserCount">0</span>)</button>
+    <button class="adm-tab" id="admTabSettings" onclick="window.admSwitchTab('settings')">⚙️ Settings</button>
   </div>
 
   <div id="admPaneCodes">
@@ -86,6 +87,27 @@
         <button class="adm-copy-btn" onclick="refreshUsers()">🔄 Refresh</button>
       </h2>
       <div id="admUsersList"><div class="adm-spin"></div></div>
+    </div>
+  </div>
+
+  <div id="admPaneSettings" class="h">
+    <div class="adm-card">
+      <h2>🔒 Free Trial + Payment Lock सिस्टम</h2>
+      <p style="color:#94a3b8;font-size:.8rem;margin-bottom:16px;line-height:1.5">
+        हे बंद (OFF) असताना संपूर्ण App सर्वांसाठी <b style="color:#4ade80">मोफत / FREE</b> राहते —
+        कोणालाही Trial Banner किंवा Lock Screen दिसणार नाही. चालू (ON) केल्यावर 7-दिवस Free Trial
+        आणि त्यानंतर ₹300/महिना Payment Lock सुरू होईल (वरील Codes / Users मधून व्यवस्थापित होते).
+      </p>
+      <div class="adm-settings-row">
+        <div>
+          <div class="adm-settings-label">Trial + Lock System</div>
+          <div class="adm-settings-status" id="admLockStatusText">लोड होत आहे…</div>
+        </div>
+        <label class="adm-switch">
+          <input type="checkbox" id="admLockToggle" onchange="window.admToggleLockSystem(this.checked)"/>
+          <span class="adm-switch-slider"></span>
+        </label>
+      </div>
     </div>
   </div>
 </div>
