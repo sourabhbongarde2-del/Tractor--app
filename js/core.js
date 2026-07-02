@@ -2,7 +2,7 @@
 // Sab page-files (dashboard.js, work-entry.js, etc.) yahan se helpers import karte hain.
 
 import{auth,db,gp,collection,addDoc,getDocs,updateDoc,deleteDoc,doc,query,where,signInWithPopup,signOut,onAuthStateChanged,friendlyErr}from'./firebase-config.js';
-import{ensureLicense,licenseStatus,redeemCode,fmtDate}from'./license.js';
+import{ensureLicense,licenseStatus,redeemCode,fmtDate,getGlobalSettings}from'./license.js';
 
 export{auth,db,collection,addDoc,getDocs,updateDoc,deleteDoc,doc,query,where,friendlyErr};
 
@@ -247,6 +247,25 @@ onAuthStateChanged(auth,async u=>{
     CU=u;
     document.getElementById('land').classList.add('h');
 
+    // Admin Panel ka global switch: jab tak Admin isko ON na kare, poora app FREE
+    // rehta hai - trial-banner ya lock-screen kuch bhi nahi dikhta, seedha app khulta hai.
+    const gs=await getGlobalSettings();
+    window._globalSettings=gs;
+
+    if(!gs.trialLockEnabled){
+      window._licStatus={active:true,mode:'free',expiresAt:null,daysLeft:0};
+      document.getElementById('lockScreen').classList.add('h');
+      document.getElementById('app').classList.remove('h');
+      document.getElementById('sbNm').textContent=u.displayName||'User';
+      document.getElementById('sbEm').textContent=u.email||'';
+      document.getElementById('sbAv').textContent=(u.displayName||u.email||'U').charAt(0).toUpperCase();
+      showTrialBanner(window._licStatus);
+      await loadProf();
+      nav('dashboard');
+      updBadge();
+      return;
+    }
+
     // Trial/unlock check - server-side Security Rules enforce ki yeh status sahi hai,
     // koi bhi browser console se bypass nahi kar sakta.
     let lic;
@@ -355,6 +374,9 @@ setLang(LANG);
 setInterval(async()=>{
   if(!CU)return;
   try{
+    const gs=await getGlobalSettings();
+    window._globalSettings=gs;
+    if(!gs.trialLockEnabled)return; // Admin ne lock system band kiya hua hai - kuch check nahi karna
     const lic=await ensureLicense(CU.uid,CU.email);
     const st=licenseStatus(lic);
     window._licStatus=st;
