@@ -248,26 +248,12 @@ onAuthStateChanged(auth,async u=>{
     document.getElementById('land').classList.add('h');
 
     // Admin Panel ka global switch: jab tak Admin isko ON na kare, poora app FREE
-    // rehta hai - trial-banner ya lock-screen kuch bhi nahi dikhta, seedha app khulta hai.
+    // rehta hai - trial-banner ya lock-screen kuch bhi nahi dikhta. Lekin license
+    // record HAMESHA banaya/track kiya jata hai (chahe free mode ho ya na ho),
+    // taaki Admin Panel > Users tab me sabhi users hamesha dikhein.
     const gs=await getGlobalSettings();
     window._globalSettings=gs;
 
-    if(!gs.trialLockEnabled){
-      window._licStatus={active:true,mode:'free',expiresAt:null,daysLeft:0};
-      document.getElementById('lockScreen').classList.add('h');
-      document.getElementById('app').classList.remove('h');
-      document.getElementById('sbNm').textContent=u.displayName||'User';
-      document.getElementById('sbEm').textContent=u.email||'';
-      document.getElementById('sbAv').textContent=(u.displayName||u.email||'U').charAt(0).toUpperCase();
-      showTrialBanner(window._licStatus);
-      await loadProf();
-      nav('dashboard');
-      updBadge();
-      return;
-    }
-
-    // Trial/unlock check - server-side Security Rules enforce ki yeh status sahi hai,
-    // koi bhi browser console se bypass nahi kar sakta.
     let lic;
     try{lic=await ensureLicense(u.uid,u.email);}catch(e){
       // Agar license check hi fail ho jaye (network issue waghera), app ko block karna
@@ -277,8 +263,32 @@ onAuthStateChanged(auth,async u=>{
       document.getElementById('lockMsg').textContent='⚠️ License तपासताना अडचण आली. इंटरनेट तपासा आणि पुन्हा प्रयत्न करा.';
       return;
     }
-    const st=licenseStatus(lic);
-    window._licStatus=st;window._licData=lic;
+    window._licData=lic;
+    let st=licenseStatus(lic);
+    window._licStatus=st;
+
+    // Admin ne is specific user ka account manually "Disable" kiya hai to - yeh
+    // hamesha lagu hoga, global Free-mode switch se independent (manual admin action).
+    if(st.mode==='disabled'){
+      document.getElementById('app').classList.add('h');
+      showLockScreen();
+      return;
+    }
+
+    if(!gs.trialLockEnabled){
+      st={active:true,mode:'free',expiresAt:null,daysLeft:0};
+      window._licStatus=st;
+      document.getElementById('lockScreen').classList.add('h');
+      document.getElementById('app').classList.remove('h');
+      document.getElementById('sbNm').textContent=u.displayName||'User';
+      document.getElementById('sbEm').textContent=u.email||'';
+      document.getElementById('sbAv').textContent=(u.displayName||u.email||'U').charAt(0).toUpperCase();
+      showTrialBanner(st);
+      await loadProf();
+      nav('dashboard');
+      updBadge();
+      return;
+    }
 
     if(!st.active){
       document.getElementById('app').classList.add('h');
@@ -376,10 +386,16 @@ setInterval(async()=>{
   try{
     const gs=await getGlobalSettings();
     window._globalSettings=gs;
-    if(!gs.trialLockEnabled)return; // Admin ne lock system band kiya hua hai - kuch check nahi karna
     const lic=await ensureLicense(CU.uid,CU.email);
     const st=licenseStatus(lic);
-    window._licStatus=st;
+    window._licStatus=st;window._licData=lic;
+    // Manual "Disable" admin action hamesha lagu hoti hai, Free-mode switch se independent
+    if(st.mode==='disabled'){
+      document.getElementById('app').classList.add('h');
+      showLockScreen();
+      return;
+    }
+    if(!gs.trialLockEnabled)return; // Admin ne trial/lock system band kiya hua hai - expiry check skip
     if(!st.active){
       document.getElementById('app').classList.add('h');
       showLockScreen();
