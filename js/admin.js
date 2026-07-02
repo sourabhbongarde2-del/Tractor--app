@@ -3,7 +3,7 @@
 // Sirf admin (sourabhbongarde2@gmail.com) ka Google login is panel me kaam karega -
 // koi aur email login kare to Firestore rules khud reject kar denge (server-side check),
 // yeh client-side check sirf turant UI feedback ke liye hai.
-import{auth,db,gp,collection,addDoc,getDocs,doc,updateDoc,signInWithPopup,signOut,onAuthStateChanged,friendlyErr}from'./firebase-config.js';
+import{auth,db,gp,collection,addDoc,getDocs,doc,updateDoc,getDoc,setDoc,signInWithPopup,signOut,onAuthStateChanged,friendlyErr}from'./firebase-config.js';
 
 const ADMIN_EMAIL='sourabhbongarde2@gmail.com';
 
@@ -57,14 +57,45 @@ onAuthStateChanged(auth,async u=>{
   document.getElementById('admEmail').textContent=u.email;
   await loadCodes();
   await loadUsers();
+  await loadSettings();
 });
 
 // ---- Tabs ----
 window.admSwitchTab=function(tab){
   document.getElementById('admTabCodes').classList.toggle('on',tab==='codes');
   document.getElementById('admTabUsers').classList.toggle('on',tab==='users');
+  document.getElementById('admTabSettings').classList.toggle('on',tab==='settings');
   document.getElementById('admPaneCodes').classList.toggle('h',tab!=='codes');
   document.getElementById('admPaneUsers').classList.toggle('h',tab!=='users');
+  document.getElementById('admPaneSettings').classList.toggle('h',tab!=='settings');
+};
+
+// ---- Settings (settings/global doc) ----
+// "Free Trial + Lock" system poore app ke liye ON/OFF karta hai. OFF hote hi
+// (default state, naya deployment) app sabke liye free ho jata hai - koi trial
+// banner ya lock screen nahi dikhta.
+async function loadSettings(){
+  const statusEl=document.getElementById('admLockStatusText');
+  const toggle=document.getElementById('admLockToggle');
+  try{
+    const snap=await getDoc(doc(db,'settings','global'));
+    const enabled=snap.exists()?!!snap.data().trialLockEnabled:false;
+    toggle.checked=enabled;
+    statusEl.textContent=enabled?'🔒 ON — Trial + Payment Lock सुरू आहे':'🟢 OFF — App सर्वांसाठी सध्या मोफत आहे';
+  }catch(e){statusEl.textContent=friendlyErr(e);}
+}
+window.admToggleLockSystem=async function(checked){
+  const statusEl=document.getElementById('admLockStatusText');
+  const toggle=document.getElementById('admLockToggle');
+  toggle.disabled=true;
+  try{
+    await setDoc(doc(db,'settings','global'),{trialLockEnabled:checked,updatedAt:new Date().toISOString()},{merge:true});
+    statusEl.textContent=checked?'🔒 ON — Trial + Payment Lock सुरू आहे':'🟢 OFF — App सर्वांसाठी सध्या मोफत आहे';
+    toast(checked?'✅ Trial/Lock System चालू केले':'✅ App आता सर्वांसाठी मोफत केले');
+  }catch(e){
+    toggle.checked=!checked; // revert on failure
+    toast(friendlyErr(e),'err');
+  }finally{toggle.disabled=false;}
 };
 
 // ---- Unlock Codes ----
