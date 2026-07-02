@@ -1,12 +1,13 @@
 // rate-card.js — Dar Card (rate management) page
-import{getDocs,addDoc,updateDoc,deleteDoc,doc,db,uq,col,uid,today,fmt,toast,lock,unlock,adBannerHTML,autoBackup,friendlyErr}from'./core.js';
+import{getDocs,addDoc,updateDoc,deleteDoc,doc,db,uq,col,uid,today,fmt,toast,lock,unlock,adBannerHTML,autoBackup,friendlyErr,ONB,refreshOnboardState,nav}from'./core.js';
 
 export async function pgRC(area){
   const[snap,ad1]=await Promise.all([getDocs(uq('rates')),adBannerHTML('rate-card-top')]);
   const rates=[];snap.forEach(d=>rates.push({...d.data(),_id:d.id}));
   window._regSet(rates);
+  const stepChip=(ONB.checked&&ONB.profileDone&&!ONB.rateDone)?`<span class="bx" style="background:var(--amber);color:#000;font-weight:800;margin-left:8px">पायरी 2/2</span>`:'';
   area.innerHTML=`
-  <div class="sh"><span class="st2">💳 दर कार्ड</span><button class="btn bp" onclick="openRM()"><i class="fas fa-plus"></i> नवीन दर</button></div>
+  <div class="sh"><span><span class="st2">💳 दर कार्ड</span>${stepChip}</span><button class="btn bp" onclick="openRM()"><i class="fas fa-plus"></i> नवीन दर</button></div>
   ${ad1}
   <div class="card">
     ${rates.length===0?`<div class="empty"><i class="fas fa-tags"></i><p>अजून कोणताही दर नाही<br><button class="btn bp bsm" onclick="openRM()" style="margin-top:8px">+ दर जोडा</button></p></div>`:`
@@ -58,7 +59,15 @@ window.saveRate=async function(){
   try{
     if(id){await updateDoc(doc(db,'rates',id),d);autoBackup('update','rates',{...d,_id:id});}
     else{const ref=await addDoc(col('rates'),{...d,createdAt:today()});autoBackup('create','rates',{...d,_id:ref.id});}
-    window.closeM('rateM');toast('दर सेव्ह ✅');window.render('rate-card');
+    window.closeM('rateM');toast('दर सेव्ह ✅');
+    const wasOnboarding=ONB.checked&&!ONB.rateDone;
+    await refreshOnboardState();
+    if(wasOnboarding&&ONB.rateDone){
+      toast('🎉 सर्व सेट झाले! आता तुम्ही संपूर्ण ॲप वापरू शकता','ok',4500);
+      nav('dashboard');
+    }else{
+      window.render('rate-card');
+    }
   }catch(e){toast(friendlyErr(e),'err');}
   finally{unlock('saveRate');}
 };
