@@ -52,39 +52,141 @@
 </div>
 
 <div id="land">
-  <nav class="l-nav">
-    <div class="l-logo">
-      <div class="svg-logo"><img src="assets/logo/logo.svg" alt="Logo" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-tractor\'></i>'"/></div>
-      <div class="l-logo-t"><h1>TractorWala</h1><p>Business Manager</p></div>
-    </div>
-  </nav>
-  <div class="l-hero">
-    <div class="l-chip"><i class="fas fa-tractor"></i> <span id="lChip">शेतकऱ्यांसाठी #1 ऍप</span></div>
-    <h1 class="l-h1"><span id="lH1a">आपला ट्रॅक्टर</span> <em id="lH1b">व्यवसाय डिजिटल करा</em></h1>
-    <p class="l-sub" id="lSub">काम, खर्च, पेमेंट आणि उधार खाता — सर्व एकाच ठिकाणी.</p>
-    <button class="l-login" onclick="doLogin()">
-      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G"/>
-      <span id="lBtn">Google ने Login करा</span>
-    </button>
-    <div class="l-stats">
-      <div class="l-stat"><b>₹0</b><span id="lSt1">सेटअप फी</span></div>
-      <div class="l-stat"><b>100%</b><span id="lSt2">डेटा सुरक्षित</span></div>
-      <div class="l-stat"><b>24/7</b><span id="lSt3">कधीही वापरा</span></div>
+
+  <!-- ============ HERO (dark band) ============ -->
+  <div class="l-hero-band">
+    <div class="l-container">
+      <nav class="l-nav">
+        <div class="l-logo">
+          <div class="svg-logo"><img src="assets/logo/logo.svg" alt="Logo" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-tractor\'></i>'"/></div>
+          <div class="l-logo-t"><h1>TractorWala</h1><p>Business Manager</p></div>
+        </div>
+      </nav>
+
+      <div class="l-hero">
+        <div class="l-chip"><i class="fas fa-tractor"></i> <span id="lChip">शेतकऱ्यांसाठी खास बनवलेलं ऍप</span></div>
+        <h1 class="l-h1"><span id="lH1a">आपला ट्रॅक्टर</span> <em id="lH1b">व्यवसाय डिजिटल करा</em></h1>
+        <p class="l-sub" id="lSub">काम, खर्च, पेमेंट आणि उधार खाता — सर्व एकाच ठिकाणी. सहज, सुरक्षित आणि मोफत सुरुवात.</p>
+
+        <div class="l-cta-row">
+          <button class="l-btn l-btn-light" onclick="doLogin()">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G"/>
+            <span id="lBtn">Google ने Login करा</span>
+          </button>
+          <div class="l-microcopy"><i class="fas fa-check-circle"></i> <span id="lSt1">₹0 सेटअप फी</span> &nbsp;·&nbsp; <span id="lSt2">7 दिवस मोफत ट्रायल</span></div>
+        </div>
+
+        <div class="l-preview-wrap">
+          <div class="l-preview-card">
+            <div class="l-pc-dots"><span></span><span></span><span></span></div>
+            <div class="l-pc-hdr"><b><i class="fas fa-tags"></i> दर कार्ड</b><span>Live</span></div>
+            <div class="l-pc-row"><span><b>नांगरणी</b><small>प्रति तास</small></span><span class="amt">₹500</span></div>
+            <div class="l-pc-row"><span><b>पेरणी</b><small>प्रति एकर</small></span><span class="amt">₹800</span></div>
+            <div class="l-pc-row"><span><b>मळणी</b><small>प्रति ट्रिप</small></span><span class="amt">₹1,200</span></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="l-flow">
-    <div class="l-flow-row">
-      <div class="l-step"><div class="i">🚜</div><h3><span id="lf1">काम नोंदवा</span></h3></div>
-      <i class="fas fa-arrow-right l-arrow"></i>
-      <div class="l-step"><div class="i">💰</div><h3><span id="lf2">पेमेंट ट्रॅक करा</span></h3></div>
-      <i class="fas fa-arrow-right l-arrow"></i>
-      <div class="l-step"><div class="i">🧾</div><h3><span id="lf3">रिपोर्ट पाठवा</span></h3></div>
+
+  <!-- ============ HOW IT WORKS (white band) ============ -->
+  <div class="l-sec l-reveal">
+    <div class="l-container">
+      <div class="l-eyebrow">कसं वापरायचं</div>
+      <div class="l-sec-ttl" id="lFlowTtl">फक्त 3 सोप्या पायऱ्या</div>
+      <div class="l-sec-sub">कुठलंही training लागत नाही — लगेच वापरता येतं</div>
+      <div class="l-steps">
+        <div class="l-step">
+          <div class="l-step-num">01</div>
+          <i class="fas fa-clipboard-list l-step-icon"></i>
+          <h4><span id="lf1">काम नोंदवा</span></h4>
+          <p id="lf1d">शेतकरी, काम व दर टाका — 30 सेकंदात एंट्री पूर्ण</p>
+        </div>
+        <div class="l-step">
+          <div class="l-step-num">02</div>
+          <i class="fas fa-hand-holding-usd l-step-icon"></i>
+          <h4><span id="lf2">पेमेंट ट्रॅक करा</span></h4>
+          <p id="lf2d">कोणाकडे किती बाकी आहे — आपोआप दिसते</p>
+        </div>
+        <div class="l-step">
+          <div class="l-step-num">03</div>
+          <i class="fas fa-paper-plane l-step-icon"></i>
+          <h4><span id="lf3">रिपोर्ट पाठवा</span></h4>
+          <p id="lf3d">WhatsApp किंवा PDF वर एका क्लिकवर शेअर</p>
+        </div>
+      </div>
     </div>
   </div>
+
+  <!-- ============ FEATURES (white band, continued) ============ -->
+  <div class="l-sec l-reveal" style="padding-top:0">
+    <div class="l-container">
+      <div class="l-eyebrow">फीचर्स</div>
+      <div class="l-sec-ttl">सर्व गरजेच्या गोष्टी एका ठिकाणी</div>
+      <div class="l-sec-sub">वेगळे रजिस्टर, वेगळ्या वह्या यांची गरज नाही</div>
+      <div class="l-fgrid">
+        <div class="l-fcard"><div class="l-ficon"><i class="fas fa-book"></i></div><div><h4>उधार खाता</h4><p>प्रत्येक शेतकऱ्याची बाकी आपोआप दिसते</p></div></div>
+        <div class="l-fcard"><div class="l-ficon"><i class="fas fa-file-invoice-dollar"></i></div><div><h4>Invoice</h4><p>UPI QR सह PDF बिल WhatsApp वर पाठवा</p></div></div>
+        <div class="l-fcard"><div class="l-ficon"><i class="fas fa-tags"></i></div><div><h4>दर कार्ड</h4><p>प्रत्येक कामाचा दर आधीच सेट करा</p></div></div>
+        <div class="l-fcard"><div class="l-ficon"><i class="fas fa-chart-bar"></i></div><div><h4>अहवाल</h4><p>रोजचा व महिन्याचा हिशोब एका क्लिकवर</p></div></div>
+        <div class="l-fcard"><div class="l-ficon"><i class="fas fa-cloud-download-alt"></i></div><div><h4>Cloud Backup</h4><p>डेटा सुरक्षित — फोन बदलला तरी टेन्शन नाही</p></div></div>
+        <div class="l-fcard"><div class="l-ficon"><i class="fas fa-language"></i></div><div><h4>3 भाषा</h4><p>मराठी, हिंदी, English — तुम्हाला हवी ती</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TRUST STRIP (light tint band) ============ -->
+  <div class="l-trust-band l-reveal">
+    <div class="l-container">
+      <div class="l-trust">
+        <div class="l-trust-item"><i class="fas fa-shield-alt"></i> डेटा सुरक्षित (Firebase)</div>
+        <div class="l-trust-item"><i class="fas fa-mobile-alt"></i> App-store install नाही</div>
+        <div class="l-trust-item"><i class="fas fa-times-circle"></i> केव्हाही रद्द करा</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PRICING (dark band - bookends hero) ============ -->
+  <div class="l-price-band l-reveal">
+    <div class="l-container">
+      <div class="l-eyebrow">किंमत</div>
+      <div class="l-sec-ttl">साधी, स्पष्ट किंमत</div>
+      <div class="l-sec-sub" style="margin-bottom:32px">लपलेले चार्जेस नाहीत</div>
+      <div class="l-price-card">
+        <div class="l-price-badge">7 दिवस मोफत ट्रायल</div>
+        <div class="l-price-amt">₹300<span>/महिना</span></div>
+        <div class="l-price-trial">पहिले 7 दिवस पूर्ण मोफत — कार्ड लागत नाही</div>
+        <ul class="l-price-feat">
+          <li><i class="fas fa-check-circle"></i> अमर्यादित काम नोंदी</li>
+          <li><i class="fas fa-check-circle"></i> उधार खाता व Invoice</li>
+          <li><i class="fas fa-check-circle"></i> WhatsApp/PDF रिपोर्ट</li>
+          <li><i class="fas fa-check-circle"></i> Cloud Backup</li>
+        </ul>
+        <button class="l-btn l-btn-solid l-btn-block" onclick="doLogin()">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G"/>
+          <span>मोफत सुरुवात करा</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <footer class="l-foot">
-    <strong>TractorWala</strong> · sourabhbongarde2@gmail.com · 7875817356
+    <strong>TractorWala</strong> · sourabhbongarde2@gmail.com · 7875817356<br>
+    © Sourabh Bongarde Software Solutions Pvt. Ltd.
   </footer>
 </div>
+
+<script>
+// Halka scroll-reveal - sirf opacity/transform (GPU-cheap), koi heavy library nahi
+(function(){
+  var els=document.querySelectorAll('.l-reveal');
+  if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('on');});return;}
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){if(en.isIntersecting){en.target.classList.add('on');io.unobserve(en.target);}});
+  },{threshold:.12});
+  els.forEach(function(e){io.observe(e);});
+})();
+</script>
 
 <div id="app" class="h">
   <aside class="sb" id="sb">
