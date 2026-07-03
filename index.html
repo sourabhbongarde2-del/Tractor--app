@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>TractorWala — Business Manager</title>
 <meta name="theme-color" content="#166534"/>
+<link rel="manifest" href="./manifest.json"/>
+<link rel="icon" type="image/png" sizes="32x32" href="./assets/icons/icon-32.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="./assets/icons/icon-16.png"/>
+<link rel="apple-touch-icon" href="./assets/icons/apple-touch-icon.png"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="TractorWala"/>
+<meta name="mobile-web-app-capable" content="yes"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Poppins:wght@400;500;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
@@ -253,6 +261,56 @@
   </nav>
 </div>
 
+<!-- PWA install banner - custom UI kyunki browser ka default prompt suppress ho sakta hai,
+     aur iOS pe koi default prompt hota hi nahi (manual instructions dikhani padti hain) -->
+<div id="pwaInstallBar" class="h">
+  <div class="pwa-ib-icon"><img src="assets/icons/icon-96.png" alt="TractorWala"/></div>
+  <div class="pwa-ib-txt">
+    <b>TractorWala App Install करा</b>
+    <span id="pwaIbSub">Home screen वर icon येईल, ऑफलाइन पण चालेल</span>
+  </div>
+  <button class="pwa-ib-btn" id="pwaIbBtn" onclick="window.pwaInstall()">Install</button>
+  <button class="pwa-ib-x" onclick="window.pwaDismiss()"><i class="fas fa-times"></i></button>
+</div>
+
 <script type="module" src="js/core.js"></script>
+<script>
+// ---- PWA: service worker register + install-prompt banner ----
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').catch(()=>{});});
+}
+(function(){
+  var bar=document.getElementById('pwaInstallBar');
+  var sub=document.getElementById('pwaIbSub');
+  var btn=document.getElementById('pwaIbBtn');
+  var KEY='tw_pwa_dismissed';
+  if(localStorage.getItem(KEY))return; // user ne ek baar band kiya to dobara mat dikhao
+  var deferredPrompt=null;
+
+  window.addEventListener('beforeinstallprompt',function(e){
+    e.preventDefault();
+    deferredPrompt=e;
+    bar.classList.remove('h');
+  });
+
+  window.pwaInstall=function(){
+    if(!deferredPrompt)return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.finally(function(){deferredPrompt=null;bar.classList.add('h');});
+  };
+  window.pwaDismiss=function(){bar.classList.add('h');localStorage.setItem(KEY,'1');};
+
+  window.addEventListener('appinstalled',function(){bar.classList.add('h');localStorage.setItem(KEY,'1');});
+
+  // iOS Safari: koi beforeinstallprompt event hi nahi hota, isliye manual instructions
+  var isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  var isStandalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+  if(isIOS && !isStandalone){
+    sub.textContent='खालच्या Share बटणावर टॅप करून "Add to Home Screen" निवडा';
+    btn.style.display='none';
+    bar.classList.remove('h');
+  }
+})();
+</script>
 </body>
 </html>
