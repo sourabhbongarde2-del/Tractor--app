@@ -15,15 +15,23 @@ export function setKhFarmerName(v){khFarmerName=v;}
 if(DARK)document.documentElement.setAttribute('data-theme','dark');
 
 // ---- Onboarding gate: naya user pehle Profile, phir Rate Card poora kare tabhi
-// baaki poora app khulta hai. "Profile complete" ka signal = phone number bhara
-// gaya hai (yeh field kabhi auto-fill nahi hota, isliye reliable signal hai).
+// baaki poora app khulta hai. IMPORTANT: is gate ko sirf bilkul NAYE users (jinke
+// paas ek bhi rate card nahi hai) ke liye lagu karte hain. Agar user ke paas kam se
+// kam ek Rate Card already hai, to woh clearly ek existing/active user hai - use
+// kabhi bhi is naye gate se lock nahi karna (chahe unka phone field khali kyun na ho,
+// jo purane users me common hai kyunki pehle woh required nahi tha).
 export let ONB={profileDone:false,rateDone:false,checked:false};
 export async function refreshOnboardState(){
-  const p=gProf();
-  const profileDone=!!(p.phone&&p.phone.trim());
   let rateDone=false;
   try{const snap=await getDocs(uq('rates'));rateDone=!snap.empty;}catch(e){/* offline waghera - safe default false */}
-  ONB={profileDone,rateDone,checked:true};
+  if(rateDone){
+    // Rate card already hai => yeh established user hai, onboarding gate kabhi lagu nahi hogi
+    ONB={profileDone:true,rateDone:true,checked:true};
+    return ONB;
+  }
+  const p=gProf();
+  const profileDone=!!(p.phone&&p.phone.trim());
+  ONB={profileDone,rateDone:false,checked:true};
   return ONB;
 }
 
