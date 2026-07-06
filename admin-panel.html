@@ -42,12 +42,30 @@
   </div>
 
   <div class="adm-tabs">
-    <button class="adm-tab on" id="admTabCodes" onclick="window.admSwitchTab('codes')">🎫 Codes</button>
+    <button class="adm-tab on" id="admTabOverview" onclick="window.admSwitchTab('overview')">📊 Overview</button>
+    <button class="adm-tab" id="admTabCodes" onclick="window.admSwitchTab('codes')">🎫 Codes</button>
     <button class="adm-tab" id="admTabUsers" onclick="window.admSwitchTab('users')">👥 Users (<span id="admUserCount">0</span>)</button>
+    <button class="adm-tab" id="admTabAnnounce" onclick="window.admSwitchTab('announce')">📢 Announcements</button>
     <button class="adm-tab" id="admTabSettings" onclick="window.admSwitchTab('settings')">⚙️ Settings</button>
+    <button class="adm-tab" id="admTabLog" onclick="window.admSwitchTab('log')">🕒 Activity Log</button>
   </div>
 
-  <div id="admPaneCodes">
+  <div id="admPaneOverview">
+    <div class="adm-ov-grid">
+      <div class="adm-ov-card"><span id="ovTotal">0</span><label>एकूण Users</label></div>
+      <div class="adm-ov-card active"><span id="ovTrial">0</span><label>Active Trial</label></div>
+      <div class="adm-ov-card active"><span id="ovPaid">0</span><label>Active Paid</label></div>
+      <div class="adm-ov-card expired"><span id="ovExpired">0</span><label>Trial संपला</label></div>
+      <div class="adm-ov-card expired"><span id="ovDisabled">0</span><label>Disabled</label></div>
+      <div class="adm-ov-card revenue"><span id="ovRevenue">₹0</span><label>अंदाजे महिना Revenue</label></div>
+    </div>
+    <div class="adm-card">
+      <h2>🆕 या आठवड्यातील नवीन Users</h2>
+      <div id="ovNewUsers"><p class="adm-empty">लोड होत आहे…</p></div>
+    </div>
+  </div>
+
+  <div id="admPaneCodes" class="h">
     <div class="adm-card">
       <h2>नवीन Unlock Code बनवा</h2>
       <div class="adm-fg">
@@ -81,12 +99,45 @@
         <input type="text" placeholder="Email से शोधा..." oninput="window.admFilterUsers(this.value)"/>
       </div>
     </div>
+    <div class="adm-bulk-bar h" id="admBulkBar">
+      <label class="adm-bulk-all"><input type="checkbox" id="admSelectAllChk" onchange="window.admSelectAllUsers(this.checked)"/> सर्व निवडा</label>
+      <span id="admBulkCount" class="adm-bulk-count">0 निवडले</span>
+      <button class="adm-btn adm-btn-sm" onclick="window.admBulkExtend(7)">➕ 7 दिवस (सर्वांना)</button>
+      <button class="adm-btn adm-btn-sm" onclick="window.admBulkExtend(30)">➕ 30 दिवस (सर्वांना)</button>
+      <button class="adm-btn adm-btn-sm adm-btn-danger" onclick="window.admBulkDisable()">Disable (सर्वांना)</button>
+    </div>
     <div class="adm-card">
       <h2 style="display:flex;justify-content:space-between;align-items:center">
         सर्व Users
         <button class="adm-copy-btn" onclick="refreshUsers()">🔄 Refresh</button>
       </h2>
       <div id="admUsersList"><div class="adm-spin"></div></div>
+    </div>
+  </div>
+
+  <div id="admPaneAnnounce" class="h">
+    <div class="adm-card">
+      <h2>📢 सर्व Users साठी Announcement</h2>
+      <p style="color:#94a3b8;font-size:.8rem;margin-bottom:16px;line-height:1.5">
+        हा message सर्व logged-in users ला त्यांच्या app च्या वर एक banner म्हणून दिसेल.
+        User एकदा बंद (✕) केला तर तोच message त्याला परत दिसणार नाही — पण नवीन message
+        लिहून Save केल्यावर सर्वांना परत दिसेल.
+      </p>
+      <div class="adm-fg">
+        <label>Message</label>
+        <textarea id="admAnnounceText" rows="3" placeholder="उदा: उद्या 2-4 दरम्यान maintenance आहे, कृपया..." style="width:100%;background:#0f172a;border:1px solid #334155;border-radius:8px;color:#fff;padding:10px;font-family:inherit;font-size:.85rem;resize:vertical"></textarea>
+      </div>
+      <div class="adm-settings-row" style="margin-top:14px">
+        <div>
+          <div class="adm-settings-label">Announcement दाखवा</div>
+          <div class="adm-settings-status" id="admAnnounceStatus">बंद आहे</div>
+        </div>
+        <label class="adm-switch">
+          <input type="checkbox" id="admAnnounceActive"/>
+          <span class="adm-switch-slider"></span>
+        </label>
+      </div>
+      <button class="adm-btn" id="admAnnounceSaveBtn" onclick="window.admSaveAnnouncement()" style="margin-top:16px">Save करा</button>
     </div>
   </div>
 
@@ -108,6 +159,25 @@
           <span class="adm-switch-slider"></span>
         </label>
       </div>
+    </div>
+    <div class="adm-card">
+      <h2>💰 महिना Subscription किंमत</h2>
+      <p style="color:#94a3b8;font-size:.8rem;margin-bottom:14px">हे बदलल्यावर नवीन किंमत लगेच सर्व users च्या payment screen वर दिसेल.</p>
+      <div class="adm-fg">
+        <label>किंमत (₹ प्रति महिना)</label>
+        <input type="number" id="admPriceInp" placeholder="300"/>
+      </div>
+      <button class="adm-btn" id="admPriceSaveBtn" onclick="window.admSavePrice()">Save करा</button>
+    </div>
+  </div>
+
+  <div id="admPaneLog" class="h">
+    <div class="adm-card">
+      <h2 style="display:flex;justify-content:space-between;align-items:center">
+        🕒 Admin Activity Log
+        <button class="adm-copy-btn" onclick="window.admLoadLog()">🔄 Refresh</button>
+      </h2>
+      <div id="admLogList"><div class="adm-spin"></div></div>
     </div>
   </div>
 </div>
