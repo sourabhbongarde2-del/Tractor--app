@@ -10,7 +10,7 @@
 //   already core.js me hai) - service worker sirf STATIC FILES cache karta hai, data
 //   layer ko touch nahi karta.
 
-const CACHE_VERSION = 'tw-v1';
+const CACHE_VERSION = 'tw-v2';
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 
