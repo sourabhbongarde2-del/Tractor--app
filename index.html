@@ -16,9 +16,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Poppins:wght@400;500;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- QRCode/html2canvas/jsPDF ab yahan se hata diye - yeh ab sirf Invoice/PDF/QR feature
+     use hone par lazy-load hote hain (core.js: ensureQRCode/ensurePdfLibs), taaki
+     har page load pe ~500KB render-blocking download na ho jab zaroorat hi na ho. -->
 <link rel="stylesheet" href="css/base.css"/>
 <link rel="stylesheet" href="css/landing.css"/>
 <link rel="stylesheet" href="css/invoice.css"/>
@@ -245,6 +245,7 @@
         </div>
       </div>
     </div>
+    <div id="announceBanner" class="h"></div>
     <div id="onboardBanner" class="h"></div>
     <div id="trialBanner" class="h"></div>
     <div class="ct" id="ct"><div class="spin"></div></div>
@@ -277,7 +278,15 @@
 <script>
 // ---- PWA: service worker register + install-prompt banner ----
 if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').catch(()=>{});});
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js').then(reg=>{
+      console.log('[PWA] Service worker registered, scope:',reg.scope);
+    }).catch(err=>{
+      console.error('[PWA] Service worker registration FAILED:',err);
+    });
+  });
+}else{
+  console.warn('[PWA] serviceWorker not supported in this browser');
 }
 (function(){
   var bar=document.getElementById('pwaInstallBar');
@@ -310,6 +319,14 @@ if('serviceWorker' in navigator){
     btn.style.display='none';
     bar.classList.remove('h');
   }
+
+  // Diagnostic: agar 4 second me bhi beforeinstallprompt na aaye, console me reason batao
+  setTimeout(function(){
+    if(deferredPrompt)return;
+    if(isStandalone){console.log('[PWA] Already installed/running standalone - isliye prompt nahi aaya.');return;}
+    if(isIOS){return;} // iOS ke liye already handled upar
+    console.warn('[PWA] beforeinstallprompt abhi tak fire nahi hua. Possible reasons: (1) pehli hi visit hai - ek reload try karo, (2) already installed via browser menu, (3) manifest/icons me error - DevTools > Application > Manifest check karo, (4) Chrome ke alava kuch browsers (Firefox/some Xiaomi/Samsung browsers) is event ko support hi nahi karte.');
+  },4000);
 })();
 </script>
 </body>
