@@ -2,7 +2,7 @@
 // Naya: ek hi farmer ka 2-3 kaam same time pe ek session me add kar sakte ho (multi-row
 // billing). Edit mode me (existing kaam edit karte waqt) simple single-row form dikhta hai,
 // kyunki edit ek specific document ko target karta hai, multi-add wahan applicable nahi.
-import{getDocs,addDoc,updateDoc,doc,db,uq,col,uid,today,fmt,toast,lock,unlock,adBannerHTML,autoBackup,friendlyErr}from'./core.js';
+import{getDocs,addDoc,updateDoc,doc,db,uq,col,uid,today,fmt,toast,lock,unlock,adBannerHTML,autoBackup,friendlyErr,invalidateCache}from'./core.js';
 import{editWID,setEditWID}from'./core.js';
 
 let _rates=[],_farmers=[];
@@ -327,6 +327,7 @@ window.saveEditWork=async function(){
     if(!qty||!rate){toast('प्रमाण आणि दर आवश्यक','err');return;}
     if(!date){toast('तारीख निवडा','err');return;}
     const data={uid:uid(),customerName:cust,mobile:mob,workType:wt,unit,quantity:qty,rate,total:qty*rate,date,notes:note,updatedAt:today()};
+    invalidateCache('works'); // payments[] preserve karke overwrite karte hain - stale read se ek payment silently gum ho sakta hai
     const snap=await getDocs(uq('works'));let pays=[];
     snap.forEach(d=>{if(d.id===editWID)pays=d.data().payments||[];});
     await updateDoc(doc(db,'works',editWID),{...data,payments:pays});
@@ -336,3 +337,4 @@ window.saveEditWork=async function(){
   }catch(e){toast(friendlyErr(e),'err');}
   finally{unlock('saveEditWork');if(btn)btn.disabled=false;}
 };
+
