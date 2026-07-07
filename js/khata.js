@@ -2,7 +2,7 @@
 // Farmer ke naam pe click karne se yahan aata hai: total kaam, total jama, baki rakam,
 // sab kaam ki list, aur seedha payment add karne ka form. Date-range consolidated
 // invoice bhi yahin se banta hai (1-tap button).
-import{getDocs,uq,fmt,fmtD,balOf,paidOf,waNum,today,toast,adBannerHTML,gProf,setKhFarmerName,friendlyErr,updateDoc,doc,db,autoBackup,lock,unlock,invalidateCache}from'./core.js';
+import{getDocs,uq,fmt,fmtD,balOf,paidOf,waNum,today,toast,adBannerHTML,gProf,setKhFarmerName,friendlyErr,updateDoc,doc,db,autoBackup,lock,unlock}from'./core.js';
 
 export async function pgKhata(area){
   const name=window._khataName;
@@ -240,7 +240,6 @@ window.khSubmitQuickPay=async function(){
     const name=window._khataName;
 
     // Taaza data mangwao - taaki kisi doosre tab/device se abhi-abhi hui payment miss na ho
-    invalidateCache('works'); // FIFO allocation ke liye guaranteed-fresh data chahiye, cache se nahi
     const snap=await getDocs(uq('works'));
     let works=[];
     snap.forEach(d=>{const w=d.data();if(w.customerName===name)works.push({...w,_id:d.id});});
