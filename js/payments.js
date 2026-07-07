@@ -1,7 +1,7 @@
 // payments.js — Payments page (pending/done tabs) + the universal "add payment" modal
 // (openPayMo/addPay/delPay are used from Dashboard, Work List, and here, so they live here
 //  and attach to window so other page modules can call them.)
-import{getDocs,updateDoc,doc,db,uq,fmt,fmtD,balOf,paidOf,waNum,today,toast,lock,unlock,gProf,autoBackup,friendlyErr,adBannerHTML,invalidateCache}from'./core.js';
+import{getDocs,updateDoc,doc,db,uq,fmt,fmtD,balOf,paidOf,waNum,today,toast,lock,unlock,gProf,autoBackup,friendlyErr,adBannerHTML}from'./core.js';
 
 export async function pgPay(area){
   const[snap,ad1]=await Promise.all([getDocs(uq('works')),adBannerHTML('payments-top')]);
@@ -100,7 +100,6 @@ window.openPayMo=async function(wid){
 window.addPay=async function(wid,full){
   if(!lock('addPay'+wid))return; // double-tap guard: rokta hai ek hi payment do baar add hone se
   try{
-    invalidateCache('works'); // read-modify-write hai (payments[] preserve karke naya add karte hain) - guaranteed-fresh data zaroori, cached/stale nahi chalega
     const snap=await getDocs(uq('works'));
     let w=null;snap.forEach(d=>{if(d.id===wid)w={...d.data()};});
     if(!w)return;
@@ -123,7 +122,6 @@ window.addPay=async function(wid,full){
 window.delPay=async function(wid,idx){
   if(!confirm('पेमेंट हटवायचे?'))return;
   try{
-    invalidateCache('works'); // yeh bhi read-modify-write hai - fresh data zaroori
     const snap=await getDocs(uq('works'));let w=null;
     snap.forEach(d=>{if(d.id===wid)w={...d.data()};});
     if(!w)return;
