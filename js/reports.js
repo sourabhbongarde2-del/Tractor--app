@@ -1,6 +1,80 @@
 // reports.js — Reports page (6-month trend, top customers) + daily/monthly share functions
 // (shareDailyWA/dlDailyPDF are used from Dashboard too, so they live here as globals)
-import{getDocs,uq,fmt,fmtD,ym,today,paidOf,toast,adBannerHTML,friendlyErr,ensurePdfLibs}from'./core.js';
+import{getDocs,uq,fmt,fmtD,ym,today,paidOf,toast,adBannerHTML,friendlyErr,ensurePdfLibs,gProf}from'./core.js';
+import{invHeaderHTML,invFooterHTML}from'./invoice.js';
+
+// ---- Shared professional PDF renderer for all report types ----
+// Invoice ne jo "brand-consistent" .inv template banaya tha (header with logo/business
+// name, styled summary box, tables, footer with developer credit) - reports bhi wahi
+// exact same visual language use karte hain ab, taaki poori app me har PDF export
+// professional aur consistent dikhe. Pehle yeh sirf jsPDF.text() se haath se likha
+// jata tha (plain lines, koi table/branding nahi) - ab html2canvas se asli styled HTML
+// capture hoti hai, jaisa Invoice PDF banta hai.
+async function exportReportPDF(bodyHTML,tag,dateLabel,periodLabel,filename){
+  await ensurePdfLibs();
+  const pr=gProf();
+  const repNo='REP'+Date.now().toString().slice(-6);
+  const holder=document.createElement('div');
+  holder.style.cssText='position:fixed;left:-9999px;top:0;width:680px;background:#fff';
+  holder.innerHTML=`<div class="inv">${invHeaderHTML(pr,tag,repNo,dateLabel,periodLabel)}<div class="inv-body">${bodyHTML}</div>${invFooterHTML(pr)}</div>`;
+  document.body.appendChild(holder);
+  try{
+    const canvas=await html2canvas(holder,{scale:2,backgroundColor:'#ffffff',useCORS:true,allowTaint:true,logging:false});
+    const{jsPDF}=window.jspdf;
+    const pdf=new jsPDF('p','mm','a4');
+    const pageW=210,pageH=297;
+    const imgW=pageW;
+    const pxPerMM=canvas.width/imgW;
+    const pageHeightPx=pageH*pxPerMM;
+    if(canvas.height<=pageHeightPx){
+      pdf.addImage(canvas.toDataURL('image/jpeg',0.92),'JPEG',0,0,imgW,canvas.height/pxPerMM);
+    }else{
+      // Content ek A4 page se lamba hai (jaise bahut saare work-rows) - canvas ko
+      // page-height ke hisaab se slice karke multiple pages banate hain
+      let renderedPx=0,first=true;
+      while(renderedPx<canvas.height){
+        const sliceH=Math.min(pageHeightPx,canvas.height-renderedPx);
+        const sliceCanvas=document.createElement('canvas');
+        sliceCanvas.width=canvas.width;sliceCanvas.height=sliceH;
+        sliceCanvas.getContext('2d').drawImage(canvas,0,renderedPx,canvas.width,sliceH,0,0,canvas.width,sliceH);
+        if(!first)pdf.addPage();
+        pdf.addImage(sliceCanvas.toDataURL('image/jpeg',0.92),'JPEG',0,0,imgW,sliceH/pxPerMM);
+        renderedPx+=sliceH;first=false;
+      }
+    }
+    pdf.save(filename);
+    toast('PDF ✅');
+  }catch(e){toast(friendlyErr(e),'err');}
+  finally{document.body.removeChild(holder);}
+}
+
+// Summary box HTML (reuse invoice ki .inv-sm styling) - har report type me common
+function summaryBoxHTML(rev,exp,cnt,cntLabel){
+  return`<div class="inv-sm" style="width:100%;margin-left:0">
+    <div class="inv-sr"><span>एकूण उत्पन्न</span><span>₹${fmt(rev)}</span></div>
+    <div class="inv-sr"><span>एकूण खर्च</span><span>₹${fmt(exp)}</span></div>
+    <div class="inv-sr"><span>${cntLabel||'एकूण काम'}</span><span>${cnt}</span></div>
+    <div class="inv-sr big"><span>नफा / तोटा</span><span>₹${fmt(rev-exp)}</span></div>
+  </div>`;
+}
+// Breakdown box (work-type ya expense-category) - do-column grid, invoice ki .inv-bd
+// grid style reuse karke
+function breakdownBoxHTML(title,arr,color){
+  if(!arr.length)return'';
+  const max=Math.max(...arr.map(x=>x[1]),1);
+  return`<div class="inv-box" style="margin-bottom:16px">
+    <div class="inv-lbl" style="margin-bottom:8px">${title}</div>
+    ${arr.map(([nm,v])=>`<div style="display:flex;justify-content:space-between;font-size:.78rem;padding:4px 0;color:#333"><span>${nm}</span><span style="font-weight:700;color:${color}">₹${fmt(v)}</span></div>`).join('')}
+  </div>`;
+}
+// Work-detail table (range/daily reports me) - invoice ki .inv-tbl reuse
+function workTableHTML(works){
+  if(!works||!works.length)return'';
+  return`<table class="inv-tbl">
+    <thead><tr><th>तारीख</th><th>शेतकरी</th><th>काम</th><th class="r">रक्कम</th></tr></thead>
+    <tbody>${works.map(w=>`<tr><td>${fmtD(w.date)}</td><td>${w.customerName||''}</td><td>${w.workType||''}</td><td class="r">₹${fmt(w.total)}</td></tr>`).join('')}</tbody>
+  </table>`;
+}
 
 export async function pgRep(area){
   const[wS,eS,ad1]=await Promise.all([getDocs(uq('works')),getDocs(uq('expenses')),adBannerHTML('reports-top')]);
@@ -49,6 +123,7 @@ export async function pgRep(area){
   });
   const ecArr=Object.entries(ec).sort((a,b)=>b[1]-a[1]).slice(0,6);
   const maxEc=Math.max(...ecArr.map(x=>x[1]),1);
+  window._rp.wtArr=wtArr;window._rp.ecArr=ecArr;
 
   // All-time outstanding summary - sab customers ka total business/collected/due
   const allBiz=works.reduce((s,w)=>s+(w.total||0),0);
@@ -141,20 +216,13 @@ window.shareMonWA=function(){
 };
 window.dlMonPDF=async function(){
   const d=window._rp||{};
-  await ensurePdfLibs();
-  const{jsPDF}=window.jspdf,pdf=new jsPDF();
-  pdf.setFillColor(22,101,52);pdf.rect(0,0,210,22,'F');
-  pdf.setTextColor(255,255,255);pdf.setFontSize(15);pdf.setFont('helvetica','bold');
-  pdf.text('TractorWala - Monthly Report',14,14);
-  pdf.setTextColor(0,0,0);pdf.setFontSize(11);pdf.setFont('helvetica','normal');
-  pdf.text(`Month: ${new Date().toLocaleDateString('en-IN',{month:'long',year:'numeric'})}`,14,33);
-  pdf.setFillColor(240,253,244);pdf.rect(14,39,182,36,'F');
-  pdf.setFont('helvetica','bold');pdf.setFontSize(12);
-  pdf.setTextColor(22,101,52);pdf.text(`Revenue: Rs.${fmt(d.mRev)}`,20,50);
-  pdf.setTextColor(220,38,38);pdf.text(`Expense: Rs.${fmt(d.mExp)}`,20,60);
-  pdf.setTextColor(0);pdf.text(`Profit: Rs.${fmt(d.mProfit)} | Works: ${d.cnt}`,20,70);
-  pdf.setFontSize(8);pdf.setTextColor(150);pdf.text('Developed by Sourabh Bongarde - Bongarde Software Solutions Pvt. Ltd. - sourabhbongarde2@gmail.com | 7875817356',14,278);
-  pdf.save(`Monthly_${ym()}.pdf`);toast('PDF ✅');
+  const dateLabel=new Date().toLocaleDateString('mr-IN',{month:'long',year:'numeric'});
+  const body=summaryBoxHTML(d.mRev,d.mExp,d.cnt)+
+    `<div class="inv-bd" style="grid-template-columns:1fr 1fr">
+      ${breakdownBoxHTML('🚜 कामाच्या प्रकारानुसार',d.wtArr||[],'#166534')}
+      ${breakdownBoxHTML('💸 खर्च वर्गवारीनुसार',d.ecArr||[],'#dc2626')}
+    </div>`;
+  await exportReportPDF(body,'मासिक अहवाल','',dateLabel,`Monthly_${ym()}.pdf`);
 };
 
 // ---- Custom date-range report: works/expenses fetched once on page-load (window._repWorks/
@@ -195,30 +263,10 @@ window.shareRangeWA=function(){
 };
 window.dlRangePDF=async function(){
   const d=window._rangeRep||{};
-  await ensurePdfLibs();
-  const{jsPDF}=window.jspdf,pdf=new jsPDF();
-  pdf.setFillColor(22,101,52);pdf.rect(0,0,210,22,'F');
-  pdf.setTextColor(255,255,255);pdf.setFontSize(15);pdf.setFont('helvetica','bold');
-  pdf.text('TractorWala - Period Report',14,14);
-  pdf.setTextColor(0,0,0);pdf.setFontSize(11);pdf.setFont('helvetica','normal');
-  pdf.text(`Period: ${d.from} to ${d.to}`,14,33);
-  pdf.setFillColor(240,253,244);pdf.rect(14,39,182,36,'F');
-  pdf.setFont('helvetica','bold');pdf.setFontSize(12);
-  pdf.setTextColor(22,101,52);pdf.text(`Revenue: Rs.${fmt(d.rev)}`,20,50);
-  pdf.setTextColor(220,38,38);pdf.text(`Expense: Rs.${fmt(d.exp)}`,20,60);
-  pdf.setTextColor(0);pdf.text(`Profit: Rs.${fmt(d.profit)} | Works: ${d.cnt}`,20,70);
-  let y=88;
-  if(d.works&&d.works.length){
-    pdf.setFontSize(10);pdf.text('Work Details:',14,80);
-    d.works.forEach(w=>{
-      if(y>270){pdf.addPage();y=20;}
-      pdf.setFont('helvetica','normal');
-      pdf.text(`• ${w.date} | ${w.customerName} | ${w.workType} | Rs.${fmt(w.total)}`,14,y);
-      y+=7;
-    });
-  }
-  pdf.setFontSize(8);pdf.setTextColor(150);pdf.text('Developed by Sourabh Bongarde - Bongarde Software Solutions Pvt. Ltd. - sourabhbongarde2@gmail.com | 7875817356',14,290);
-  pdf.save(`Report_${d.from}_to_${d.to}.pdf`);toast('PDF ✅');
+  const dateLabel=new Date().toLocaleDateString('mr-IN');
+  const periodLabel=`${fmtD(d.from)} — ${fmtD(d.to)}`;
+  const body=summaryBoxHTML(d.rev,d.exp,d.cnt)+workTableHTML(d.works);
+  await exportReportPDF(body,'कालावधी अहवाल',dateLabel,periodLabel,`Report_${d.from}_to_${d.to}.pdf`);
 };
 window.dlRangeCSV=function(){
   const d=window._rangeRep||{};
@@ -256,23 +304,8 @@ window.dlDailyPDF=async function(){
     let w=[],e=[];wS.forEach(d=>w.push(d.data()));eS.forEach(d=>e.push(d.data()));
     const td=today();const tw=w.filter(x=>x.date===td),te=e.filter(x=>x.date===td);
     const rev=tw.reduce((s,x)=>s+(x.total||0),0),exp=te.reduce((s,x)=>s+(x.amount||0),0);
-    await ensurePdfLibs();
-    const{jsPDF}=window.jspdf,pdf=new jsPDF();
-    pdf.setFillColor(22,101,52);pdf.rect(0,0,210,22,'F');
-    pdf.setTextColor(255,255,255);pdf.setFontSize(15);pdf.setFont('helvetica','bold');
-    pdf.text('TractorWala - Daily Report',14,14);
-    pdf.setTextColor(0);pdf.setFontSize(11);pdf.setFont('helvetica','normal');
-    pdf.text(`Date: ${td}`,14,32);
-    pdf.setFillColor(240,253,244);pdf.rect(14,37,182,32,'F');
-    pdf.setFont('helvetica','bold');pdf.setFontSize(12);
-    pdf.setTextColor(22,101,52);pdf.text(`Revenue: Rs.${fmt(rev)}`,20,48);
-    pdf.setTextColor(220,38,38);pdf.text(`Expense: Rs.${fmt(exp)}`,20,57);
-    pdf.setTextColor(0);pdf.text(`Profit: Rs.${fmt(rev-exp)} | Works: ${tw.length}`,20,66);
-    if(tw.length){
-      pdf.setFontSize(10);pdf.text('Work Details:',14,82);
-      let y=90;tw.forEach(x=>{if(y>260)return;pdf.setFont('helvetica','normal');pdf.text(`• ${x.customerName} | ${x.workType} | ${x.quantity} ${x.unit} | Rs.${fmt(x.total)}`,14,y);y+=7;});
-    }
-    pdf.setFontSize(8);pdf.setTextColor(150);pdf.text('Developed by Sourabh Bongarde - Bongarde Software Solutions Pvt. Ltd. - sourabhbongarde2@gmail.com',14,278);
-    pdf.save(`Daily_${td}.pdf`);toast('PDF ✅');
+    const dateLabel=new Date().toLocaleDateString('mr-IN');
+    const body=summaryBoxHTML(rev,exp,tw.length)+workTableHTML(tw);
+    await exportReportPDF(body,'दैनिक अहवाल',dateLabel,'',`Daily_${td}.pdf`);
   }catch(e){toast(friendlyErr(e),'err');}
 };
