@@ -1,10 +1,64 @@
 // core.js — Shared state, helpers, ad banners, toast, nav/render router, auth wiring.
 // Sab page-files (dashboard.js, work-entry.js, etc.) yahan se helpers import karte hain.
 
-import{auth,db,gp,collection,addDoc,getDocs,getDoc,updateDoc,deleteDoc,doc,query,where,signInWithPopup,signOut,onAuthStateChanged,friendlyErr}from'./firebase-config.js';
+import{auth,db,gp,collection,addDoc as _addDoc,getDocs as _getDocs,getDoc,updateDoc as _updateDoc,deleteDoc as _deleteDoc,doc,query,where,signInWithPopup,signOut,onAuthStateChanged,friendlyErr}from'./firebase-config.js';
 import{ensureLicense,licenseStatus,redeemCode,fmtDate,getGlobalSettings}from'./license.js';
 
-export{auth,db,collection,addDoc,getDocs,updateDoc,deleteDoc,doc,query,where,friendlyErr};
+export{auth,db,collection,doc,query,where,friendlyErr};
+
+// ---- Lightweight read-cache + write-invalidation for the 5 "customer data" collections
+// (works/expenses/rates/shetkari/profiles). ----
+// PROBLEM: har page navigation (Dashboard, Khata, Reports, Work List...) pehle poori
+// 'works' collection dobara network se fetch karta tha - slow/rural internet pe yeh
+// sabse bada lag ka source tha, khaas kar jab user baar-baar Dashboard<->Khata jaise
+// pages ke beech aata-jaata hai.
+// FIX: getDocs() ab pehle cache check karta hai (agar 45 second se fresh hai to
+// SEEDHA cached data return karta hai - koi network wait nahi). addDoc/updateDoc/
+// deleteDoc turant us collection ka cache invalidate kar dete hain, isliye user ka
+// khud ka kiya hua badlav HAMESHA turant dikhta hai - kabhi stale data nahi dikhega.
+// TTL sirf ek safety-net hai (agar kahin invalidation miss ho jaye to bhi 45 sec me
+// khud thik ho jayega) - asli correctness invalidation se aati hai, TTL se nahi.
+const _collCache={};
+const CACHE_TTL=45000;
+function _snapLike(dataArr){
+  const docs=dataArr.map(d=>{const{_id,...rest}=d;return{id:_id,data:()=>rest};});
+  return{
+    forEach(cb){docs.forEach(cb);},
+    get docs(){return docs;},
+    get empty(){return dataArr.length===0;},
+    get size(){return dataArr.length;}
+  };
+}
+function _invalidate(name){if(name)delete _collCache[name];}
+function _refCollName(ref){try{return ref.parent?ref.parent.id:ref.id;}catch(e){return null;}}
+
+export async function getDocs(q){
+  const key=q&&q._cacheColl;
+  if(!key)return _getDocs(q); // uq() se nahi bana query (rare) - seedha pass-through
+  const c=_collCache[key];
+  if(c&&(Date.now()-c.ts<CACHE_TTL))return _snapLike(c.data);
+  const snap=await _getDocs(q);
+  const data=[];snap.forEach(d=>data.push({...d.data(),_id:d.id}));
+  _collCache[key]={data,ts:Date.now()};
+  return _snapLike(data);
+}
+export async function addDoc(ref,data){
+  const r=await _addDoc(ref,data);
+  _invalidate(_refCollName(ref));
+  return r;
+}
+export async function updateDoc(ref,data){
+  const r=await _updateDoc(ref,data);
+  _invalidate(_refCollName(ref));
+  return r;
+}
+export async function deleteDoc(ref){
+  const r=await _deleteDoc(ref);
+  _invalidate(_refCollName(ref));
+  return r;
+}
+// Manual invalidation escape-hatch, agar kabhi bahar se cache turant clear karna ho
+export function invalidateCache(name){_invalidate(name);}
 
 // ---- Global state ----
 export let CU=null,LANG=localStorage.getItem('tw_lang')||'mr',DARK=localStorage.getItem('tw_dark')==='true';
@@ -70,7 +124,12 @@ window.setLang=function(l){
 // ---- Core helpers ----
 export const uid=()=>CU?.uid;
 export const col=c=>collection(db,c);
-export const uq=c=>{if(!uid())throw new Error('Not authenticated');return query(col(c),where('uid','==',uid()));};
+export const uq=c=>{
+  if(!uid())throw new Error('Not authenticated');
+  const q=query(col(c),where('uid','==',uid()));
+  q._cacheColl=c; // caching-layer ke liye tag - is query ka target collection kya hai
+  return q;
+};
 export const fmt=n=>new Intl.NumberFormat('en-IN').format(Math.round(n||0));
 export const fmtD=d=>{if(!d)return'—';try{return new Date(d+'T12:00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'});}catch{return d;}};
 export const today=()=>new Date().toISOString().split('T')[0];
@@ -416,6 +475,34 @@ window._dismissAnnounce=function(ver){
   if(el)el.classList.add('h');
 };
 
+// ---- Connectivity indicator: user ko pata chalna chahiye jab woh offline ho jaaye
+// (taaki "app atak gaya" na lage - unhe pata ho ki data save ho raha hai aur net
+// wapas aate hi khud-ba-khud sync ho jayega), aur jab wapas online aaye to confirm
+// karo. Firestore ka apna offline-queue (enableIndexedDbPersistence) already writes
+// ko background me sync karta hai - yeh sirf UI par uska status dikhata hai.
+let _wasOffline=false;
+function updateConnBanner(){
+  const el=document.getElementById('connBanner');
+  if(!el)return;
+  if(!navigator.onLine){
+    _wasOffline=true;
+    el.classList.remove('h');
+    el.innerHTML='📴 इंटरनेट नाही — तुम्ही ऑफलाइन काम करू शकता, नेट आल्यावर डेटा आपोआप सिंक होईल.';
+    el.className='conn-off';
+  }else if(_wasOffline){
+    el.classList.remove('h');
+    el.innerHTML='✅ इंटरनेट परत आले — डेटा सिंक होत आहे...';
+    el.className='conn-on';
+    _wasOffline=false;
+    setTimeout(()=>{el.classList.add('h');},3000);
+  }else{
+    el.classList.add('h');
+  }
+}
+window.addEventListener('online',updateConnBanner);
+window.addEventListener('offline',updateConnBanner);
+updateConnBanner();
+
 function showTrialBanner(st){
   const el=document.getElementById('trialBanner');
   if(!el)return;
@@ -512,3 +599,26 @@ setInterval(async()=>{
     }
   }catch(_){/* network issue - silently skip, next interval try karega */}
 },5*60*1000);
+
+// ---- Connectivity indicator: user ko clearly pata chale ki app "lag" nahi kar rahi -
+// woh sirf offline hai. Offline hone par ek persistent bar dikhta hai (jab tak net
+// wapas na aaye), aur online hote hi ek chhota toast confirm karta hai ki data sync
+// ho raha hai. Asli data-sync khud Firestore SDK karta hai (enableIndexedDbPersistence
+// already firebase-config.js me hai) - yeh sirf us process ko USER KE LIYE VISIBLE
+// banata hai, taaki unhe pata rahe ki unka kaam surakshit hai.
+function updateConnBanner(){
+  const el=document.getElementById('connBanner');
+  if(!el)return;
+  if(navigator.onLine){
+    el.classList.add('h');
+  }else{
+    el.classList.remove('h');
+    el.innerHTML='📴 इंटरनेट नाही — काम सुरू ठेवा, डेटा सुरक्षित सेव्ह होईल आणि नेट आल्यावर आपोआप sync होईल.';
+  }
+}
+window.addEventListener('online',()=>{
+  updateConnBanner();
+  window.toast?.('✅ इंटरनेट परत आलं — डेटा sync होत आहे...','ok',3500);
+});
+window.addEventListener('offline',updateConnBanner);
+updateConnBanner();
