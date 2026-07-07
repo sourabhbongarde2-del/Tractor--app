@@ -158,7 +158,7 @@ window.invToggleWork=function(wid){
   if(btn){btn.disabled=_selectedWorkIds.size===0;btn.innerHTML=`<i class="fas fa-file-invoice"></i> Invoice बनवा (${_selectedWorkIds.size} काम)`;}
 };
 
-export function invHeaderHTML(pr,tag,invNo,dateLabel,periodLabel){
+function invHeaderHTML(pr,tag,invNo,dateLabel,periodLabel){
   return`<div class="inv-top">
     <div class="inv-brand">
       <div class="inv-lg"><img src="assets/logo/logo.svg" alt="logo" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\\'fas fa-tractor\\'></i>'"/></div>
@@ -175,7 +175,7 @@ export function invHeaderHTML(pr,tag,invNo,dateLabel,periodLabel){
     </div>
   </div>`;
 }
-export function invFooterHTML(pr){
+function invFooterHTML(pr){
   // Developer credit — har invoice (text/image/PDF teeno) me hamesha present, jaisa maanga gaya
   return`<div class="inv-foot">
     <div class="biz">${pr.phone?'📞 '+pr.phone+' · ':''}${pr.businessName||'TractorWala'}</div>
